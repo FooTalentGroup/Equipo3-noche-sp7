@@ -1,0 +1,56 @@
+# Conventional Commits - Formato de Mensajes de Commit
+
+Genera mensajes de commit siguiendo Conventional Commits:
+
+**Formato:** `tipo(scope): descripción`
+
+**Tipos válidos:** 
+- `feat` - Nueva funcionalidad para el usuario final (features de la aplicación)
+- `fix` - Corrección de bug
+- `refactor` - Refactorización de código
+- `docs` - Cambios en documentación
+- `style` - Cambios de formato (sin afectar código)
+- `test` - Agregar o modificar tests
+- `chore` - Tareas de mantenimiento, configuración, setup del proyecto (NO features de usuario)
+- `perf` - Mejoras de rendimiento
+- `ci` - Cambios en CI/CD
+- `build` - Cambios en build system
+- `revert` - Revertir un commit anterior
+
+**IMPORTANTE - Cuándo usar cada tipo:**
+- `feat`: Solo para funcionalidades nuevas que el usuario final puede usar (ej: login, dashboard, API endpoints)
+- `chore`: Para configuración, setup, scripts, workflows, templates, estructura del proyecto. SIEMPRE usa `chore` cuando haya:
+  * Configuración de CI/CD, workflows, scripts helper
+  * Setup inicial del proyecto
+  * Templates de GitHub
+  * Configuración de ramas, branch protection
+  * Cualquier cosa relacionada con infraestructura/configuración del proyecto
+- `docs`: SOLO cuando el cambio es ÚNICAMENTE documentación (README, guías, sin tocar código/config)
+
+**PRIORIDAD:** Si hay configuración, workflows, scripts, templates → USA `chore(config)` o `chore(ci)`, NO `docs`
+
+**Scopes válidos:** 
+- `frontend` - Cambios en frontend
+- `backend` - Cambios en backend
+- `ux-ui` - Cambios de diseño/UX
+- `docs` - Cambios en documentación
+- `ci` - Cambios en CI/CD
+- `config` - Cambios de configuración
+
+**Ejemplos:**
+- `feat(frontend): agregar login con Google` - Nueva funcionalidad para usuarios
+- `fix(backend): corregir error 500 en API` - Corrección de bug
+- `refactor(frontend): reorganizar componentes` - Mejora de código
+- `chore(config): configuración inicial del repositorio base` - Setup/configuración (workflows, scripts, templates)
+- `chore(ci): agregar workflows de CI/CD` - Configuración de CI/CD
+- `chore(config): agregar scripts helper y templates de GitHub` - Configuración del proyecto
+- `docs: actualizar README con instrucciones` - SOLO si es ÚNICAMENTE documentación sin cambios de código/config
+- `test(backend): agregar tests para API de usuarios` - Tests
+
+**Reglas:**
+- Siempre usa este formato cuando generes mensajes de commit
+- El scope debe detectarse automáticamente según la carpeta donde estés trabajando
+- La descripción debe ser clara y concisa
+- Usa minúsculas en la descripción
+- No termines la descripción con punto
+

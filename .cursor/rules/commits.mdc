@@ -1,0 +1,35 @@
+---
+alwaysApply: true
+Genera mensajes de commit siguiendo Conventional Commits:
+
+Formato: tipo(scope): descripción
+
+Tipos válidos: feat, fix, refactor, docs, style, test, chore, perf, ci, build, revert
+Scopes válidos: frontend, backend, ux-ui, docs, ci, config
+
+IMPORTANTE - Cuándo usar cada tipo:
+- feat: Solo para funcionalidades nuevas que el usuario final puede usar (login, dashboard, API endpoints)
+- chore: Para configuración, setup, scripts, workflows, templates, estructura del proyecto. SIEMPRE usa chore cuando haya:
+  * Configuración de CI/CD, workflows, scripts helper
+  * Setup inicial del proyecto
+  * Templates de GitHub
+  * Configuración de ramas, branch protection
+  * Cualquier cosa relacionada con infraestructura/configuración del proyecto
+- fix: Corrección de bugs
+- refactor: Mejora de código sin cambiar funcionalidad
+- docs: SOLO cuando el cambio es ÚNICAMENTE documentación (README, guías, sin tocar código/config)
+- ci: Cambios específicos en CI/CD (pero chore también es válido)
+
+PRIORIDAD: Si hay configuración, workflows, scripts, templates → USA chore(config) o chore(ci), NO docs
+
+Ejemplos:
+- feat(frontend): agregar login con Google - Nueva funcionalidad para usuarios
+- fix(backend): corregir error 500 en API - Corrección de bug
+- refactor(frontend): reorganizar componentes - Mejora de código
+- chore(config): configuración inicial del repositorio base - Setup/configuración (workflows, scripts, templates)
+- chore(ci): agregar workflows de CI/CD - Configuración de CI/CD
+- chore(config): agregar scripts helper y templates de GitHub - Configuración del proyecto
+- docs: actualizar README con instrucciones - SOLO si es ÚNICAMENTE documentación sin cambios de código/config
+
+Siempre usa este formato cuando generes mensajes de commit.
+---
