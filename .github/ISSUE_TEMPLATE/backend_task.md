@@ -1,5 +1,5 @@
 ---
-name: Tarea Backend
+name: Backend Task
 about: Crear una tarea técnica de backend
 title: '[BACK] '
 labels: backend

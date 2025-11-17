@@ -1,5 +1,5 @@
 ---
-name: Tarea Frontend
+name: Frontend Task
 about: Crear una tarea técnica de frontend
 title: '[FRONT] '
 labels: frontend
