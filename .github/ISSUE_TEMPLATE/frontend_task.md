@@ -1,43 +1,41 @@
 ---
-name: Sub-tarea Técnica
-about: Crear una sub-tarea técnica partiendo de una User Story o Feature
-title: '[SUBTASK] '
-labels: subtask, technical
+name: Tarea Frontend
+about: Crear una tarea técnica de frontend
+title: '[FRONT] '
+labels: frontend
 assignees: ''
 ---
 
 ## ¿Cuándo usar este template?
-- ✅ Tarea técnica que es **parte de una User Story** (se crea como sub-issue desde la US)
-  - Ejemplo: Si la US es "Login y Registro" (#1), los subtasks serían: "Maquetar formulario" (relacionado con #1), "Conectar con API" (relacionado con #1), "Validaciones" (relacionado con #1)
-- ✅ Tarea técnica **independiente** (configuración, documentación, investigación, etc.)
-  - Ejemplo: "Configurar CI/CD", "Documentar API", "Investigar librería X"
+- ✅ Tarea técnica de **frontend** que es parte de una User Story (se crea como sub-issue desde la US)
+  - Ejemplo: Si la US es "Login y Registro" (#1), los subtasks serían: "Maquetar formulario" (relacionado con #1), "Validaciones frontend" (relacionado con #1), "Integrar con API" (relacionado con #1)
+- ✅ Tarea técnica **independiente** de frontend (componentes, hooks, utilidades, etc.)
+  - Ejemplo: "Crear componente Button", "Implementar hook useAuth", "Configurar Storybook"
 - ❌ NO usar para bugs o refactors (se trabajan directamente sobre la issue original de bug/refactor)
 - ❌ NO usar si es una funcionalidad nueva completa para el usuario (usa User Story o Feature Request en ese caso)
 
 ## User Story o Feature Relacionada (Opcional)
-Si esta sub-tarea es parte de una User Story o Feature más grande, indícalo aquí:
+Si esta tarea es parte de una User Story o Feature más grande, indícalo aquí:
 - Pertenece a: #issue-number
 - Si es una tarea técnica independiente, deja este campo vacío
 
-## Descripción de la Sub-tarea
-Descripción clara y técnica de lo que se debe implementar en esta sub-tarea específica.
+## Descripción de la Tarea
+Descripción clara y técnica de lo que se debe implementar en esta tarea específica de frontend.
 
 ## Tipo de Tarea
 - [ ] 🎨 UI/UX (Componentes, estilos, layouts)
-- [ ] 🔌 API/Endpoint (Crear o modificar endpoints)
-- [ ] 🗄️ Base de Datos (Modelos, migraciones, queries)
-- [ ] 🔐 Autenticación/Autorización
+- [ ] 🔌 Integración API (Conectar con endpoints del backend)
+- [ ] 🧩 Componentes (Crear o modificar componentes React/Vue/etc.)
+- [ ] 🎣 Hooks/Custom Hooks (Lógica reutilizable)
+- [ ] 🗂️ Estado (Redux, Context, Zustand, etc.)
 - [ ] ✅ Testing (Unitarios, integración, E2E)
 - [ ] 📚 Documentación (Actualizar docs)
-- [ ] ⚙️ Configuración (Setup, CI/CD, deployment)
+- [ ] ⚙️ Configuración (Build, bundler, herramientas)
 - [ ] 🔍 Investigación (Spike, POC)
+- [ ] ♿ Accesibilidad (Mejoras de accesibilidad)
+- [ ] 📱 Responsive (Adaptación a diferentes tamaños)
 
 **Nota:** Los bugs y refactors se trabajan directamente sobre la issue original (no se crean subtasks para ellos).
-
-## Componente
-- [ ] Frontend
-- [ ] Backend
-- [ ] Fullstack
 
 ## Archivos/Áreas Afectadas
 Lista los archivos, módulos o áreas del código que se verán afectados:
@@ -46,7 +44,7 @@ Lista los archivos, módulos o áreas del código que se verán afectados:
 - etc.
 
 ## Implementación Propuesta
-Describe brevemente cómo planeas implementar esta sub-tarea:
+Describe brevemente cómo planeas implementar esta tarea:
 
 ```typescript
 // Ejemplo de código o pseudocódigo si aplica
@@ -58,6 +56,8 @@ Describe brevemente cómo planeas implementar esta sub-tarea:
 - [ ] El código sigue las convenciones del proyecto
 - [ ] Se ha actualizado la documentación si es necesario
 - [ ] Se ha revisado el código (self-review)
+- [ ] Es responsive (si aplica)
+- [ ] Cumple con estándares de accesibilidad (si aplica)
 
 ## Dependencias Técnicas
 - Depende de: #issue-number (debe completarse antes)
@@ -67,7 +67,7 @@ Describe brevemente cómo planeas implementar esta sub-tarea:
 Consideraciones técnicas, decisiones de diseño, o información relevante para el desarrollador:
 
 ## Checklist
-- [ ] La sub-tarea está claramente definida
+- [ ] La tarea está claramente definida
 - [ ] Se ha identificado la User Story/Feature padre (si aplica)
 - [ ] Se han identificado las dependencias técnicas
 - [ ] La estimación es realista (< 1 día idealmente)

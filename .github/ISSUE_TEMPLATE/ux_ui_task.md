@@ -2,7 +2,7 @@
 name: UX/UI Task
 about: Crear una tarea de diseño, UX o UI
 title: '[UX-UI] '
-labels: ux-ui, design
+labels: ux-ui
 assignees: ''
 ---
 
