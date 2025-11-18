@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Fork (left) -->
+  <g>
+    <rect x="20" y="30" width="5" height="45" fill="#ea580c" rx="2.5"/>
+    <rect x="15" y="25" width="3" height="12" fill="#ea580c" rx="1.5"/>
+    <rect x="21" y="25" width="3" height="12" fill="#ea580c" rx="1.5"/>
+    <rect x="27" y="25" width="3" height="12" fill="#ea580c" rx="1.5"/>
+  </g>
+  
+  <!-- Knife (right, crossing) -->
+  <g>
+    <rect x="55" y="25" width="30" height="5" fill="#ea580c" rx="2.5"/>
+    <rect x="85" y="26" width="6" height="8" fill="#ea580c" rx="2"/>
+  </g>
+</svg>
