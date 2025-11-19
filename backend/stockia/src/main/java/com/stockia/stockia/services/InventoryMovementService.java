@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.stockia.stockia.dtos.InventoryMovementRequestDto;
 import com.stockia.stockia.models.InventoryMovement;
+import com.stockia.stockia.models.User;
 import com.stockia.stockia.repositories.InventoryMovementRepository;
 import com.stockia.stockia.repositories.UserRepository;
 
@@ -29,7 +30,7 @@ public class InventoryMovementService {
     public InventoryMovement registerMovement(InventoryMovementRequestDto dto){
         Product product = productRepo.findById(dto.getProductId()).
         orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-        User user = userReppo.findById(dto.getUserId()).
+        User user = userRepo.findById(dto.getUserId()).
         orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         InventoryMovement movement = new InventoryMovement();
