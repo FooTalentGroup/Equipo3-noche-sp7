@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router';
-import {LayoutDashboard, Package, UtensilsCrossed, Menu, Plus, FileUp,Printer} from 'lucide-react';
+import {LayoutDashboard, Package, UtensilsCrossed, Menu, Plus, FileUp,Printer,Bell} from 'lucide-react';
 import { UserMenu } from './UserMenu.jsx';
 import {
   Sheet,
@@ -46,12 +46,12 @@ export const Navbar = () => {
   );
 
   return (
-    <nav className='py-3 px-3 shadow-md sticky top-0 bg-slate-50 z-40'>
+    <nav className='py-3 px-3 border top-0 bg-slate-50 z-40 h-21'>
       <div className='flex justify-between items-center px-3'>
         <div className='flex items-center gap-6'>
           <NavLink
             to='/dashboard'
-            className='flex items-center gap-2 text-black'
+            className='flex items-center mb-4 gap-2 text-black'
           >
             <UtensilsCrossed className='h-6 w-6' />
             <span className='text-xl font-bold'>ProEat</span>
@@ -88,22 +88,10 @@ export const Navbar = () => {
           </Sheet>
             <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6'>
                 <Button
-                    className='bg-white text-neutral-950 hover:bg-gray-400 cursor-pointer shadow-sm'
+                    className='bg-white text-neutral-950 hover:bg-gray-400 cursor-pointer shadow-sm mt-3'
                 >
-                    <FileUp className='h-4 w-4 mr-1' />
-                    Exportar
-                </Button>
-                <Button
-                    className='bg-white text-neutral-950 hover:bg-gray-400 cursor-pointer shadow-sm'
-                >
-                    <Printer className='h-4 w-4 mr-1' />
-                    Imprimir
-                </Button>
-                <Button
-                    className='bg-[#436086] text-white cursor-pointer'
-                >
-                    <Plus className='h-4 w-4 mr-1' />
-                    Agregar
+                    <Bell className='h-4 w-4 mr-1' />
+                    Notificaciones
                 </Button>
             </div>
         </div>

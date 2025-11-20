@@ -4,7 +4,7 @@ import { Plus } from 'lucide-react';
 import { useProductsFilter } from '@/features/products/hooks/useProductsFilter';
 import { ProductsFiltersBar } from '@/features/products/components/filters/ProductsFiltersBar.jsx';
 import { ProductsFiltersPopup } from '../components/filters/ProductFiltersPopup';
-import { ProductsTable } from "@/features/sales/components/ProductsTable.jsx";
+import { ProductsTable } from "@/features/products/components/ProductsTable.jsx";
 
 export default function ProductsListPage() {
     const {
