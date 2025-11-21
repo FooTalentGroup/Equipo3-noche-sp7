@@ -13,6 +13,7 @@ import { ImageDropzone } from "@/shared/components/ui/ImageDropzone";
 import { FormInputField } from "./ProductFormInputField";
 import { FormSelectField } from "./ProductFormSelectField";
 import { LoadingModal } from "@/shared/components/ui/LoadingModal";
+import { SuccessModal } from "@/shared/components/ui/SuccessModal";
 import { DollarSign } from "lucide-react";
 
 const mockCategories = [
@@ -30,7 +31,7 @@ const mockProviders = [
 ];
 
 export function CreateProductComponent() {
-    const { form, handlePost, handleError, isPending } = useCreateProduct();
+    const { form, handlePost, handleError, isPending, isSuccess } = useCreateProduct();
 
     return (
         <div className="w-full flex flex-col md:max-w-5xl p-12 bg-sidebar border rounded-sm relative h-min">
@@ -150,13 +151,14 @@ export function CreateProductComponent() {
                         >
                             Cancelar
                         </Button>
-                        <Button type="submit" className="bg-gray-600">
+                        <Button type="submit" className="bg-btn-primary">
                             {isPending ? "Guardando..." : "Registrar Producto"}
                         </Button>
                     </section>
                 </form>
             </Form>
             {isPending && <LoadingModal className="absolute top-0 left-0 w-full h-full bg-card" />}
+            {isSuccess && <SuccessModal className="absolute top-0 left-0 w-full h-full bg-card" />}
         </div>
     );
 }

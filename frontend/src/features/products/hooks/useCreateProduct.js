@@ -5,7 +5,8 @@ import { createProductSchema } from "../validators/createProductValidator";
 import { toast } from "sonner";
 // eslint-disable-next-line no-unused-vars
 import { useApiPost } from "@/shared/hooks/useApi";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 
 const initialProductValue = {
   name: "",
@@ -19,6 +20,8 @@ const initialProductValue = {
 
 export function useCreateProduct() {
   const [isPending, setIsPending] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const navigate = useNavigate();
   // eslint-disable-next-line no-unused-vars
   const queryClient = useQueryClient();
   const form = useForm({
@@ -32,11 +35,13 @@ export function useCreateProduct() {
     setIsPending(true);
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500));
-      toast.success("Producto creado exitosamente");
+      setIsPending(false);
+      setIsSuccess(true);
       console.log(data);
       // form.reset();
-    } finally {
+    } catch (error) {
       setIsPending(false);
+      throw error;
     }
   };
 
@@ -44,6 +49,16 @@ export function useCreateProduct() {
     console.log("Errores de validación:", errors);
     toast.error("Por favor, corrige los errores en el formulario");
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      const timer = setTimeout(() => {
+        navigate("/products");
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [isSuccess, navigate]);
+
   // const handlePost = useApiPost("/api/products", {
   //   onSuccess: () => {
   //     // queryClient.invalidateQueries(["products"]);
@@ -57,5 +72,5 @@ export function useCreateProduct() {
   //     });
   //   },
   // });
-  return { form, handlePost, handleError, isPending };
+  return { form, handlePost, handleError, isPending, isSuccess };
 }
