@@ -116,7 +116,7 @@ export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
-                    <thead className="text-xs uppercase bg-gray-50 text-gray-600">
+                    <thead className="text-xs uppercase bg-slate-200 text-gray-600">
                     <tr>
                         <th className="px-6 py-3">Estado</th>
                         <th className="px-6 py-3">Producto</th>
