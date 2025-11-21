@@ -19,7 +19,7 @@ public class ClienteRequestDto {
     @NotNull(message = "Debe indicar si es cliente frecuente")
     private Boolean clienteFrecuente;
 
-    // Getters y Setters
+   
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public String getCorreoElectronico() { return correoElectronico; }
