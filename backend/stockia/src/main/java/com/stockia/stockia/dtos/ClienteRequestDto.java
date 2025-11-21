@@ -3,6 +3,7 @@ package com.stockia.stockia.dtos;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 public class ClienteRequestDto {
 
@@ -14,11 +15,14 @@ public class ClienteRequestDto {
     private String correoElectronico;
 
     @NotBlank(message = "El teléfono es obligatorio")
+    @Pattern(
+        regexp = "^[0-9]{10}$", 
+        message = "El teléfono debe contener exactamente 10 dígitos numéricos"
+    )
     private String telefono;
 
     @NotNull(message = "Debe indicar si es cliente frecuente")
     private Boolean clienteFrecuente;
-
    
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
