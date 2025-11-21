@@ -1,29 +1,25 @@
-package com.stockia.stockia.models;
+package com.stockia.stockia.dtos;
 
-import jakarta.persistence.*; 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-@Entity
-@Table(name = "clientes")
-public class Cliente {
+public class ClienteRequestDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
 
-    @Column(unique = true, nullable = false)
-    private String correoElectronico; 
+    @NotBlank(message = "El correo electrónico es obligatorio")
+    @Email(message = "El formato del correo electrónico es inválido")
+    private String correoElectronico;
 
-    @Column(unique = true, nullable = false)
-    private String telefono; 
+    @NotBlank(message = "El teléfono es obligatorio")
+    private String telefono;
 
+    @NotNull(message = "Debe indicar si es cliente frecuente")
     private Boolean clienteFrecuente;
 
-    
-    public Cliente() {} 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // Getters y Setters
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public String getCorreoElectronico() { return correoElectronico; }
