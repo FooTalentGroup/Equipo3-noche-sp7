@@ -16,8 +16,8 @@ public class ClienteRequestDto {
 
     @NotBlank(message = "El teléfono es obligatorio")
     @Pattern(
-        regexp = "^[0-9]{10}$", 
-        message = "El teléfono debe contener exactamente 10 dígitos numéricos"
+        regexp = "^\\+[1-9][0-9]{1,3}[0-9]{8,12}$", 
+        message = "El teléfono debe comenzar con código de país (+XX) seguido de 8-12 dígitos. Ejemplo: +54911234567"
     )
     private String telefono;
 
