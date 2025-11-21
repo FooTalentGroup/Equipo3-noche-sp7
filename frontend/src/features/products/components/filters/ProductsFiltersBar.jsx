@@ -1,28 +1,49 @@
-import { Filter } from 'lucide-react';
-import {SearchBar} from "@/features/products/components/filters/SearchBar.jsx";
-import { Button } from '@/shared/components/ui/button.jsx';
+import {FileUp, Filter, Funnel, Plus, Printer, Search} from 'lucide-react';
+import React from 'react';
+import {Button} from "@/shared/components/ui/button.jsx";
 
-export const ProductsFiltersBar = ({
-                                       searchQuery,
-                                       onSearchChange,
-                                       onToggleFilters
-                                   }) => {
+export function ProductsFiltersBar({ searchQuery, onSearchChange, onToggleFilters }) {
     return (
-        <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4 mb-6'>
-            <div className='flex-1'>
-                <SearchBar searchQuery={searchQuery} onSearchChange={onSearchChange} />
+        <div className="flex gap-3 items-center mb-4">
+            <div className="relative flex-1 max-w-2xl">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                    type="text"
+                    aria-label="Buscar productos"
+                    value={searchQuery}
+                    onChange={(e) => onSearchChange(e.target.value)}
+                    placeholder="¿Qué producto estás buscando hoy?"
+                    className="wnput w-full border border-gray-300 rounded-lg pl-11 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
+                />
             </div>
 
-            <div className='flex justify-end'>
+            <Button
+                onClick={onToggleFilters}
+                className='bg-white text-neutral-950 hover:bg-gray-400 cursor-pointer shadow-sm'
+            >
+                <Funnel className='h-4 w-4 mr-1' />
+                Filtrar
+            </Button>
                 <Button
-                    variant='outline'
-                    onClick={onToggleFilters}
-                    className='sm:w-auto bg-white text-neutral-950 hover:bg-gray-400 cursor-pointer shadow-sm'
+                    className='bg-white text-neutral-950 hover:bg-gray-400 cursor-pointer shadow-sm'
                 >
-                    <Filter className='h-4 w-4 mr-2' />
-                    Filtros
+                    <FileUp className='h-4 w-4 mr-1' />
+                    Exportar
                 </Button>
-            </div>
+                <Button
+                    className='bg-white text-neutral-950 hover:bg-gray-400 cursor-pointer shadow-sm'
+                >
+                    <Printer className='h-4 w-4 mr-1' />
+                    Imprimir
+                </Button>
+                <Button
+                    className='bg-[#436086] text-white cursor-pointer'
+                >
+                    <Plus className='h-4 w-4 mr-1' />
+                    Registrar
+                </Button>
+
+
         </div>
     );
-};
+}
