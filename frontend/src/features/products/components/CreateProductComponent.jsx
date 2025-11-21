@@ -33,7 +33,7 @@ export function CreateProductComponent() {
     const { form, handlePost, handleError, isPending } = useCreateProduct();
 
     return (
-        <div className="w-full flex flex-col md:max-w-3xl p-12 bg-sidebar border rounded-sm relative h-[min-content]">
+        <div className="w-full flex flex-col md:max-w-5xl p-12 bg-sidebar border rounded-sm relative h-min">
                 <Form {...form}>
                 <section id="header" className="flex flex-col gap-2">
                     <h1 className="text-3xl font-bold">
@@ -45,7 +45,7 @@ export function CreateProductComponent() {
                     </h5>
                 </section>
                 <form
-                    className="flex flex-col gap-6 w-full max-w-2xl py-12"
+                    className="flex flex-col gap-6 w-full max-w-2xl pt-12"
                     onSubmit={form.handleSubmit(handlePost, handleError)}
                 >
                     <div className="flex flex-col gap-6">

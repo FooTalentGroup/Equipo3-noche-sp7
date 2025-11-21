@@ -1,8 +1,10 @@
 import {FileUp, Filter, Funnel, Plus, Printer, Search} from 'lucide-react';
 import React from 'react';
 import {Button} from "@/shared/components/ui/button.jsx";
+import { useNavigate } from 'react-router';
 
 export function ProductsFiltersBar({ searchQuery, onSearchChange, onToggleFilters }) {
+    const navigate = useNavigate();
     return (
         <div className="flex gap-3 items-center mb-4">
             <div className="relative flex-1 max-w-2xl">
@@ -38,6 +40,7 @@ export function ProductsFiltersBar({ searchQuery, onSearchChange, onToggleFilter
                 </Button>
                 <Button
                     className='bg-[#436086] text-white cursor-pointer'
+                    onClick={() => navigate('/products/create')}
                 >
                     <Plus className='h-4 w-4 mr-1' />
                     Registrar
