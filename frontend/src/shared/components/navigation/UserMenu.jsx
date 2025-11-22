@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { LogOut } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 import { useLogout } from "@/features/auth/hooks/useAuth.js";
 import { clearAuthData, getUsername } from "@/features/auth/utils/authStorage.js";
 
@@ -17,7 +17,7 @@ export const UserMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
   const navigate = useNavigate();
-  const username = getUsername();
+  const username = getUsername() || "Administrador";
 
   const logout = useLogout({
     onSuccess: () => {
@@ -58,18 +58,12 @@ export const UserMenu = () => {
 
   return (
     <div className="relative" ref={menuRef}>
-      <button
+       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500"
-        aria-label="Menú de usuario"
-        aria-expanded={isOpen}
+        className="flex items-center gap-3 px-3 py-3 text-gray-600 hover:bg-gray-200 w-full rounded-md transition"
       >
-        <div className="w-8 h-8 rounded-full bg-orange-600 text-white flex items-center justify-center text-sm font-semibold">
-          {initials}
-        </div>
-        <span className="text-gray-700 text-sm font-medium hidden sm:block">
-          {username}
-        </span>
+        <User className="h-5 w-5 text-gray-600" />
+        <span className="text-sm">{username}</span>
       </button>
 
       {isOpen && (
