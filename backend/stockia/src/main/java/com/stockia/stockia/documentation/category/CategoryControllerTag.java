@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Tag(
-    name = "Categorías",
+    name = "03 - Categorías",
     description = "Gestión de categorías de productos. Permite crear, consultar, actualizar y desactivar categorías."
 )
 public @interface CategoryControllerTag {}

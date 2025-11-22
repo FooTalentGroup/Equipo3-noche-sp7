@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Tag(name = "Productos", description = "API para gestión de productos del inventario")
+@Tag(name = "04 - Productos", description = "API para gestión de productos del inventario")
 public @interface ProductControllerTag {
 }
 
