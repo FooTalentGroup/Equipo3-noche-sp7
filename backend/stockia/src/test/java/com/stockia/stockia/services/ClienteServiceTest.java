@@ -34,6 +34,22 @@ import static org.mockito.Mockito.never;
  * Tests exitosos: 3/3  
  * Errores: 0
  * Tiempo: 1.590s
+ *
+ * Comandos para test
+ *
+ * # TODOS los tests del service
+ * mvn test -Dtest=ClienteServiceTest
+ *
+ * # Test 1: Registro nuevo exitoso
+ * mvn test -Dtest=ClienteServiceTest#debeRegistrarClienteNuevoExitosamente
+ *
+ * #Test 2: Teléfono duplicado
+ * mvn test -Dtest=ClienteServiceTest#debeLanzarExcepcionCuandoClienteDuplicadoPorTelefono
+ *
+ * # Test 3: Email duplicado
+ * mvn test -Dtest=ClienteServiceTest#debeLanzarExcepcionCuandoClienteDuplicadoPorCorreo
+ *
+ *
  **/
 
     
