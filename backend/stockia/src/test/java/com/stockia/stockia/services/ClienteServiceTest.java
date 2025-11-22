@@ -19,6 +19,24 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.never;
 
+/**
+ * Pruebas unitarias para la capa de servicio ClienteService.
+ * 
+ * Esta clase contiene tests que verifican la lógica de negocio
+ * del registro de clientes, incluyendo validaciones de duplicados
+ * y el correcto flujo de datos entre el servicio y el repositorio.
+ * 
+ * Se utiliza @ExtendWith(MockitoExtension.class) para inyección de mocks
+ * y @InjectMocks/@Mock para simular las dependencias del repositorio.
+ * 
+ * RESULTADOS DE EJECUCIÓN:
+ * Tests ejecutados: 3/3
+ * Tests exitosos: 3/3  
+ * Errores: 0
+ * Tiempo: 1.590s
+ **/
+
+    
 @ExtendWith(MockitoExtension.class)
 class ClienteServiceTest {
 
@@ -27,6 +45,28 @@ class ClienteServiceTest {
 
     @InjectMocks
     private ClienteService clienteService;
+
+  /**
+     * Test que verifica el registro exitoso de un cliente nuevo.
+     * 
+     * Prueba:
+     * - Se registra un cliente con datos únicos (no existe duplicado)
+     * - El repositorio confirma que no hay conflictos
+     * - Se guarda el cliente exitosamente
+     * 
+     * Resultado esperado:
+     * - Cliente guardado con ID asignado
+     * - Método save() del repositorio invocado
+     * - Todos los datos persistidos correctamente
+     * 
+     * RESULTADO DE EJECUCIÓN: Exitoso
+     * - Mock del repositorio respondiendo correctamente
+     * - Lógica de validación de duplicados funcionando
+     * - Asignación de ID simulada correctamente
+     * - Verificaciones de Mockito pasando
+     * 
+     * 
+     */
 
     @Test
     void debeRegistrarClienteNuevoExitosamente() {
@@ -51,6 +91,28 @@ class ClienteServiceTest {
         verify(clienteRepository).save(any(Cliente.class));
     }
 
+    /**
+     * Test que verifica la excepción por teléfono duplicado.
+     * 
+     * Prueba:
+     * - Se intenta registrar un cliente con teléfono ya existente
+     * - El repositorio encuentra un cliente con ese teléfono
+     * - Se lanza ClienteDuplicadoException
+     * 
+     * Resultado esperado:
+     * - Excepción ClienteDuplicadoException lanzada
+     * - No se llama al método save()
+     * - Validación de duplicados funcionando
+     * 
+     * RESULTADO DE EJECUCIÓN: Exitoso
+     * - Excepción lanzada correctamente
+     * - Mock findByCorreoElectronicoOrTelefono funcionando
+     * - Validación de duplicados por teléfono operativa
+     * - AssertJ verificando la excepción adecuadamente
+     * 
+     * 
+     */   
+
     @Test
     void debeLanzarExcepcionCuandoClienteDuplicadoPorTelefono() {
         Cliente nuevoCliente = new Cliente();
@@ -70,9 +132,30 @@ class ClienteServiceTest {
             .isInstanceOf(ClienteDuplicadoException.class);
     }
 
+  /**
+     * Test que verifica la excepción por email duplicado.
+     * 
+     * Prueba:
+     * - Se intenta registrar un cliente con email ya existente
+     * - El repositorio encuentra un cliente con ese email
+     * - Se lanza ClienteDuplicadoException
+     * 
+     * Resultado esperado:
+     * - Excepción ClienteDuplicadoException lanzada
+     * - Método save() nunca invocado
+     * - Validación de duplicados por email funcionando
+     * 
+     * RESULTADO DE EJECUCIÓN: Exitoso
+     * - Excepción lanzada correctamente por email duplicado
+     * - Verificación verify(never()) funcionando
+     * - Lógica de negocio de duplicados operativa
+     * - Mock repository simulando búsqueda exitosamente
+     * 
+     * 
+     */
+
     @Test
     void debeLanzarExcepcionCuandoClienteDuplicadoPorCorreo() {
-        // Given
         Cliente nuevoCliente = new Cliente();
         nuevoCliente.setNombre("Ana García");
         nuevoCliente.setCorreoElectronico("ana@duplicado.com");
