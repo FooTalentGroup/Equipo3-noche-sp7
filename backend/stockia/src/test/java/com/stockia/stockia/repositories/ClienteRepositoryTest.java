@@ -32,6 +32,28 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Queries JPA ejecutándose exitosamente
  * Hibernate generando SQL correcto
  * 
+ * Comandos para tests
+ * # TODOS los tests del repository
+ * mvn test -Dtest=ClienteRepositoryTest
+ *
+ * # Test 1: Buscar por email
+ * mvn test -Dtest=ClienteRepositoryTest#debeBuscarClientePorCorreoElectronico
+ *
+ * # Test 2: Buscar por teléfono
+ * mvn test -Dtest=ClienteRepositoryTest#debeBuscarClientePorTelefono
+ *
+ * # Test 3: Guardar cliente
+ * mvn test -Dtest=ClienteRepositoryTest#debeGuardarClienteCorrectamente
+ *
+ * # Test 4: Cliente inexistente
+ * mvn test -Dtest=ClienteRepositoryTest#noDebeEncontrarClienteInexistente
+ *
+ * # Test 5: Buscar por cualquier campo
+ * mvn test -Dtest=ClienteRepositoryTest#debeEncontrarClientePorCualquierCampo
+ *
+ * # Test 6: Restricciones de unicidad
+ *mvn test -Dtest=ClienteRepositoryTest#debeRespetarRestriccionesDeUnicidad
+ *
  */
 
 
