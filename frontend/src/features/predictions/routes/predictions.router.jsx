@@ -1,10 +1,12 @@
-import DashboardPage from "../pages/DashboardPage.jsx";
 import { ProtectedRoute } from "@/infrastructure/router/ProtectedRoute.jsx";
 import { ProtectedLayout } from "@/shared/components/layout/ProtectedLayout.jsx";
+import PredictionsPage from "../pages/PredictionsPage";
 
-export const dashboardRoutes = [
+
+
+export const predictionsRoutes = [
   {
-    path: "/dashboard",
+    path: "/predictions-IA",
     element: (
       <ProtectedRoute>
         <ProtectedLayout />
@@ -13,9 +15,8 @@ export const dashboardRoutes = [
     children: [
       {
         index: true,
-        element: <DashboardPage />,
+        element: <PredictionsPage />,
       },
     ],
   },
 ];
-

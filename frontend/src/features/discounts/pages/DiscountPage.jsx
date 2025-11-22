@@ -3,7 +3,7 @@ import React from 'react';
 const DiscountPage = () => {
     return (
         <div>
-            <h1>Desuentos</h1>
+            <h1>Descuentos</h1>
         </div>
     );
 };
