@@ -34,9 +34,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *  Tiempo: 1.754s
  *
  * Comandos de test
- * mvn clean install
- * mvn test
- * mvn spring-boot:run
+ * # TODOS los tests del controller
+ * mvn test -Dtest=ClienteControllerTest
+ *
+ * # Test 1: Registro exitoso
+ * mvn test -Dtest=ClienteControllerTest#debeRegistrarClienteExitosamente
+ *
+ * # Test 2: Datos inválidos
+ * mvn test -Dtest=ClienteControllerTest#debeRetornarErrorCuandoDatosInvalidos
+ *
+ * # Test 3: Cliente duplicado
+ * mvn test -Dtest=ClienteControllerTest#debeRetornarConflictoCuandoClienteDuplicado
+ * 
+ * 
  *
  *
  **/
