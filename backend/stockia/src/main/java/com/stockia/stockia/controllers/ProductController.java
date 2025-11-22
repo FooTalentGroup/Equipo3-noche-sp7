@@ -1,6 +1,6 @@
 package com.stockia.stockia.controllers;
 
-import com.stockia.stockia.documentation.ProductApiDocumentation.*;
+import com.stockia.stockia.documentation.product.*;
 import com.stockia.stockia.dtos.product.ProductRequestDto;
 import com.stockia.stockia.dtos.product.ProductResponseDto;
 import com.stockia.stockia.dtos.product.ProductUpdateDto;

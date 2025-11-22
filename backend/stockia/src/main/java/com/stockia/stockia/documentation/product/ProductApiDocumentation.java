@@ -1,4 +1,4 @@
-package com.stockia.stockia.documentation;
+package com.stockia.stockia.documentation.product;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,13 +12,31 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Documentación Swagger para los endpoints de productos.
- * Contiene todas las anotaciones de OpenAPI para documentar la API REST.
+ * Documentación centralizada de la API de Productos para Swagger/OpenAPI.
+ *
+ * @deprecated Este archivo ha sido segmentado en archivos individuales por endpoint.
+ *             Usar los archivos individuales en su lugar:
+ *             - ProductControllerTag.java
+ *             - ProductIdParam.java
+ *             - ProductNameParam.java
+ *             - CategoryIdParam.java
+ *             - IncludeInactiveParam.java
+ *             - LowStockParam.java
+ *             - CreateProductDoc.java
+ *             - GetProductByIdDoc.java
+ *             - GetAllProductsDoc.java
+ *             - UpdateProductDoc.java
+ *             - DeleteProductDoc.java
+ *             - GetDeletedProductsDoc.java
+ *             - GetProductsManagementDoc.java
+ *             - RestoreProductDoc.java
+ *             - PermanentDeleteProductDoc.java
  *
  * @author StockIA Team
  * @version 1.0
  * @since 2025-11-20
  */
+@Deprecated(since = "1.1.1", forRemoval = true)
 public class ProductApiDocumentation {
 
     @Target(ElementType.TYPE)
