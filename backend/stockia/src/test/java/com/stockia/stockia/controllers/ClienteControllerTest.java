@@ -33,6 +33,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *  Errores: 0
  *  Tiempo: 1.754s
  *
+ * Comandos de test
+ * mvn clean install
+ * mvn test
+ * mvn spring-boot:run
+ *
  *
  **/
 
@@ -62,7 +67,7 @@ class ClienteControllerTest {
      * - Respuesta JSON con los datos del cliente creado
      * - ID asignado automáticamente
      * 
-     * RESULTADO DE EJECUCIÓN: EXITOSO
+     * RESULTADO DE EJECUCIÓN: Exitoso
      * - Validación de endpoint POST funcionando
      * - Serialización JSON correcta
      * - Mock del servicio respondiendo adecuadamente
@@ -111,7 +116,7 @@ class ClienteControllerTest {
      * - Status HTTP 400 (BAD REQUEST)
      * - Validación de Bean Validation debe fallar
      * 
-     * RESULTADO DE EJECUCIÓN:  EXITOSO
+     * RESULTADO DE EJECUCIÓN:  Exitoso
      * - Validaciones @NotBlank, @Email, @Pattern funcionando
      * - Spring Boot manejando correctamente MethodArgumentNotValidException
      * - 4 errores de validación detectados correctamente:
@@ -148,7 +153,7 @@ class ClienteControllerTest {
      * - Status HTTP 409 (CONFLICT)
      * - Excepción de negocio manejada correctamente
      * 
-     * RESULTADO DE EJECUCIÓN:  EXITOSO
+     * RESULTADO DE EJECUCIÓN:  Exitoso
      * - ResponseStatusExceptionResolver manejando la excepción
      * - Conversión de ClienteDuplicadoException a HTTP 409
      * - Endpoint respondiendo con el status correcto
