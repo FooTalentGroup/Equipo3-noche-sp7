@@ -1,6 +1,18 @@
 package com.stockia.stockia.controllers;
 
-import com.stockia.stockia.documentation.CategoryApiDocumentation.*;
+import com.stockia.stockia.documentation.category.CategoryControllerTag;
+import com.stockia.stockia.documentation.category.CategoryIdParam;
+import com.stockia.stockia.documentation.category.CreateCategoryDoc;
+import com.stockia.stockia.documentation.category.GetAllCategoriesDoc;
+import com.stockia.stockia.documentation.category.GetActiveCategoriesDoc;
+import com.stockia.stockia.documentation.category.GetCategoryByIdDoc;
+import com.stockia.stockia.documentation.category.GetDeletedCategoriesDoc;
+import com.stockia.stockia.documentation.category.UpdateCategoryDoc;
+import com.stockia.stockia.documentation.category.DeactivateCategoryDoc;
+import com.stockia.stockia.documentation.category.ActivateCategoryDoc;
+import com.stockia.stockia.documentation.category.DeleteCategoryDoc;
+import com.stockia.stockia.documentation.category.RestoreCategoryDoc;
+import com.stockia.stockia.documentation.category.PermanentDeleteCategoryDoc;
 import com.stockia.stockia.dtos.category.CategoryRequestDto;
 import com.stockia.stockia.dtos.category.CategoryResponseDto;
 import com.stockia.stockia.services.CategoryService;

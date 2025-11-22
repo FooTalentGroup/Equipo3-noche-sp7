@@ -1,4 +1,4 @@
-package com.stockia.stockia.documentation;
+package com.stockia.stockia.documentation.category;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,10 +17,27 @@ import java.lang.annotation.Target;
 /**
  * Documentación centralizada de la API de Categorías para Swagger/OpenAPI.
  *
+ * @deprecated Este archivo ha sido segmentado en archivos individuales por endpoint.
+ *             Usar los archivos individuales en su lugar:
+ *             - CategoryControllerTag.java
+ *             - CategoryIdParam.java
+ *             - CreateCategoryDoc.java
+ *             - GetAllCategoriesDoc.java
+ *             - GetActiveCategoriesDoc.java
+ *             - GetCategoryByIdDoc.java
+ *             - UpdateCategoryDoc.java
+ *             - DeactivateCategoryDoc.java
+ *             - ActivateCategoryDoc.java
+ *             - DeleteCategoryDoc.java
+ *             - GetDeletedCategoriesDoc.java
+ *             - RestoreCategoryDoc.java
+ *             - PermanentDeleteCategoryDoc.java
+ *
  * @author StockIA Team
  * @version 1.0
  * @since 2025-11-20
  */
+@Deprecated(since = "1.1.1", forRemoval = true)
 public class CategoryApiDocumentation {
 
     @Target(ElementType.TYPE)
