@@ -27,3 +27,27 @@ public class OpenApiConfig {
     }
 }
 
+/*
+* En este archivo deberia implementarse swagger
+*
+* # Compilar
+* mvn clean install
+*
+* # Ejecutar aplicación
+* mvn spring-boot:run
+*
+* # Tests
+* mvn test
+*
+* # Solo compilar
+* mvn compile
+*
+* # Swagger UI
+* http://localhost:8080/swagger-ui.html
+*
+* # API Endpoints
+* http://localhost:8080/api/clientes
+*
+* # H2 Console
+* http://localhost:8080/h2-console
+*/
