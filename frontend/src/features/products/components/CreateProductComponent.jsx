@@ -15,18 +15,12 @@ import { LoadingModal } from "@/shared/components/ui/LoadingModal";
 import { SuccessModal } from "@/shared/components/ui/SuccessModal";
 import { useNavigate } from "react-router";
 import { FormInputField } from "@/features/products/components/ProductFormInputField";
-
-
-const mockCategories = [
-    { id: 1, name: "Electrónica" },
-    { id: 2, name: "Hogar y Jardín" },
-    { id: 3, name: "Moda y Accesorios" },
-    { id: 4, name: "Alimentos" },
-];
+import { useCategories } from "@/features/categories/context/CategoriesContext";
 
 export function CreateProductComponent() {
     const navigate = useNavigate();
     const { form, handlePost, handleError, isPending, isSuccess, resetSuccess } = useCreateProduct();
+    const { categories: mockCategories } = useCategories();
 
     const handleRegisterAnother = () => {
         form.reset();
@@ -38,7 +32,7 @@ export function CreateProductComponent() {
     };
 
     return (
-        <div className="w-full flex flex-col md:max-w-5xl p-12 bg-sidebar border rounded-sm relative h-min">
+        <div className="w-full flex flex-col md:max-w-5xl p-12 bg-stokia-neutral-50 border rounded-sm relative h-min">
                 <Form {...form}>
                 <section id="header" className="flex flex-col gap-2">
                     <h1 className="text-3xl font-bold">
