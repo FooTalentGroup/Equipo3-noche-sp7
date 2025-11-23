@@ -40,6 +40,7 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-btn-primary: var(--btn-primary);
+  --color-stokia-neutral-50: var(--stokia-neutral-50);
 }
 
 :root {
@@ -75,7 +76,8 @@
   --sidebar-accent-foreground: oklch(0.216 0.006 56.043);
   --sidebar-border: oklch(0.923 0.003 48.717);
   --sidebar-ring: oklch(0.709 0.01 56.259);
-  --btn-primary: oklch(0.45 0.08 250);
+  --btn-primary: oklch(0.483 0.0707 255.51);
+  --stokia-neutral-50: oklch(0.97 0.0029 264.54);
 }
 
 .dark {
