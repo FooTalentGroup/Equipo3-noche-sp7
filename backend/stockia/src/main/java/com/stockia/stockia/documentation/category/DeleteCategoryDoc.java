@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -22,7 +23,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(
     summary = "Eliminar categoría (soft delete)",
-    description = "Marca la categoría como eliminada sin borrarla físicamente. Se guarda en el historial."
+    description = "Marca la categoría como eliminada sin borrarla físicamente. Se guarda en el historial. " +
+                  "<strong>Solo accesible para usuarios con rol ADMIN.</strong>",
+    security = @SecurityRequirement(name = "bearer-key")
 )
 @ApiResponses(value = {
     @ApiResponse(
@@ -67,6 +70,38 @@ import java.lang.annotation.Target;
                 {
                   "success": false,
                   "message": "La categoría ya está eliminada",
+                  "data": null
+                }
+                """
+            )
+        )
+    ),
+    @ApiResponse(
+        responseCode = "401",
+        description = "No autorizado - Token ausente o inválido",
+        content = @Content(
+            mediaType = "application/json",
+            examples = @ExampleObject(
+                value = """
+                {
+                  "success": false,
+                  "message": "Acceso no autorizado. Token inválido o ausente",
+                  "data": null
+                }
+                """
+            )
+        )
+    ),
+    @ApiResponse(
+        responseCode = "403",
+        description = "Acceso denegado - Se requiere rol ADMIN",
+        content = @Content(
+            mediaType = "application/json",
+            examples = @ExampleObject(
+                value = """
+                {
+                  "success": false,
+                  "message": "Acceso denegado. No tienes permisos para realizar esta acción",
                   "data": null
                 }
                 """

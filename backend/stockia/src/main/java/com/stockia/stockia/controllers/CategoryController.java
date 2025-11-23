@@ -21,6 +21,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -61,6 +62,7 @@ public class CategoryController {
      */
     @PostMapping
     @CreateCategoryDoc
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<ApiResult<CategoryResponseDto>> createCategory(
             @Valid @RequestBody CategoryRequestDto dto) {
 
@@ -78,6 +80,7 @@ public class CategoryController {
      */
     @GetMapping
     @GetAllCategoriesDoc
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<ApiResult<List<CategoryResponseDto>>> getAllCategories() {
 
         List<CategoryResponseDto> categories = categoryService.getAllCategories();
@@ -94,6 +97,7 @@ public class CategoryController {
      */
     @GetMapping("/active")
     @GetActiveCategoriesDoc
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<ApiResult<List<CategoryResponseDto>>> getActiveCategories() {
 
         List<CategoryResponseDto> categories = categoryService.getActiveCategories();
@@ -111,6 +115,7 @@ public class CategoryController {
      */
     @GetMapping("/{id}")
     @GetCategoryByIdDoc
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<ApiResult<CategoryResponseDto>> getCategoryById(
             @PathVariable @CategoryIdParam Long id) {
 
@@ -130,6 +135,7 @@ public class CategoryController {
      */
     @PutMapping("/{id}")
     @UpdateCategoryDoc
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResult<CategoryResponseDto>> updateCategory(
             @PathVariable @CategoryIdParam Long id,
             @Valid @RequestBody CategoryRequestDto dto) {
@@ -149,6 +155,7 @@ public class CategoryController {
      */
     @DeleteMapping("/{id}")
     @DeleteCategoryDoc
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResult<Void>> deleteCategory(
             @PathVariable @CategoryIdParam Long id) {
 
@@ -167,6 +174,7 @@ public class CategoryController {
      */
     @PatchMapping("/{id}/deactivate")
     @DeactivateCategoryDoc
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResult<Void>> deactivateCategory(
             @PathVariable @CategoryIdParam Long id) {
 
@@ -185,6 +193,7 @@ public class CategoryController {
      */
     @PatchMapping("/{id}/activate")
     @ActivateCategoryDoc
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResult<CategoryResponseDto>> activateCategory(
             @PathVariable @CategoryIdParam Long id) {
 
@@ -202,6 +211,7 @@ public class CategoryController {
      */
     @GetMapping("/deleted")
     @GetDeletedCategoriesDoc
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResult<List<CategoryResponseDto>>> getDeletedCategories() {
 
         List<CategoryResponseDto> categories = categoryService.getDeletedCategories();
@@ -219,6 +229,7 @@ public class CategoryController {
      */
     @PatchMapping("/{id}/restore")
     @RestoreCategoryDoc
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResult<CategoryResponseDto>> restoreCategory(
             @PathVariable @CategoryIdParam Long id) {
 
@@ -237,6 +248,7 @@ public class CategoryController {
      */
     @DeleteMapping("/{id}/permanent")
     @PermanentDeleteCategoryDoc
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResult<Void>> permanentlyDeleteCategory(
             @PathVariable @CategoryIdParam Long id) {
 
@@ -247,4 +259,3 @@ public class CategoryController {
         );
     }
 }
-
