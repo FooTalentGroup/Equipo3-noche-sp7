@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useApiPost } from "@/shared/hooks/useApi";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
+import { useProducts } from "../context/ProductsContext";
 
 const initialProductValue = {
   name: "",
@@ -19,6 +20,7 @@ const initialProductValue = {
 export function useCreateProduct() {
   const [isPending, setIsPending] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const {addProduct} = useProducts();
   const navigate = useNavigate();
   // eslint-disable-next-line no-unused-vars
   const queryClient = useQueryClient();
@@ -35,8 +37,8 @@ export function useCreateProduct() {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       setIsPending(false);
       setIsSuccess(true);
-      console.log(data);
-      // form.reset();
+      addProduct(data);
+      form.reset();
     } catch (error) {
       setIsPending(false);
       throw error;
