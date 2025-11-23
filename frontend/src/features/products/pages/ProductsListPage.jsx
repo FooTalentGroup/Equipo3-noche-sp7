@@ -65,8 +65,8 @@ export default function ProductsListPage() {
             />
 
             <Dialog open={isCreateModalOpen} onOpenChange={handleCreateModalChange}>
-                <DialogTitle>Registrar Producto</DialogTitle>
-                <Description>Foo</Description>
+                <DialogTitle className="sr-only">Registrar Producto</DialogTitle>
+                <Description className="sr-only">Formulario para registrar un nuevo producto</Description>
                 <DialogContent className="max-h-[90vh] overflow-y-auto p-0 gap-0 max-w-3xl">
                     <div className="overflow-y-auto">
                         <CreateProductComponent />
