@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router";
 import {
     Form,
     FormControl,
@@ -13,7 +14,6 @@ import { ImageDropzone } from "@/shared/components/ui/ImageDropzone";
 import { FormSelectField } from "./ProductFormSelectField";
 import { LoadingModal } from "@/shared/components/ui/LoadingModal";
 import { SuccessModal } from "@/shared/components/ui/SuccessModal";
-import { useNavigate } from "react-router";
 import { FormInputField } from "@/features/products/components/ProductFormInputField";
 import { useCategories } from "@/features/categories/context/CategoriesContext";
 
@@ -135,9 +135,9 @@ export function CreateProductComponent() {
                 <SuccessModal
                     className="absolute top-0 left-0 w-full h-full bg-card"
                     title="¡Producto registrado exitosamente!"
-                    description="¿Qué deseas hacer ahora?"
+                    description="Serás redirigido a “Productos” en 5 segundos."
                     primaryButtonText="Registrar otro producto"
-                    secondaryButtonText="Ver lista de productos"
+                    secondaryButtonText="Volver"
                     onPrimaryClick={handleRegisterAnother}
                     onSecondaryClick={handleGoToProducts}
                 />
