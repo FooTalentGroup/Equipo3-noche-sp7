@@ -42,22 +42,11 @@ const createProductSchema = z
             .min(0.01, { message: "El precio debe ser mayor a 0." })
             .max(99999999.99),
 
-        cost_price: z.coerce
-            .number()
-            .min(0, { message: "El precio de costo no puede ser negativo." })
-            .max(99999999.99),
-
         min_stock: z.coerce
             .number()
             .int({ message: "El stock debe ser un número entero." })
             .min(1, { message: "El stock mínimo debe ser al menos 1." })
             .max(99, { message: "El stock mínimo no puede superar los 99." }),
-
-        provider: z
-            .number()
-            .int()
-            .min(1, { message: "Por favor, selecciona un proveedor." })
-            .max(999),
     })
     .strict();
 

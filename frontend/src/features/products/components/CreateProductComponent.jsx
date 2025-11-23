@@ -10,11 +10,12 @@ import {
 import { Button } from "@/shared/components/ui/button";
 import { useCreateProduct } from "../hooks/useCreateProduct";
 import { ImageDropzone } from "@/shared/components/ui/ImageDropzone";
-import { FormInputField } from "./ProductFormInputField";
 import { FormSelectField } from "./ProductFormSelectField";
 import { LoadingModal } from "@/shared/components/ui/LoadingModal";
 import { SuccessModal } from "@/shared/components/ui/SuccessModal";
-import { DollarSign } from "lucide-react";
+import { useNavigate } from "react-router";
+import { FormInputField } from "@/features/products/components/ProductFormInputField";
+
 
 const mockCategories = [
     { id: 1, name: "Electrónica" },
@@ -23,15 +24,18 @@ const mockCategories = [
     { id: 4, name: "Alimentos" },
 ];
 
-const mockProviders = [
-    { id: 1, name: "Proveedor 1" },
-    { id: 2, name: "Proveedor 2" },
-    { id: 3, name: "Proveedor 3" },
-    { id: 4, name: "Proveedor 4" },
-];
-
 export function CreateProductComponent() {
-    const { form, handlePost, handleError, isPending, isSuccess } = useCreateProduct();
+    const navigate = useNavigate();
+    const { form, handlePost, handleError, isPending, isSuccess, resetSuccess } = useCreateProduct();
+
+    const handleRegisterAnother = () => {
+        form.reset();
+        if (resetSuccess) resetSuccess();
+    };
+
+    const handleGoToProducts = () => {
+        navigate("/products");
+    };
 
     return (
         <div className="w-full flex flex-col md:max-w-5xl p-12 bg-sidebar border rounded-sm relative h-min">
@@ -75,12 +79,10 @@ export function CreateProductComponent() {
                             <div className="flex flex-col md:flex-row w-full gap-6">
                                 <FormInputField
                                     control={form.control}
-                                    name="cost_price"
-                                    startIcon={DollarSign}
-                                    label="Costo de compra"
-                                    placeholder="Colocar costo de compra"
+                                    name="min_stock"
+                                    label="Stock mínimo"
                                     type="number"
-                                    step="0.01"
+                                    step="1"
                                     required
                                 />
 
@@ -92,29 +94,6 @@ export function CreateProductComponent() {
                                     step="0.01"
                                     placeholder="Precio de venta"
                                     required
-                                />
-                            </div>
-
-                            <div className="flex flex-col md:flex-row w-full gap-6">
-                                <FormInputField
-                                    control={form.control}
-                                    name="min_stock"
-                                    label="Stock mínimo"
-                                    type="number"
-                                    step="1"
-                                    required
-                                />
-
-                                <FormSelectField
-                                    control={form.control}
-                                    name="provider"
-                                    label="Proveedor"
-                                    placeholder="Colocar nombre del proveedor"
-                                    required
-                                    options={mockProviders.map((p) => ({
-                                        value: p.id,
-                                        label: p.name,
-                                    }))}
                                 />
                             </div>
 
@@ -158,7 +137,17 @@ export function CreateProductComponent() {
                 </form>
             </Form>
             {isPending && <LoadingModal className="absolute top-0 left-0 w-full h-full bg-card" />}
-            {isSuccess && <SuccessModal className="absolute top-0 left-0 w-full h-full bg-card" />}
+            {isSuccess && (
+                <SuccessModal
+                    className="absolute top-0 left-0 w-full h-full bg-card"
+                    title="¡Producto registrado exitosamente!"
+                    description="¿Qué deseas hacer ahora?"
+                    primaryButtonText="Registrar otro producto"
+                    secondaryButtonText="Ver lista de productos"
+                    onPrimaryClick={handleRegisterAnother}
+                    onSecondaryClick={handleGoToProducts}
+                />
+            )}
         </div>
     );
 }
