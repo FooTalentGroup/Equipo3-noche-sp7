@@ -1,6 +1,4 @@
 import { useLocation, useNavigate } from 'react-router';
-import { Button } from '@/shared/components/ui/button';
-import { Plus } from 'lucide-react';
 import { useProductsFilter } from '@/features/products/hooks/useProductsFilter';
 import { ProductsFiltersBar } from '@/features/products/components/filters/ProductsFiltersBar.jsx';
 import { ProductsFiltersPopup } from '../components/filters/ProductFiltersPopup';
@@ -10,6 +8,7 @@ import {
   DialogContent,
 } from "@/shared/components/ui/dialog";
 import { CreateProductComponent } from "../components/CreateProductComponent";
+import { Description, DialogTitle } from '@radix-ui/react-dialog';
 
 export default function ProductsListPage() {
     const location = useLocation();
@@ -32,7 +31,7 @@ export default function ProductsListPage() {
 
     const handleCreateModalChange = (open) => {
         if (!open) {
-            navigate(-1);
+            navigate("/products");
         }
     };
 
@@ -66,6 +65,8 @@ export default function ProductsListPage() {
             />
 
             <Dialog open={isCreateModalOpen} onOpenChange={handleCreateModalChange}>
+                <DialogTitle>Registrar Producto</DialogTitle>
+                <Description>Foo</Description>
                 <DialogContent className="max-h-[90vh] overflow-y-auto p-0 gap-0 max-w-3xl">
                     <div className="overflow-y-auto">
                         <CreateProductComponent />
