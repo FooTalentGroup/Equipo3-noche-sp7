@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.stockia.stockia.security.constants.SecurityConstants.Roles.*;
+
 @RestController
 @RequestMapping("/api/products")
 @ProductControllerTag
@@ -136,7 +138,7 @@ public class ProductController {
 
     @DeleteMapping("/{id}/permanent")
     @PermanentDeleteProductDoc
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize(ADMIN_ONLY)
     public ResponseEntity<ApiResult<Void>> permanentlyDeleteProduct(@ProductIdParam @PathVariable Long id) {
         log.info("DELETE /api/products/{}/permanent - Permanently deleting product", id);
         productService.permanentlyDeleteProduct(id);

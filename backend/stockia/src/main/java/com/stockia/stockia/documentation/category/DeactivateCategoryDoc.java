@@ -1,5 +1,6 @@
 package com.stockia.stockia.documentation.category;
 
+import com.stockia.stockia.documentation.common.SecurityResponses;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -59,39 +60,8 @@ import java.lang.annotation.Target;
                 """
             )
         )
-    ),
-    @ApiResponse(
-        responseCode = "401",
-        description = "No autorizado - Token ausente o inválido",
-        content = @Content(
-            mediaType = "application/json",
-            examples = @ExampleObject(
-                value = """
-                {
-                  "success": false,
-                  "message": "Acceso no autorizado. Token inválido o ausente",
-                  "data": null
-                }
-                """
-            )
-        )
-    ),
-    @ApiResponse(
-        responseCode = "403",
-        description = "Acceso denegado - Se requiere rol ADMIN",
-        content = @Content(
-            mediaType = "application/json",
-            examples = @ExampleObject(
-                value = """
-                {
-                  "success": false,
-                  "message": "Acceso denegado. No tienes permisos para realizar esta acción",
-                  "data": null
-                }
-                """
-            )
-        )
     )
 })
+@SecurityResponses.RequiresAdmin
 public @interface DeactivateCategoryDoc {}
 

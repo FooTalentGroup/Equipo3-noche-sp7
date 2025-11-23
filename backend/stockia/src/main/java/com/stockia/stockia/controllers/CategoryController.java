@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.stockia.stockia.security.constants.SecurityConstants.Roles.*;
+
 /**
  * Controlador REST para la gestión de categorías de productos.
  *
@@ -211,7 +213,7 @@ public class CategoryController {
      */
     @GetMapping("/deleted")
     @GetDeletedCategoriesDoc
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize(ADMIN_ONLY)
     public ResponseEntity<ApiResult<List<CategoryResponseDto>>> getDeletedCategories() {
 
         List<CategoryResponseDto> categories = categoryService.getDeletedCategories();
@@ -248,7 +250,7 @@ public class CategoryController {
      */
     @DeleteMapping("/{id}/permanent")
     @PermanentDeleteCategoryDoc
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize(ADMIN_ONLY)
     public ResponseEntity<ApiResult<Void>> permanentlyDeleteCategory(
             @PathVariable @CategoryIdParam Long id) {
 

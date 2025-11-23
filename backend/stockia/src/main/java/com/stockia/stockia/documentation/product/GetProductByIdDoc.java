@@ -1,5 +1,6 @@
 package com.stockia.stockia.documentation.product;
 
+import com.stockia.stockia.documentation.common.SecurityResponses;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -46,26 +47,9 @@ import java.lang.annotation.Target;
                                 value = "{\"success\":false,\"message\":\"No se encontró el producto con ID: 999\",\"data\":null}"
                         )
                 )
-        ),
-        @ApiResponse(
-                responseCode = "401",
-                description = "No autorizado - Token ausente o inválido",
-                content = @Content(
-                        examples = @ExampleObject(
-                                value = "{\"success\":false,\"message\":\"Acceso no autorizado. Token inválido o ausente\",\"data\":null}"
-                        )
-                )
-        ),
-        @ApiResponse(
-                responseCode = "403",
-                description = "Acceso denegado - Se requiere rol ADMIN o MANAGER",
-                content = @Content(
-                        examples = @ExampleObject(
-                                value = "{\"success\":false,\"message\":\"Acceso denegado. No tienes permisos para realizar esta acción\",\"data\":null}"
-                        )
-                )
         )
 })
+@SecurityResponses.RequiresAdminOrManager
 public @interface GetProductByIdDoc {
 }
 

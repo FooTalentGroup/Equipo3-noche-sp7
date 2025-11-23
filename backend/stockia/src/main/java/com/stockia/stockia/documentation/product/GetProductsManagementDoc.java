@@ -1,5 +1,6 @@
 package com.stockia.stockia.documentation.product;
 
+import com.stockia.stockia.documentation.common.SecurityResponses;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -41,26 +42,9 @@ import java.lang.annotation.Target;
                 value = "{\"success\":true,\"message\":\"2 producto(s) encontrado(s)\",\"data\":[{\"id\":1,\"name\":\"laptop hp\",\"category\":{\"id\":1,\"name\":\"Electrónica\"},\"price\":999.99,\"currentStock\":2,\"minStock\":5,\"isAvailable\":true,\"hasLowStock\":true}]}"
             )
         )
-    ),
-    @ApiResponse(
-        responseCode = "401",
-        description = "No autorizado - Token ausente o inválido",
-        content = @Content(
-            examples = @ExampleObject(
-                value = "{\"success\":false,\"message\":\"Acceso no autorizado. Token inválido o ausente\",\"data\":null}"
-            )
-        )
-    ),
-    @ApiResponse(
-        responseCode = "403",
-        description = "Acceso denegado - Se requiere rol ADMIN",
-        content = @Content(
-            examples = @ExampleObject(
-                value = "{\"success\":false,\"message\":\"Acceso denegado. No tienes permisos para realizar esta acción\",\"data\":null}"
-            )
-        )
     )
 })
+@SecurityResponses.RequiresAdmin
 public @interface GetProductsManagementDoc {
 }
 
