@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class ProductController {
 
     @PostMapping
     @CreateProductDoc
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<ApiResult<ProductResponseDto>> createProduct(@Valid @RequestBody ProductRequestDto dto) {
         log.info("POST /api/products - Creating product: {}", dto.getName());
         ProductResponseDto product = productService.createProduct(dto);
@@ -38,6 +40,7 @@ public class ProductController {
 
     @GetMapping("/{id}")
     @GetProductByIdDoc
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<ApiResult<ProductResponseDto>> getProductById(@ProductIdParam @PathVariable Long id) {
         log.info("GET /api/products/{} - Fetching product", id);
         ProductResponseDto product = productService.getProductById(id);
@@ -46,6 +49,7 @@ public class ProductController {
 
     @GetMapping
     @GetAllProductsDoc
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<ApiResult<List<ProductResponseDto>>> getAllProducts(
             @RequestParam(required = false) String q,
             @RequestParam(required = false) Long categoryId) {
@@ -68,6 +72,7 @@ public class ProductController {
 
     @GetMapping("/management")
     @GetProductsManagementDoc
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResult<List<ProductResponseDto>>> getProductsForManagement(
             @IncludeInactiveParam @RequestParam(required = false, defaultValue = "false") Boolean includeInactive,
             @LowStockParam @RequestParam(required = false, defaultValue = "false") Boolean lowStock,
@@ -92,6 +97,7 @@ public class ProductController {
 
     @PutMapping("/{id}")
     @UpdateProductDoc
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResult<ProductResponseDto>> updateProduct(
             @ProductIdParam @PathVariable Long id, @Valid @RequestBody ProductUpdateDto dto) {
         log.info("PUT /api/products/{} - Updating product", id);
@@ -101,6 +107,7 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     @DeleteProductDoc
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResult<Void>> deleteProduct(@ProductIdParam @PathVariable Long id) {
         log.info("DELETE /api/products/{} - Deleting product", id);
         productService.deleteProduct(id);
@@ -109,6 +116,7 @@ public class ProductController {
 
     @GetMapping("/deleted")
     @GetDeletedProductsDoc
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResult<List<ProductResponseDto>>> getDeletedProducts() {
         log.info("GET /api/products/deleted - Fetching deleted products");
         List<ProductResponseDto> products = productService.getDeletedProducts();
@@ -119,6 +127,7 @@ public class ProductController {
 
     @PatchMapping("/{id}/restore")
     @RestoreProductDoc
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResult<ProductResponseDto>> restoreProduct(@ProductIdParam @PathVariable Long id) {
         log.info("PATCH /api/products/{}/restore - Restoring product", id);
         ProductResponseDto product = productService.restoreProduct(id);
@@ -127,6 +136,7 @@ public class ProductController {
 
     @DeleteMapping("/{id}/permanent")
     @PermanentDeleteProductDoc
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResult<Void>> permanentlyDeleteProduct(@ProductIdParam @PathVariable Long id) {
         log.info("DELETE /api/products/{}/permanent - Permanently deleting product", id);
         productService.permanentlyDeleteProduct(id);
