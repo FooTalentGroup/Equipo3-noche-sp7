@@ -55,7 +55,6 @@ export function FormInputField({
                     fieldState.error && "pr-9"
                   )}
                   maxLength={100}
-                  required={required}
                   onFocus={(e) => {
                     if (type === "number" && e.target.value === "0") {
                       field.onChange("");
