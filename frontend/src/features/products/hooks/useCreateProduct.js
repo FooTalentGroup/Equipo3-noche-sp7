@@ -13,9 +13,7 @@ const initialProductValue = {
   category: 0,
   image_file: null,
   min_stock: 0,
-  cost_price: 0,
   price: 0,
-  provider: 0,
 };
 
 export function useCreateProduct() {
@@ -50,6 +48,10 @@ export function useCreateProduct() {
     toast.error("Por favor, corrige los errores en el formulario");
   };
 
+  const resetSuccess = () => {
+    setIsSuccess(false);
+  };
+
   useEffect(() => {
     if (isSuccess) {
       const timer = setTimeout(() => {
@@ -72,5 +74,5 @@ export function useCreateProduct() {
   //     });
   //   },
   // });
-  return { form, handlePost, handleError, isPending, isSuccess };
+  return { form, handlePost, handleError, isPending, isSuccess, resetSuccess };
 }
