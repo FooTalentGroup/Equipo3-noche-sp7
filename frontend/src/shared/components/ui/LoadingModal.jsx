@@ -14,10 +14,10 @@ export function LoadingModal({
         className
       )}
     >
-      <Loader2 className="h-20 w-20 animate-spin text-slate-800" />
+      <Loader2 className="h-32 w-32 animate-spin text-btn-primary" />
       <div className="flex flex-col items-center gap-2 text-center">
-        <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-        <p className="text-sm text-gray-600">{description}</p>
+        <h3 className="text-lg font-semibold">{title}</h3>
+        <p className="text-sm text-muted-foreground">{description}</p>
       </div>
     </div>
   );
