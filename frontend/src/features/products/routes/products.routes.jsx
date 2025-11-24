@@ -14,6 +14,10 @@ export const productsRoutes = [
       {
         path: 'create',
         element: <ProductsListPage />,
+      },
+      {
+        path: 'edit/:id',
+        element: <ProductsListPage />
       }
     ],
   },
