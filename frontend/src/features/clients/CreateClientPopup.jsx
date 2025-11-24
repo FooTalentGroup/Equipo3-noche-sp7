@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-export function ProductsFiltersPopup({
+export function CreateClientPopup({
                                          open,
                                          onClose,
                                          filters,
@@ -14,11 +14,13 @@ export function ProductsFiltersPopup({
         category: filters?.category ?? 'all',
         minPrice: filters?.minPrice ?? '',
         maxPrice: filters?.maxPrice ?? '',
+        // NUEVO: stockLevel → 'all' | 'high' | 'medium' | 'low'
         stockLevel: filters?.stockLevel ?? 'all',
     };
 
     const [local, setLocal] = useState(initialLocal);
 
+    // Sync cuando cambian los filtros externos o se abre el popup
     useEffect(() => {
         setLocal({
             category: filters?.category ?? 'all',
@@ -35,7 +37,7 @@ export function ProductsFiltersPopup({
     }
 
     function applyAll() {
-        onChange(local);
+        onChange(local);           // enviamos stockLevel directamente
         if (onApply) onApply();
     }
 

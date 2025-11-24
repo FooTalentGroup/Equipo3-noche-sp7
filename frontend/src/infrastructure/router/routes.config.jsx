@@ -1,44 +1,32 @@
-import { authRoutes } from "@/features/auth/routes/auth.routes.jsx";
-import { homeRoutes } from "@/features/dashboard/routes/home.routes.jsx";
-import { productsRoutes } from "@/features/products/routes/products.routes.jsx";
-import { notfoundRoutes } from "./notfound.routes.jsx";
-import {createBrowserRouter, Navigate} from "react-router-dom";
-import {salesRoutes} from "@/features/sales/routes/sales.routes.jsx";
-import { ProtectedLayout } from '@/shared/components/layout/ProtectedLayout.jsx';
-import DashboardPage from '@/features/dashboard/pages/HomePage.jsx';
-import {discountsRoutes} from "@/features/discounts/routes/discounts.routes.jsx";
-import { customersRoutes } from "@/features/customers/routes/customers.routes.jsx";
-import { suppliersRoutes } from "@/features/suppliers/routes/suppliers.routes.jsx";
-import { predictionsRoutes } from "@/features/predictions/routes/predictions.router.jsx";
-import { reportsRoutes } from "@/features/repor/routes/reports.routes.jsx";
-
+import React from 'react';
+import { createBrowserRouter } from 'react-router-dom';
+import App from '@/App.jsx';
+import NotFoundPage from '@/infrastructure/pages/NotFoundPage.jsx';
+import HomePage from '@/features/dashboard/pages/HomePage.jsx';
+import ProductsPage from '@/features/products/pages/ProductsListPage.jsx';
+import CustomersPage from '@/features/customers/pages/CustomersPage.jsx';
+import SuppliersPage from '@/features/suppliers/pages/SuppliersPage.jsx';
+import SalesPage from '@/features/sales/pages/SalesPage';
+import DiscountsPage from '@/features/discounts/pages/DiscountPage.jsx';
+import PredictionsPage from '@/features/predictions/pages/PredictionsPage.jsx';
+import ReportsPage from '@/features/repor/pages/ReportsPage.jsx';
 
 const router = createBrowserRouter([
     {
         path: '/',
-        element: <ProtectedLayout />,
+        element: <App />,
         children: [
-            {
-                index: true,
-                element: <Navigate to="/dashboard" replace />
-            },
-            {
-                path: 'dashboard',
-                element: <DashboardPage />
-            },
-        ]
+            { index: true, element: <HomePage /> },
+            { path: 'products', element: <ProductsPage /> },
+            { path: 'customers', element: <CustomersPage /> },
+            { path: 'suppliers', element: <SuppliersPage /> },
+            { path: 'sales', element: <SalesPage /> },
+            { path: 'discounts', element: <DiscountsPage /> },
+            { path: 'predictions-IA', element: <PredictionsPage /> },
+            { path: 'reports', element: <ReportsPage /> },
+            { path: '*', element: <NotFoundPage /> },
+        ],
     },
-    ...authRoutes,
-    ...homeRoutes,
-    ...productsRoutes,
-    ...salesRoutes,
-    ...discountsRoutes,
-    ...customersRoutes,
-    ...suppliersRoutes,
-    ...predictionsRoutes,
-    ...reportsRoutes,
-    ...notfoundRoutes
-
 ]);
 
 export default router;
