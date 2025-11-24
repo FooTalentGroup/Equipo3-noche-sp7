@@ -1,6 +1,8 @@
 package com.stockia.stockia.config;
 
+import com.stockia.stockia.models.Client;
 import com.stockia.stockia.models.ProductCategory;
+import com.stockia.stockia.repositories.ClientRepository;
 import com.stockia.stockia.repositories.ProductCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,7 @@ import java.util.List;
 @Slf4j
 public class DataSeeder implements CommandLineRunner {
 
+        private final ClientRepository clientRepository;
         private final ProductCategoryRepository categoryRepository;
 
         /**
@@ -33,6 +36,26 @@ public class DataSeeder implements CommandLineRunner {
         public void run(String... args) {
                 // Crea las categorías básicas si no existen. (quedarán a cambiar por las de QA)
                 seedProductCategories();
+                seedClients();
+        }
+
+        private void seedClients() {
+                if (clientRepository.count() > 0) {
+                        log.info("✅ Los clientes ya existen. Saltando seeding...");
+                        return;
+                }
+
+                log.info("🌱 Iniciando seeding de clientes...");
+
+                List<Client> clients = List.of(
+                                Client.builder()
+                                                .name("Consumidor Final")
+                                                .email("consumidorfinal@stockia.com")
+                                                .phone("123456789")
+                                                .build());
+
+                clientRepository.saveAll(clients);
+                log.info("✅ Seeding completado: {} Cliente consumidor final creado", clients.size());
         }
 
         /**
