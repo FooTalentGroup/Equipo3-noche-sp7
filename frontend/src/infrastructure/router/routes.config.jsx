@@ -10,8 +10,13 @@ import SalesPage from '@/features/sales/pages/SalesPage';
 import DiscountsPage from '@/features/discounts/pages/DiscountPage.jsx';
 import PredictionsPage from '@/features/predictions/pages/PredictionsPage.jsx';
 import ReportsPage from '@/features/repor/pages/ReportsPage.jsx';
+import { authRoutes } from '@/features/auth/routes/auth.routes';
 
 const router = createBrowserRouter([
+     {
+        path: '/',
+        children: authRoutes,
+    },
     {
         path: '/',
         element: <App />,
