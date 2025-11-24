@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router';
-import {LayoutDashboard, Package, UtensilsCrossed, Menu, Plus, FileUp,Printer,Bell} from 'lucide-react';
-import { UserMenu } from './UserMenu.jsx';
+import { UtensilsCrossed, Menu, Plus, FileUp,Printer} from 'lucide-react';
+
 import {
   Sheet,
   SheetContent,
@@ -16,14 +16,9 @@ export const Navbar = () => {
   const navLinks = [
     {
       to: '/dashboard',
-      icon: LayoutDashboard,
       label: 'Dashboard'
     },
-    {
-      to: '/products',
-      icon: Package,
-      label: 'Productos'
-    }
+
   ];
 
   const NavLinkItem = ({ to, icon: Icon, label, onClick }) => (
@@ -54,11 +49,11 @@ export const Navbar = () => {
             className='flex items-center mb-4 gap-2 text-black'
           >
             <UtensilsCrossed className='h-6 w-6' />
-            <span className='text-xl font-bold'>ProEat</span>
+            <span className='text-xl font-bold'>STOCKIA</span>
           </NavLink>
         </div>
         <div className='flex items-center gap-2'>
-          <UserMenu />
+          
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <Button
@@ -74,7 +69,7 @@ export const Navbar = () => {
               <div className='flex flex-col gap-4 mt-8'>
                 <div className='flex items-center gap-2 text-orange-600 mb-4'>
                   <UtensilsCrossed className='h-6 w-6' />
-                  <span className='text-xl font-bold'>ProEat</span>
+                  <span className='text-xl font-bold'>STOCKIA</span>
                 </div>
                 <nav className='flex flex-col gap-2'>
                   {navLinks.map(link => (
