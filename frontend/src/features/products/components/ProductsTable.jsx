@@ -3,6 +3,7 @@ import { Edit, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button.jsx';
 import Badge from "@/features/products/components/Badge.jsx";
 import { useProducts } from '../context/ProductsContext';
+import { useNavigate } from 'react-router';
 // =============== HELPERS (NO BORRAR) ===============
 const parsePrice = (val) => {
     if (val == null) return 0;
@@ -23,7 +24,8 @@ export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc
     // const [products, setProducts] = useState(generateRandomProducts());
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
-    const {products, deleteProduct} = useProducts()
+    const {products, deleteProduct} = useProducts();
+    const navigate = useNavigate();
 
     const handleDelete = (id) => {
         deleteProduct(id);
@@ -117,7 +119,7 @@ export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc
                             </td>
                             <td className="px-6 py-4">
                                 <div className="flex items-center justify-center gap-4">
-                                    <button className="text-gray-500 hover:text-blue-600 cursor-pointer transition">
+                                    <button onClick={() => navigate(`/products/edit/${product.id}`)} className="text-gray-500 hover:text-blue-600 cursor-pointer transition">
                                         <Edit className="w-4 h-4" />
                                     </button>
                                     <button onClick={() => handleDelete(product.id)} className="text-red-600 cursor-pointer transition">
