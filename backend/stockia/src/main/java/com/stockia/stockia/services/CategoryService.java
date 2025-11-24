@@ -6,6 +6,7 @@ import com.stockia.stockia.exceptions.category.CategoryNotFoundException;
 import com.stockia.stockia.exceptions.category.DuplicateCategoryException;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Interfaz de servicio para la gestión de categorías de productos.
@@ -32,7 +33,7 @@ public interface CategoryService {
      * @return DTO con la categoría encontrada
      * @throws CategoryNotFoundException si no se encuentra la categoría
      */
-    CategoryResponseDto getCategoryById(Long id);
+    CategoryResponseDto getCategoryById(UUID id);
 
     /**
      * Lista todas las categorías (activas e inactivas).
@@ -51,13 +52,13 @@ public interface CategoryService {
     /**
      * Actualiza una categoría existente.
      *
-     * @param id ID de la categoría a actualizar
+     * @param id  ID de la categoría a actualizar
      * @param dto Nuevos datos de la categoría
      * @return DTO con la categoría actualizada
-     * @throws CategoryNotFoundException si no se encuentra la categoría
+     * @throws CategoryNotFoundException  si no se encuentra la categoría
      * @throws DuplicateCategoryException si el nuevo nombre ya existe
      */
-    CategoryResponseDto updateCategory(Long id, CategoryRequestDto dto);
+    CategoryResponseDto updateCategory(UUID id, CategoryRequestDto dto);
 
     /**
      * Desactiva una categoría (soft delete).
@@ -66,7 +67,7 @@ public interface CategoryService {
      * @param id ID de la categoría a desactivar
      * @throws CategoryNotFoundException si no se encuentra la categoría
      */
-    void deactivateCategory(Long id);
+    void deactivateCategory(UUID id);
 
     /**
      * Activa una categoría previamente desactivada.
@@ -75,7 +76,7 @@ public interface CategoryService {
      * @return DTO con la categoría activada
      * @throws CategoryNotFoundException si no se encuentra la categoría
      */
-    CategoryResponseDto activateCategory(Long id);
+    CategoryResponseDto activateCategory(UUID id);
 
     /**
      * Elimina una categoría (soft delete).
@@ -84,7 +85,7 @@ public interface CategoryService {
      * @param id ID de la categoría a eliminar
      * @throws CategoryNotFoundException si no se encuentra la categoría
      */
-    void deleteCategory(Long id);
+    void deleteCategory(UUID id);
 
     /**
      * Lista las categorías eliminadas.
@@ -100,7 +101,7 @@ public interface CategoryService {
      * @return DTO con la categoría restaurada
      * @throws CategoryNotFoundException si no se encuentra la categoría
      */
-    CategoryResponseDto restoreCategory(Long id);
+    CategoryResponseDto restoreCategory(UUID id);
 
     /**
      * Elimina permanentemente una categoría de la base de datos.
@@ -108,6 +109,5 @@ public interface CategoryService {
      * @param id ID de la categoría a eliminar permanentemente
      * @throws CategoryNotFoundException si no se encuentra la categoría
      */
-    void permanentlyDeleteCategory(Long id);
+    void permanentlyDeleteCategory(UUID id);
 }
-

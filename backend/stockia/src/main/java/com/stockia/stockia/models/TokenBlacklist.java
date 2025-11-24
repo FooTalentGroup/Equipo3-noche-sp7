@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -13,8 +14,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class TokenBlacklist {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String token;

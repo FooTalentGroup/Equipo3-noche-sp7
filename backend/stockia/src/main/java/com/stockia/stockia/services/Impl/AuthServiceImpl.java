@@ -60,7 +60,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public RegisterResponseDto register(RegisterRequestDto requestDto) {
         if (userRepository.existsByEmail(requestDto.email())) {
-            throw new DuplicateResourceException("El email '"+requestDto.email()+"' ya está registrado");
+            throw new DuplicateResourceException("El email '" + requestDto.email() + "' ya está registrado");
         }
         String encodedPassword = passwordEncoder.encode(requestDto.password());
 
@@ -77,16 +77,14 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public LoginResponseDto login(LoginRequestDto requestDto) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(requestDto.email(), requestDto.password())
-        );
+                new UsernamePasswordAuthenticationToken(requestDto.email(), requestDto.password()));
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
 
-        if (user.getAccount_status() != AccountStatus.ACTIVE) {
+        if (user.getAccountStatus() != AccountStatus.ACTIVE) {
             throw new UnauthorizedException(
-                    "Acceso denegado. Estado del usuario: " + user.getAccount_status()
-            );
+                    "Acceso denegado. Estado del usuario: " + user.getAccountStatus());
         }
 
         String token = jwtService.generateToken(userMapper.toJwtDataDto(user), TokenPurpose.AUTHENTICATION);
@@ -161,7 +159,6 @@ public class AuthServiceImpl implements AuthService {
         tokenBlacklistService.addTokenToBlacklist(requestDto.token(), jwtService.extractExpiration(requestDto.token()));
     }
 
-
     /**
      * Gets the currently authenticated user.
      */
@@ -184,15 +181,13 @@ public class AuthServiceImpl implements AuthService {
     private void sendPasswordResetEmail(User user, String token) {
         Map<String, Object> templateModel = Map.of(
                 "name", user.getName(),
-                "recoveryPasswordUrl", baseUrl + resetPasswordUrl + "?token=" + token
-        );
+                "recoveryPasswordUrl", baseUrl + resetPasswordUrl + "?token=" + token);
 
         emailService.sendHtmlEmail(
                 user.getEmail(),
                 "Recuperación de contraseña",
                 "password-recovery",
-                templateModel
-        );
+                templateModel);
     }
 
 }

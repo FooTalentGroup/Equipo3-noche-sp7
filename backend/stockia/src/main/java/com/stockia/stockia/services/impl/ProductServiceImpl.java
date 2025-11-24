@@ -1,4 +1,4 @@
-package com.stockia.stockia.services.impl;
+package com.stockia.stockia.services.Impl;
 
 import com.stockia.stockia.dtos.product.ProductRequestDto;
 import com.stockia.stockia.dtos.product.ProductResponseDto;
@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -28,8 +29,8 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
 
     public ProductServiceImpl(ProductRepository productRepository,
-                             ProductCategoryRepository categoryRepository,
-                             ProductMapper productMapper) {
+            ProductCategoryRepository categoryRepository,
+            ProductMapper productMapper) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.productMapper = productMapper;
@@ -65,7 +66,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public ProductResponseDto getProductById(Long id) {
+    public ProductResponseDto getProductById(UUID id) {
         log.info("Fetching product with ID: {}", id);
         Product product = productRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
@@ -91,7 +92,8 @@ public class ProductServiceImpl implements ProductService {
 
         // Paso 1: Filtrar por disponibilidad (includeInactive)
         if (includeInactive != null && includeInactive) {
-            // Incluye productos activos e inactivos (isAvailable=true/false), pero NO eliminados
+            // Incluye productos activos e inactivos (isAvailable=true/false), pero NO
+            // eliminados
             products = productRepository.findByDeletedFalse();
         } else {
             // Solo productos activos (isAvailable=true) y no eliminados
@@ -112,7 +114,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductResponseDto> searchProducts(String name, Long categoryId) {
+    public List<ProductResponseDto> searchProducts(String name, UUID categoryId) {
         log.info("Searching products: name={}, categoryId={}", name, categoryId);
         List<Product> products;
         if (name != null && categoryId != null) {
@@ -135,8 +137,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductResponseDto> searchProductsWithManagementFilters(String query, Long categoryId, Boolean includeInactive, Boolean lowStock) {
-        log.info("Searching products with management filters - query: {}, categoryId: {}, includeInactive: {}, lowStock: {}",
+    public List<ProductResponseDto> searchProductsWithManagementFilters(String query, UUID categoryId,
+            Boolean includeInactive, Boolean lowStock) {
+        log.info(
+                "Searching products with management filters - query: {}, categoryId: {}, includeInactive: {}, lowStock: {}",
                 query, categoryId, includeInactive, lowStock);
 
         // Paso 1: Búsqueda base
@@ -171,7 +175,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public ProductResponseDto updateProduct(Long id, ProductUpdateDto dto) {
+    public ProductResponseDto updateProduct(UUID id, ProductUpdateDto dto) {
         log.info("Updating product with ID: {}", id);
         Product product = productRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
@@ -207,7 +211,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public void deleteProduct(Long id) {
+    public void deleteProduct(UUID id) {
         log.info("Deleting product with ID: {}", id);
         Product product = productRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
@@ -226,7 +230,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public ProductResponseDto restoreProduct(Long id) {
+    public ProductResponseDto restoreProduct(UUID id) {
         log.info("Restoring product with ID: {}", id);
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
@@ -242,7 +246,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public void permanentlyDeleteProduct(Long id) {
+    public void permanentlyDeleteProduct(UUID id) {
         log.info("Permanently deleting product with ID: {}", id);
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
@@ -251,4 +255,3 @@ public class ProductServiceImpl implements ProductService {
         log.info("Product permanently deleted with ID: {}", id);
     }
 }
-

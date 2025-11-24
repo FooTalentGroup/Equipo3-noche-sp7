@@ -1,5 +1,7 @@
 package com.stockia.stockia.utils;
 
+import java.util.UUID;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -16,9 +18,9 @@ public class SoftDeletableValidator {
     /**
      * Valida que una entidad no esté ya eliminada antes de intentar eliminarla.
      *
-     * @param deleted estado de eliminación de la entidad
+     * @param deleted    estado de eliminación de la entidad
      * @param entityType tipo de entidad (ej: "producto", "categoría")
-     * @param entityId ID de la entidad
+     * @param entityId   ID de la entidad
      * @throws IllegalStateException si la entidad ya está eliminada
      */
     public static void validateNotAlreadyDeleted(Boolean deleted, String entityType, Long entityId) {
@@ -32,12 +34,12 @@ public class SoftDeletableValidator {
     /**
      * Valida que una entidad esté eliminada antes de intentar restaurarla.
      *
-     * @param deleted estado de eliminación de la entidad
+     * @param deleted    estado de eliminación de la entidad
      * @param entityType tipo de entidad (ej: "producto", "categoría")
-     * @param entityId ID de la entidad
+     * @param entityId   ID de la entidad
      * @throws IllegalStateException si la entidad no está eliminada
      */
-    public static void validateIsDeleted(Boolean deleted, String entityType, Long entityId) {
+    public static void validateIsDeleted(Boolean deleted, String entityType, UUID entityId) {
         if (deleted == null || !deleted) {
             String message = String.format("El/La %s no está eliminado/a", entityType);
             log.warn("Intentando restaurar {} con ID {} que no está eliminado/a", entityType, entityId);
@@ -58,4 +60,3 @@ public class SoftDeletableValidator {
         return text.substring(0, 1).toUpperCase() + text.substring(1);
     }
 }
-

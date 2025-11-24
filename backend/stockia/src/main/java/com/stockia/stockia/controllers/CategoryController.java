@@ -17,6 +17,8 @@ import com.stockia.stockia.dtos.category.CategoryRequestDto;
 import com.stockia.stockia.dtos.category.CategoryResponseDto;
 import com.stockia.stockia.services.CategoryService;
 import com.stockia.stockia.utils.ApiResult;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.stockia.stockia.security.constants.SecurityConstants.Roles.*;
 
@@ -32,26 +35,27 @@ import static com.stockia.stockia.security.constants.SecurityConstants.Roles.*;
  * Controlador REST para la gestión de categorías de productos.
  *
  * Endpoints disponibles:
- * - POST   /api/categories                  → Crear categoría
- * - GET    /api/categories                  → Listar todas
- * - GET    /api/categories/active           → Listar solo activas
- * - GET    /api/categories/deleted          → Listar eliminadas
- * - GET    /api/categories/{id}             → Obtener por ID
- * - PUT    /api/categories/{id}             → Actualizar
- * - DELETE /api/categories/{id}             → Eliminar (soft delete)
- * - PATCH  /api/categories/{id}/deactivate  → Desactivar
- * - PATCH  /api/categories/{id}/activate    → Activar
- * - PATCH  /api/categories/{id}/restore     → Restaurar eliminada
- * - DELETE /api/categories/{id}/permanent   → Eliminar permanentemente
- *
- * @author StockIA Team
+ * 
+ * - DELETE [/api/categories/{id}] → Eliminar categoría (soft delete)
+ * - DELETE [/api/categories/{id}/permanent] → Eliminar categoría permanentemente
+ * - GET [/api/categories/{id}] → Obtener categoría por ID
+ * - GET [/api/categories] → Listar todas las categorías
+ * - GET [/api/categories/deleted] → Listar categorías eliminadas
+ * - GET [/api/categories/active] → Listar categorías activas
+ * - PATCH [/api/categories/{id}/restore] → Restaurar categoría eliminada
+ * - PATCH [/api/categories/{id}/deactivate] → Desactivar categoría
+ * - PATCH [/api/categories/{id}/activate] → Activar categoría
+ * - POST [/api/categories] → Crear nueva categoría
+ * - PUT [/api/categories/{id} → Actualizar categoría
+ * 
+ * @author StockIA Team (Maidana)
  * @version 1.0
  * @since 2025-11-20
  */
 @RestController
 @RequestMapping("/api/categories")
 @RequiredArgsConstructor
-@CategoryControllerTag
+@Tag(name = "04 - Categorías", description = "Endpoints para la gestión de categorías")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -64,7 +68,7 @@ public class CategoryController {
      */
     @PostMapping
     @CreateCategoryDoc
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize(ADMIN_OR_MANAGER)
     public ResponseEntity<ApiResult<CategoryResponseDto>> createCategory(
             @Valid @RequestBody CategoryRequestDto dto) {
 
@@ -82,7 +86,7 @@ public class CategoryController {
      */
     @GetMapping
     @GetAllCategoriesDoc
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize(ADMIN_OR_MANAGER)
     public ResponseEntity<ApiResult<List<CategoryResponseDto>>> getAllCategories() {
 
         List<CategoryResponseDto> categories = categoryService.getAllCategories();
@@ -99,7 +103,7 @@ public class CategoryController {
      */
     @GetMapping("/active")
     @GetActiveCategoriesDoc
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize(ADMIN_OR_MANAGER)
     public ResponseEntity<ApiResult<List<CategoryResponseDto>>> getActiveCategories() {
 
         List<CategoryResponseDto> categories = categoryService.getActiveCategories();
@@ -117,9 +121,9 @@ public class CategoryController {
      */
     @GetMapping("/{id}")
     @GetCategoryByIdDoc
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize(ADMIN_OR_MANAGER)
     public ResponseEntity<ApiResult<CategoryResponseDto>> getCategoryById(
-            @PathVariable @CategoryIdParam Long id) {
+            @PathVariable @CategoryIdParam UUID id) {
 
         CategoryResponseDto category = categoryService.getCategoryById(id);
 
@@ -137,9 +141,9 @@ public class CategoryController {
      */
     @PutMapping("/{id}")
     @UpdateCategoryDoc
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize(ADMIN_ONLY)
     public ResponseEntity<ApiResult<CategoryResponseDto>> updateCategory(
-            @PathVariable @CategoryIdParam Long id,
+            @PathVariable @CategoryIdParam UUID id,
             @Valid @RequestBody CategoryRequestDto dto) {
 
         CategoryResponseDto category = categoryService.updateCategory(id, dto);
@@ -157,9 +161,9 @@ public class CategoryController {
      */
     @DeleteMapping("/{id}")
     @DeleteCategoryDoc
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize(ADMIN_ONLY)
     public ResponseEntity<ApiResult<Void>> deleteCategory(
-            @PathVariable @CategoryIdParam Long id) {
+            @PathVariable @CategoryIdParam UUID id) {
 
         categoryService.deleteCategory(id);
 
@@ -176,9 +180,9 @@ public class CategoryController {
      */
     @PatchMapping("/{id}/deactivate")
     @DeactivateCategoryDoc
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize(ADMIN_ONLY)
     public ResponseEntity<ApiResult<Void>> deactivateCategory(
-            @PathVariable @CategoryIdParam Long id) {
+            @PathVariable @CategoryIdParam UUID id) {
 
         categoryService.deactivateCategory(id);
 
@@ -195,9 +199,9 @@ public class CategoryController {
      */
     @PatchMapping("/{id}/activate")
     @ActivateCategoryDoc
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize(ADMIN_ONLY)
     public ResponseEntity<ApiResult<CategoryResponseDto>> activateCategory(
-            @PathVariable @CategoryIdParam Long id) {
+            @PathVariable @CategoryIdParam UUID id) {
 
         CategoryResponseDto category = categoryService.activateCategory(id);
 
@@ -231,9 +235,9 @@ public class CategoryController {
      */
     @PatchMapping("/{id}/restore")
     @RestoreCategoryDoc
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize(ADMIN_ONLY)
     public ResponseEntity<ApiResult<CategoryResponseDto>> restoreCategory(
-            @PathVariable @CategoryIdParam Long id) {
+            @PathVariable @CategoryIdParam UUID id) {
 
         CategoryResponseDto category = categoryService.restoreCategory(id);
 
@@ -252,7 +256,7 @@ public class CategoryController {
     @PermanentDeleteCategoryDoc
     @PreAuthorize(ADMIN_ONLY)
     public ResponseEntity<ApiResult<Void>> permanentlyDeleteCategory(
-            @PathVariable @CategoryIdParam Long id) {
+            @PathVariable @CategoryIdParam UUID id) {
 
         categoryService.permanentlyDeleteCategory(id);
 

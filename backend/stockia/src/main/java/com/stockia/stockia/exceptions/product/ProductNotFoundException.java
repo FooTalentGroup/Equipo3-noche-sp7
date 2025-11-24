@@ -1,5 +1,7 @@
 package com.stockia.stockia.exceptions.product;
 
+import java.util.UUID;
+
 /**
  * Excepción lanzada cuando no se encuentra un producto solicitado.
  * Típicamente se lanza al buscar un producto por ID que no existe
@@ -24,7 +26,7 @@ public class ProductNotFoundException extends RuntimeException {
      * Constructor con mensaje y causa.
      *
      * @param message mensaje de error descriptivo
-     * @param cause causa original de la excepción
+     * @param cause   causa original de la excepción
      */
     public ProductNotFoundException(String message, Throwable cause) {
         super(message, cause);
@@ -36,7 +38,7 @@ public class ProductNotFoundException extends RuntimeException {
      *
      * @param id ID del producto no encontrado
      */
-    public ProductNotFoundException(Long id) {
+    public ProductNotFoundException(UUID id) {
         super("Producto no encontrado con ID: " + id);
     }
 
@@ -47,4 +49,3 @@ public class ProductNotFoundException extends RuntimeException {
         super("Producto no encontrado");
     }
 }
-

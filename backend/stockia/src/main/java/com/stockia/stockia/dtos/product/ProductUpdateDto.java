@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -24,7 +25,7 @@ public class ProductUpdateDto {
     private String name;
 
     @Schema(description = "Nuevo ID de categoría", example = "2")
-    private Long categoryId;
+    private UUID categoryId;
 
     @DecimalMin(value = "0.0", message = "El precio debe ser mayor o igual a 0")
     @Schema(description = "Nuevo precio de venta", example = "899.99")
@@ -45,4 +46,3 @@ public class ProductUpdateDto {
     @Schema(description = "Nueva disponibilidad del producto", example = "true")
     private Boolean isAvailable;
 }
-
