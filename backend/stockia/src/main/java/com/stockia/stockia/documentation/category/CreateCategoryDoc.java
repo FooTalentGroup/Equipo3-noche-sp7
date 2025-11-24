@@ -5,7 +5,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import com.stockia.stockia.documentation.common.SecurityResponses;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -22,7 +23,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(
     summary = "Crear nueva categoría",
-    description = "Crea una nueva categoría de productos. El nombre debe ser único."
+    description = "Crea una nueva categoría de productos. El nombre debe ser único. " +
+                  "<strong>Solo accesible para usuarios con rol ADMIN o MANAGER.</strong>",
+    security = @SecurityRequirement(name = "bearer-key")
 )
 @ApiResponses(value = {
     @ApiResponse(
@@ -87,5 +90,6 @@ import java.lang.annotation.Target;
         )
     )
 })
+@SecurityResponses.RequiresAdminOrManager
 public @interface CreateCategoryDoc {}
 

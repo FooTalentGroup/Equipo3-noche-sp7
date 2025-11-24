@@ -3,7 +3,10 @@ package com.stockia.stockia.documentation.product;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import com.stockia.stockia.documentation.common.SecurityResponses;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -20,21 +23,24 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(
-    summary = "Listar productos activos",
-    description = "Retorna todos los productos activos y disponibles. " +
-                  "Opcionalmente puede filtrar por búsqueda de texto (q) y/o categoría (categoryId)"
+        summary = "Listar productos activos",
+        description = "Retorna todos los productos activos y disponibles. " +
+                "Opcionalmente puede filtrar por búsqueda de texto (q) y/o categoría (categoryId). " +
+                "<strong>Solo accesible para usuarios con rol ADMIN o MANAGER.</strong>",
+        security = @SecurityRequirement(name = "bearer-key")
 )
 @ApiResponses({
-    @ApiResponse(
-        responseCode = "200",
-        description = "Lista de productos obtenida exitosamente",
-        content = @io.swagger.v3.oas.annotations.media.Content(
-            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                value = "{\"success\":true,\"message\":\"3 producto(s) encontrado(s)\",\"data\":[{\"id\":1,\"name\":\"laptop hp\",\"category\":{\"id\":1,\"name\":\"Electrónica\"},\"price\":999.99,\"currentStock\":10,\"minStock\":5,\"isAvailable\":true,\"hasLowStock\":false}]}"
-            )
+        @ApiResponse(
+                responseCode = "200",
+                description = "Lista de productos obtenida exitosamente",
+                content = @Content(
+                        examples = @ExampleObject(
+                                value = "{\"success\":true,\"message\":\"3 producto(s) encontrado(s)\",\"data\":[{\"id\":1,\"name\":\"laptop hp\",\"category\":{\"id\":1,\"name\":\"Electrónica\"},\"price\":999.99,\"currentStock\":10,\"minStock\":5,\"isAvailable\":true,\"hasLowStock\":false}]}"
+                        )
+                )
         )
-    )
 })
+@SecurityResponses.RequiresAdminOrManager
 public @interface GetAllProductsDoc {
 }
 

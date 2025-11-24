@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 public class ProductResponseDto {
 
     @Schema(description = "Identificador único del producto", example = "1")
-    private Long id;
+    private UUID id;
 
     @Schema(description = "Nombre del producto", example = "Laptop HP Pavilion 15")
     private String name;
@@ -41,7 +42,6 @@ public class ProductResponseDto {
     @Schema(description = "Disponibilidad del producto", example = "true")
     private Boolean isAvailable;
 
-
     @Schema(description = "Fecha y hora de creación", example = "2025-11-20T10:30:00")
     private LocalDateTime createdAt;
 
@@ -51,4 +51,3 @@ public class ProductResponseDto {
     @Schema(description = "Indica si el stock está por debajo del mínimo", example = "false")
     private Boolean hasLowStock;
 }
-

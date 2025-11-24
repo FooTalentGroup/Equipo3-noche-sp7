@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Repositorio JPA para la entidad Product.
@@ -19,121 +20,123 @@ import java.util.Optional;
  * @since 2025-11-20
  */
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long> {
+public interface ProductRepository extends JpaRepository<Product, UUID> {
 
+       /**
+        * Busca productos por nombre (búsqueda parcial, case-insensitive) excluyendo
+        * eliminados.
+        * Útil para funcionalidad de búsqueda y autocompletado.
+        *
+        * @param name parte del nombre a buscar
+        * @return lista de productos cuyo nombre contiene el texto especificado
+        */
+       List<Product> findByNameContainingIgnoreCaseAndDeletedFalse(String name);
 
+       /**
+        * Busca productos por categoría excluyendo eliminados.
+        * Útil para listar productos de una categoría específica.
+        *
+        * @param categoryId ID de la categoría
+        * @return lista de productos pertenecientes a la categoría especificada
+        */
+       List<Product> findByCategoryIdAndDeletedFalse(UUID categoryId);
 
-    /**
-     * Busca productos por nombre (búsqueda parcial, case-insensitive) excluyendo eliminados.
-     * Útil para funcionalidad de búsqueda y autocompletado.
-     *
-     * @param name parte del nombre a buscar
-     * @return lista de productos cuyo nombre contiene el texto especificado
-     */
-    List<Product> findByNameContainingIgnoreCaseAndDeletedFalse(String name);
+       /**
+        * Busca productos por nombre y categoría (búsqueda combinada) excluyendo
+        * eliminados.
+        * Útil para filtros avanzados.
+        *
+        * @param name       parte del nombre a buscar
+        * @param categoryId ID de la categoría
+        * @return lista de productos que coinciden con ambos criterios
+        */
+       List<Product> findByNameContainingIgnoreCaseAndCategoryIdAndDeletedFalse(String name, UUID categoryId);
 
-    /**
-     * Busca productos por categoría excluyendo eliminados.
-     * Útil para listar productos de una categoría específica.
-     *
-     * @param categoryId ID de la categoría
-     * @return lista de productos pertenecientes a la categoría especificada
-     */
-    List<Product> findByCategoryIdAndDeletedFalse(Long categoryId);
+       /**
+        * Lista todos los productos activos (no eliminados).
+        * Método principal para listar el inventario actual.
+        *
+        * @return lista de todos los productos con deleted = false
+        */
+       List<Product> findByDeletedFalse();
 
-    /**
-     * Busca productos por nombre y categoría (búsqueda combinada) excluyendo eliminados.
-     * Útil para filtros avanzados.
-     *
-     * @param name parte del nombre a buscar
-     * @param categoryId ID de la categoría
-     * @return lista de productos que coinciden con ambos criterios
-     */
-    List<Product> findByNameContainingIgnoreCaseAndCategoryIdAndDeletedFalse(String name, Long categoryId);
+       /**
+        * Lista todos los productos eliminados (soft delete).
+        * Útil para historial y recuperación de productos.
+        *
+        * @return lista de todos los productos con deleted = true
+        */
+       List<Product> findByDeletedTrue();
 
-    /**
-     * Lista todos los productos activos (no eliminados).
-     * Método principal para listar el inventario actual.
-     *
-     * @return lista de todos los productos con deleted = false
-     */
-    List<Product> findByDeletedFalse();
+       /**
+        * Busca productos con stock actual menor al especificado, excluyendo
+        * eliminados.
+        * Utilizado para alertas de stock bajo.
+        *
+        * @param stock umbral de stock a comparar
+        * @return lista de productos con currentStock menor al valor especificado
+        */
+       List<Product> findByCurrentStockLessThanAndDeletedFalse(Integer stock);
 
-    /**
-     * Lista todos los productos eliminados (soft delete).
-     * Útil para historial y recuperación de productos.
-     *
-     * @return lista de todos los productos con deleted = true
-     */
-    List<Product> findByDeletedTrue();
+       /**
+        * Busca productos con stock actual menor o igual al stock mínimo (alertas de
+        * stock bajo).
+        * Versión alternativa usando consulta JPQL para mayor claridad.
+        *
+        * @return lista de productos que necesitan reabastecimiento
+        */
+       @Query("SELECT p FROM Product p WHERE p.currentStock <= p.minStock AND p.deleted = false")
+       List<Product> findLowStockProducts();
 
-    /**
-     * Busca productos con stock actual menor al especificado, excluyendo eliminados.
-     * Utilizado para alertas de stock bajo.
-     *
-     * @param stock umbral de stock a comparar
-     * @return lista de productos con currentStock menor al valor especificado
-     */
-    List<Product> findByCurrentStockLessThanAndDeletedFalse(Integer stock);
+       /**
+        * Busca productos por disponibilidad excluyendo eliminados.
+        *
+        * @param isAvailable estado de disponibilidad
+        * @return lista de productos con la disponibilidad especificada
+        */
+       List<Product> findByIsAvailableAndDeletedFalse(Boolean isAvailable);
 
-    /**
-     * Busca productos con stock actual menor o igual al stock mínimo (alertas de stock bajo).
-     * Versión alternativa usando consulta JPQL para mayor claridad.
-     *
-     * @return lista de productos que necesitan reabastecimiento
-     */
-    @Query("SELECT p FROM Product p WHERE p.currentStock <= p.minStock AND p.deleted = false")
-    List<Product> findLowStockProducts();
+       /**
+        * Busca un producto por ID solo si no está eliminado.
+        * Alternativa a findById que automáticamente excluye productos eliminados.
+        *
+        * @param id ID del producto
+        * @return Optional con el producto si existe y no está eliminado
+        */
+       Optional<Product> findByIdAndDeletedFalse(UUID id);
 
-    /**
-     * Busca productos por disponibilidad excluyendo eliminados.
-     *
-     * @param isAvailable estado de disponibilidad
-     * @return lista de productos con la disponibilidad especificada
-     */
-    List<Product> findByIsAvailableAndDeletedFalse(Boolean isAvailable);
+       /**
+        * Cuenta productos activos por categoría.
+        * Útil para estadísticas y reportes.
+        *
+        * @param categoryId ID de la categoría
+        * @return cantidad de productos activos en la categoría
+        */
+       long countByCategoryIdAndDeletedFalse(UUID categoryId);
 
-    /**
-     * Busca un producto por ID solo si no está eliminado.
-     * Alternativa a findById que automáticamente excluye productos eliminados.
-     *
-     * @param id ID del producto
-     * @return Optional con el producto si existe y no está eliminado
-     */
-    Optional<Product> findByIdAndDeletedFalse(Long id);
+       /**
+        * Verifica si existe un producto activo con el mismo nombre.
+        * El nombre del producto debe ser único en todo el sistema.
+        * Nota: Los nombres se almacenan en lowercase para consistencia.
+        *
+        * @param name nombre del producto (debe estar en lowercase)
+        * @return true si existe un producto activo con ese nombre
+        */
+       @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Product p " +
+                     "WHERE p.name = :name AND p.deleted = false")
+       boolean existsActiveProductByName(@Param("name") String name);
 
-    /**
-     * Cuenta productos activos por categoría.
-     * Útil para estadísticas y reportes.
-     *
-     * @param categoryId ID de la categoría
-     * @return cantidad de productos activos en la categoría
-     */
-    long countByCategoryIdAndDeletedFalse(Long categoryId);
-
-    /**
-     * Verifica si existe un producto activo con el mismo nombre.
-     * El nombre del producto debe ser único en todo el sistema.
-     * Nota: Los nombres se almacenan en lowercase para consistencia.
-     *
-     * @param name nombre del producto (debe estar en lowercase)
-     * @return true si existe un producto activo con ese nombre
-     */
-    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Product p " +
-           "WHERE p.name = :name AND p.deleted = false")
-    boolean existsActiveProductByName(@Param("name") String name);
-
-    /**
-     * Verifica si existe un producto activo con el mismo nombre, excluyendo un ID específico.
-     * Útil para validaciones en actualizaciones.
-     * Nota: Los nombres se almacenan en lowercase para consistencia.
-     *
-     * @param name nombre del producto (debe estar en lowercase)
-     * @param excludeId ID del producto a excluir de la búsqueda
-     * @return true si existe otro producto activo con ese nombre
-     */
-    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Product p " +
-           "WHERE p.name = :name AND p.deleted = false AND p.id != :excludeId")
-    boolean existsActiveProductByNameExcludingId(@Param("name") String name, @Param("excludeId") Long excludeId);
+       /**
+        * Verifica si existe un producto activo con el mismo nombre, excluyendo un ID
+        * específico.
+        * Útil para validaciones en actualizaciones.
+        * Nota: Los nombres se almacenan en lowercase para consistencia.
+        *
+        * @param name      nombre del producto (debe estar en lowercase)
+        * @param excludeId ID del producto a excluir de la búsqueda
+        * @return true si existe otro producto activo con ese nombre
+        */
+       @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Product p " +
+                     "WHERE p.name = :name AND p.deleted = false AND p.id != :excludeId")
+       boolean existsActiveProductByNameExcludingId(@Param("name") String name, @Param("excludeId") UUID excludeId);
 }
-

@@ -32,8 +32,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+            HttpServletResponse response,
+            FilterChain filterChain) throws ServletException, IOException {
 
         try {
             String token = extractToken(request.getHeader(HttpHeaders.AUTHORIZATION));
@@ -47,14 +47,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-
     private String extractToken(String authHeader) {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.substring(7);
         }
         return null;
     }
-
 
     private void authenticateToken(String token, HttpServletRequest request) {
         TokenPurpose purpose = jwtService.extractPurpose(token);
@@ -71,12 +69,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (jwtService.isTokenValid(token, userDetails)) {
                 if (userDetails instanceof CustomUserDetails customUser) {
-                    if (customUser.getUser().getAccount_status() != AccountStatus.ACTIVE) {
+                    if (customUser.getUser().getAccountStatus() != AccountStatus.ACTIVE) {
                         throw new UnauthorizedException("El usuario no se encuentra activo y no puede operar.");
                     }
                 }
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
+                        null, userDetails.getAuthorities());
 
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);

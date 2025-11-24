@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Entidad que representa una categoría de productos.
@@ -18,24 +19,24 @@ import java.util.List;
  */
 @Entity
 @Table(name = "product_categories", indexes = {
-    @Index(name = "idx_category_name", columnList = "name"),
-    @Index(name = "idx_category_active", columnList = "is_active")
+        @Index(name = "idx_category_name", columnList = "name"),
+        @Index(name = "idx_category_active", columnList = "is_active")
 })
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"products"})
-@EqualsAndHashCode(of = {"id"})
+@ToString(exclude = { "products" })
+@EqualsAndHashCode(of = { "id" })
 public class ProductCategory {
 
     /**
      * Identificador único de la categoría.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
     /**
      * Nombre de la categoría.
@@ -151,8 +152,7 @@ public class ProductCategory {
      */
     public long getActiveProductsCount() {
         return products.stream()
-            .filter(p -> !p.getDeleted())
-            .count();
+                .filter(p -> !p.getDeleted())
+                .count();
     }
 }
-

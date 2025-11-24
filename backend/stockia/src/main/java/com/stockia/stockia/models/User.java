@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name="users")
+@Table(name = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,39 +22,39 @@ public class User {
     @Column(unique = true)
     private String email;
 
-    @Column(nullable=false,  unique=true)
+    @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String password; // encriptado (BCrypt)
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable=false)
+    @Column(nullable = false)
     private Role role;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "account_status")
     @Enumerated(EnumType.STRING)
-    private AccountStatus account_status;
+    private AccountStatus accountStatus;
 
     @Column(nullable = false)
     private boolean deleted;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime created_at;
+    @Column(nullable = false, updatable = false, name = "created_at")
+    private LocalDateTime createdAt;
 
-    private LocalDateTime updated_at;
-
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
-        account_status = AccountStatus.ACTIVE;
+        accountStatus = AccountStatus.ACTIVE;
         deleted = false;
-        created_at = LocalDateTime.now();
-        updated_at = LocalDateTime.now();
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updated_at = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 }

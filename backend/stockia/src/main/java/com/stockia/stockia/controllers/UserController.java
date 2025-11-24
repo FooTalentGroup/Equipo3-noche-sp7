@@ -24,8 +24,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@Tag(name = "02 - Usuarios",
-        description = "Endpoints para la gestión de usuarios ")
+@Tag(name = "02 - Usuarios", description = "Endpoints para la gestión de usuarios ")
 public class UserController {
 
     private final UserService userService;
@@ -33,32 +32,33 @@ public class UserController {
     @GetAllUsersEndpointDoc
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<?> getAllWithSearch(@ParameterObject @Valid UserSearchRequestDto params, @ParameterObject Pageable pageable) {
+    public ResponseEntity<?> getAllWithSearch(@ParameterObject @Valid UserSearchRequestDto params,
+            @ParameterObject Pageable pageable) {
         Page<UserSearchResponseDto> response = userService.searchUsers(params, pageable);
         return ResponseEntity.ok()
-                .body(ApiResult.success(response,"Operación exitosa"));
+                .body(ApiResult.success(response, "Operación exitosa"));
     }
 
     @GetUserByIdEndpointDoc
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable UUID id){
+    public ResponseEntity<?> getById(@PathVariable UUID id) {
         UserSearchResponseDto response = userService.findById(id);
-        return ResponseEntity.ok().body(ApiResult.success(response,"Usuario encontrado"));
+        return ResponseEntity.ok().body(ApiResult.success(response, "Usuario encontrado"));
     }
 
     @UpdateUserEndpointDoc
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateById(@PathVariable UUID id, @RequestBody @Valid UserUpdateRequestDto request){
+    public ResponseEntity<?> updateById(@PathVariable UUID id, @RequestBody @Valid UserUpdateRequestDto request) {
         UserSearchResponseDto response = userService.updateById(id, request);
-        return ResponseEntity.ok().body(ApiResult.success(response,"Actualizacion exitosa"));
+        return ResponseEntity.ok().body(ApiResult.success(response, "Actualizacion exitosa"));
     }
 
     @DeleteUserEndpointDoc
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteById(@PathVariable UUID id){
+    public ResponseEntity<?> deleteById(@PathVariable UUID id) {
         userService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

@@ -9,7 +9,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * Seeder de datos iniciales para la aplicación.
- * Se ejecuta automáticamente al iniciar la aplicación y crea las categorías base.
+ * Se ejecuta automáticamente al iniciar la aplicación y crea las categorías
+ * base.
  *
  * @author StockIA Team
  * @version 1.0

@@ -5,11 +5,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import com.stockia.stockia.documentation.common.SecurityResponses;
 
 /**
  * Documentación del endpoint DELETE /api/categories/{id}/permanent - Eliminar permanentemente.
@@ -22,7 +23,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(
     summary = "Eliminar categoría permanentemente",
-    description = "Elimina físicamente la categoría de la base de datos. Esta acción es irreversible."
+    description = "Elimina físicamente la categoría de la base de datos. Esta acción es irreversible. " +
+                  "<strong>Solo accesible para usuarios con rol ADMIN.</strong>",
+    security = @SecurityRequirement(name = "bearer-key")
 )
 @ApiResponses(value = {
     @ApiResponse(
@@ -58,5 +61,6 @@ import java.lang.annotation.Target;
         )
     )
 })
+@SecurityResponses.RequiresAdmin
 public @interface PermanentDeleteCategoryDoc {}
 

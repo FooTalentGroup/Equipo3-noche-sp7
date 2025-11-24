@@ -1,5 +1,7 @@
 package com.stockia.stockia.dtos.category;
 
+import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +23,7 @@ public class CategoryResponseDto {
     /**
      * ID único de la categoría.
      */
-    private Long id;
+    private UUID id;
 
     /**
      * Nombre de la categoría.
@@ -43,4 +45,3 @@ public class CategoryResponseDto {
      */
     private Integer productCount;
 }
-
