@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.lang.annotation.*;
 
@@ -14,7 +15,9 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Operation(summary = "Obtener clientes frecuentes", description = "Retorna la lista de clientes marcados como frecuentes (isFrequent = true).")
+@Operation(summary = "Obtener clientes frecuentes",
+        description = "Retorna la lista de clientes marcados como frecuentes (isFrequent = true).",
+        security = @SecurityRequirement(name = "bearer-key"))
 @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Lista de clientes frecuentes obtenida exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(example = """
                     [

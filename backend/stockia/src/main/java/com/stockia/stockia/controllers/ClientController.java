@@ -31,6 +31,7 @@ public class ClientController {
     private final ClientService clientService;
 
     @RegisterClientEndpointDoc
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<ApiResult<?>> registrarClient(@Valid @RequestBody ClientRequestDto clientDto) {
         Client newClient = Client.builder()
@@ -54,6 +55,7 @@ public class ClientController {
     }
 
     @GetClientByIdEndpointDoc
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResult<?>> getClientById(@PathVariable UUID id) {
         Client client = clientService.getClientById(id)
@@ -62,6 +64,7 @@ public class ClientController {
     }
 
     @GetFrequentClientsEndpointDoc
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/frecuentes")
     public ResponseEntity<ApiResult<?>> getAllFrequentClients() {
         List<Client> clientesFrecuentes = clientService.getAllFrequentClients();
@@ -69,6 +72,7 @@ public class ClientController {
     }
 
     @FindClientByEmailEndpointDoc
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/buscar")
     public ResponseEntity<ApiResult<?>> findByEmail(@RequestParam String email) {
         Client client = clientService.findByEmail(email)
@@ -77,6 +81,7 @@ public class ClientController {
     }
 
     @FindClientByPhoneEndpointDoc
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/buscar/telefono")
     public ResponseEntity<ApiResult<?>> findByPhone(@RequestParam String telefono) {
         Client client = clientService.findByPhone(telefono)

@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.lang.annotation.*;
 
@@ -14,7 +15,9 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Operation(summary = "Obtener todos los clientes", description = "Retorna la lista completa de todos los clientes registrados en el sistema.")
+@Operation(summary = "Obtener todos los clientes",
+        description = "Retorna la lista completa de todos los clientes registrados en el sistema.",
+        security = @SecurityRequirement(name = "bearer-key"))
 @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Lista de clientes obtenida exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(example = """
                     [

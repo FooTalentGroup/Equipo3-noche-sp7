@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.lang.annotation.*;
 
@@ -15,7 +16,9 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Operation(summary = "Registrar nuevo cliente", description = "Registra un nuevo cliente en el sistema. El email y teléfono deben ser únicos.")
+@Operation(summary = "Registrar nuevo cliente",
+        description = "Registra un nuevo cliente en el sistema. El email y teléfono deben ser únicos.",
+        security = @SecurityRequirement(name = "bearer-key"))
 @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Cliente creado exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(example = """
                     {

@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.lang.annotation.*;
 
@@ -15,7 +16,10 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Operation(summary = "Buscar cliente por email", description = "Busca y retorna un cliente mediante su dirección de correo electrónico.", parameters = @Parameter(name = "email", description = "Email del cliente", required = true))
+@Operation(summary = "Buscar cliente por email",
+        description = "Busca y retorna un cliente mediante su dirección de correo electrónico.",
+        parameters = @Parameter(name = "email", description = "Email del cliente", required = true),
+        security = @SecurityRequirement(name = "bearer-key"))
 @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Cliente encontrado", content = @Content(mediaType = "application/json", schema = @Schema(example = """
                     {

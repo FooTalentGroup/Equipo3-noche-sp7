@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -21,9 +22,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(
-    summary = "Listar todas las categorías",
-    description = "Obtiene la lista completa de categorías (activas e inactivas)"
-)
+        summary = "Listar todas las categorías",
+        description = "Obtiene la lista completa de categorías (activas e inactivas)",
+        security = @SecurityRequirement(name = "bearer-key"))
 @ApiResponses(value = {
     @ApiResponse(
         responseCode = "200",
