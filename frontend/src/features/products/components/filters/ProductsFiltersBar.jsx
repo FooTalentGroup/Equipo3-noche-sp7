@@ -1,4 +1,4 @@
-import {FileUp, Filter, Funnel, Plus, Printer, Search} from 'lucide-react';
+import { FileUp, Filter, Funnel, Plus, Printer, Search } from 'lucide-react';
 import React from 'react';
 import {Button} from "@/shared/components/ui/button.jsx";
 import { useNavigate } from 'react-router';
@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router';
 export function ProductsFiltersBar({ searchQuery, onSearchChange, onToggleFilters }) {
     const navigate = useNavigate();
     return (
-        <div className="flex gap-3 items-center mb-4">
+        <div className="flex gap-3 items-center mb-4 max-w-[1066px] h-10">
             <div className="relative flex-1 max-w-2xl">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input

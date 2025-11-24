@@ -1,15 +1,5 @@
 import { useState } from 'react';
 
-/**
- * Manages search, filters and popup state for products list.
- * filters shape:
- *  {
- *    category: string | 'all',
- *    minPrice: number | '',
- *    maxPrice: number | '',
- *    inStock: boolean
- *  }
- */
 export function useProductsFilter(initial = {}) {
   const [searchQuery, setSearchQuery] = useState(initial.searchQuery || '');
   const [filters, setFilters] = useState({

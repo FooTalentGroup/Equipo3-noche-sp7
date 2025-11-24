@@ -1,5 +1,4 @@
-// ProductsTable.jsx
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Edit, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button.jsx';
 import Badge from "@/features/products/components/Badge.jsx";
@@ -34,17 +33,15 @@ export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc
         if (actual === 0) {
             return <Badge variant="destructive">Sin stock</Badge>;
         }
-        if (actual <= 10) { // ← Tus reglas: 1 a 10 = Bajo stock
+        if (actual <= 10) {
             return <Badge variant="warning">Bajo stock</Badge>;
         }
-        return <Badge variant="success">Alto stock</Badge>; // > 10 = Alto stock
+        return <Badge variant="success">Alto stock</Badge>;
     };
 
-    // Filtrado y ordenamiento (tu lógica original, solo simplificada un poco)
     const filteredProducts = useMemo(() => {
         let result = [...products];
 
-        // Búsqueda
         if (searchQuery) {
             const term = searchQuery.toLowerCase();
             result = result.filter(p =>
@@ -53,7 +50,6 @@ export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc
             );
         }
 
-        // Filtros de categoría y stock (los que ya tenías)
         if (filters.category && filters.category !== 'all') {
             const catNorm = normalize(filters.category);
             result = result.filter(p => normalize(p.category) === catNorm);
@@ -62,7 +58,6 @@ export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc
         if (filters.stockStatus === 'in') result = result.filter(p => p.stock_actual > 0);
         if (filters.stockStatus === 'out') result = result.filter(p => p.stock_actual === 0);
 
-        // Ordenamiento
         switch (sort) {
             case 'name_asc': result.sort((a, b) => a.name.localeCompare(b.name)); break;
             case 'name_desc': result.sort((a, b) => b.name.localeCompare(a.name)); break;
@@ -73,29 +68,40 @@ export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc
         return result;
     }, [products, searchQuery, filters, sort]);
 
-    // Paginación
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, filters, sort]);
+
     const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+    useEffect(() => {
+        if (totalPages === 0) {
+            setCurrentPage(1);
+        } else if (currentPage > totalPages) {
+            setCurrentPage(1);
+        }
+    }, [totalPages, currentPage]);
+
     const paginated = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
     return (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1086px] max-h-[673px]">
             <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
-                    <thead className="text-xs uppercase bg-slate-200 text-gray-600">
-                    <tr>
-                        <th className="px-6 py-3">Estado</th>
-                        <th className="px-6 py-3">Producto</th>
-                        <th className="px-6 py-3">Categoría</th>
-                        <th className="px-6 py-3">Precio</th>
-                        <th className="px-6 py-3">Descuento</th>
-                        <th className="px-6 py-3 text-center">Acciones</th>
-                    </tr>
+                    <thead className="text-[14px] bg-slate-200 text-[#404040] font-semibold">
+                        <tr>
+                            <th className="px-6 py-3">Estado</th>
+                            <th className="px-6 py-3">Producto</th>
+                            <th className="px-6 py-3">Categoría</th>
+                            <th className="px-6 py-3">Precio</th>
+                            <th className="px-6 py-3">Descuento</th>
+                            <th className="px-6 py-3 text-center">Acciones</th>
+                        </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                     {paginated.map(product => (
                         <tr key={product.id} className="hover:bg-gray-50 transition-colors">
                             <td className="px-6 py-4">
-                                <div className="w-28"> {/* Ancho fijo para que todos queden alineados */}
+                                <div className="w-28">
                                     {getStockBadge(product.stock_actual, product.min_stock)}
                                 </div>
                             </td>
@@ -125,7 +131,6 @@ export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc
                 </table>
             </div>
 
-            {/* Paginación */}
             <div className="flex items-center justify-center px-6 py-3 bg-gray-50 border-t">
                 <div className="flex items-center gap-2">
                     <button
@@ -150,7 +155,7 @@ export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc
 
                     <button
                         onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                        disabled={currentPage === totalPages}
+                        disabled={currentPage === totalPages || totalPages === 0}
                         className="border-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 rounded-md disabled:opacity-50 flex items-center gap-1"
                     >
                         Next <ChevronRight className="w-4 h-4" />
