@@ -10,6 +10,7 @@ import SalesPage from '@/features/sales/pages/SalesPage';
 import DiscountsPage from '@/features/discounts/pages/DiscountPage.jsx';
 import PredictionsPage from '@/features/predictions/pages/PredictionsPage.jsx';
 import ReportsPage from '@/features/repor/pages/ReportsPage.jsx';
+import { productsRoutes } from '@/features/products/routes/products.routes';
 
 const router = createBrowserRouter([
     {
@@ -17,7 +18,7 @@ const router = createBrowserRouter([
         element: <App />,
         children: [
             { index: true, element: <HomePage /> },
-            { path: 'products', element: <ProductsPage /> },
+            ...productsRoutes,
             { path: 'customers', element: <CustomersPage /> },
             { path: 'suppliers', element: <SuppliersPage /> },
             { path: 'sales', element: <SalesPage /> },

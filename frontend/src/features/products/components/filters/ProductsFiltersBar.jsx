@@ -1,10 +1,10 @@
 import { FileUp, Filter, Funnel, Plus, Printer, Search } from 'lucide-react';
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from "@/shared/components/ui/button.jsx";
-import { CreateProductComponent } from '@/features/products/components/CreateProductComponent.jsx';
+import { useNavigate } from 'react-router';
 
 export function ProductsFiltersBar({ searchQuery, onSearchChange, onToggleFilters }) {
-    const [isCreateOpen, setIsCreateOpen] = useState(false);
+    const navigate = useNavigate();
     return (
         <>
             <div className="flex gap-3 items-center mb-4 max-w-[1066px] h-10">
@@ -41,28 +41,12 @@ export function ProductsFiltersBar({ searchQuery, onSearchChange, onToggleFilter
                 </Button>
                 <Button
                     className='bg-[#436086] text-white cursor-pointer'
-                    onClick={() => setIsCreateOpen(true)}
+                    onClick={() => navigate('/products/create')}
                 >
                     <Plus className='h-4 w-4 mr-1' />
                     Registrar
                 </Button>
             </div>
-
-            {isCreateOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center">
-                    <div className="absolute inset-0 bg-black/40" onClick={() => setIsCreateOpen(false)} />
-                    <div className="relative bg-white rounded shadow-lg w-[720px] max-h-[90vh] overflow-auto p-6 z-10">
-                        <button
-                            aria-label="Cerrar"
-                            onClick={() => setIsCreateOpen(false)}
-                            className="absolute right-3 top-3 text-gray-600 hover:text-gray-900"
-                        >
-                            ×
-                        </button>
-                        <CreateProductComponent onClose={() => setIsCreateOpen(false)} />
-                    </div>
-                </div>
-            )}
         </>
     );
 }
