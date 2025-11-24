@@ -1,12 +1,20 @@
-import { useState } from 'react';
-import { Button } from '@/shared/components/ui/button';
-import { Plus } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router';
 import { useProductsFilter } from '@/features/products/hooks/useProductsFilter';
 import { ProductsFiltersBar } from '@/features/products/components/filters/ProductsFiltersBar.jsx';
 import { ProductsFiltersPopup } from '../components/filters/ProductFiltersPopup';
 import { ProductsTable } from "@/features/products/components/ProductsTable.jsx";
+import {
+  Dialog,
+  DialogContent,
+} from "@/shared/components/ui/dialog";
+import { CreateProductComponent } from "../components/CreateProductComponent";
+import { Description, DialogTitle } from '@radix-ui/react-dialog';
 
 export default function ProductsListPage() {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const isCreateModalOpen = location.pathname === '/products/create';
+    
     const {
         searchQuery,
         setSearchQuery,
@@ -20,6 +28,12 @@ export default function ProductsListPage() {
         applyFilters,
         clearFilters,
     } = useProductsFilter();
+
+    const handleCreateModalChange = (open) => {
+        if (!open) {
+            navigate("/products");
+        }
+    };
 
     return (
         <div className="p-6 w-full">
@@ -49,6 +63,16 @@ export default function ProductsListPage() {
                     clearFilters();
                 }}
             />
+
+            <Dialog open={isCreateModalOpen} onOpenChange={handleCreateModalChange}>
+                <DialogTitle className="sr-only">Registrar Producto</DialogTitle>
+                <Description className="sr-only">Formulario para registrar un nuevo producto</Description>
+                <DialogContent className="max-h-[90vh] overflow-y-auto p-0 gap-0 max-w-3xl">
+                    <div className="overflow-y-auto">
+                        <CreateProductComponent />
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

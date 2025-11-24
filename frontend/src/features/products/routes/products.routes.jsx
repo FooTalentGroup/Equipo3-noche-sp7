@@ -15,6 +15,10 @@ export const productsRoutes = [
         index: true,
         element: <ProductsListPage />,
       },
+      {
+        path: 'create',
+        element: <ProductsListPage />,
+      }
     ],
   },
 ];
