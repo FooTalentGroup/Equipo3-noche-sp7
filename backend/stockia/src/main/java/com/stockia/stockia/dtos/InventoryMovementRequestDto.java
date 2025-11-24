@@ -1,23 +1,24 @@
 package com.stockia.stockia.dtos;
 
+import com.stockia.stockia.enums.MovementType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/*
- * Ests DTO recibe los datos desde frontend
- * No incluye createdAt porque se genera automaticamente
+import java.math.BigDecimal;
+import java.util.UUID;
+
+/**
+ * DTO para registrar un movimiento de inventario.
+ * Recibe los datos desde el frontend.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class InventoryMovementRequestDto {
-    private Long id;
-    private Long userId;
-    private String movementType;
-    private int quantity;
+    private UUID productId;
+    private MovementType movementType;
+    private Integer quantity;
     private String reason;
-
-
-    
+    private BigDecimal purchaseCost; // Solo para movimientos de tipo IN
 }
