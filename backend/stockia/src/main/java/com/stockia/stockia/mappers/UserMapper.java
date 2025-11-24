@@ -10,7 +10,7 @@ import com.stockia.stockia.models.User;
 import org.mapstruct.*;
 import org.springframework.data.domain.Page;
 
-@Mapper(componentModel = "spring", imports = {Role.class})
+@Mapper(componentModel = "spring", imports = { Role.class })
 public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
@@ -18,37 +18,37 @@ public interface UserMapper {
     @Mapping(target = "email", source = "requestDto.email")
     @Mapping(target = "name", source = "requestDto.name")
     @Mapping(target = "role", source = "requestDto.role")
-    @Mapping(target = "account_status", ignore = true)
+    @Mapping(target = "accountStatus", ignore = true)
     @Mapping(target = "deleted", ignore = true)
-    @Mapping(target = "created_at", ignore = true)
-    @Mapping(target = "updated_at", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     User toUser(RegisterRequestDto requestDto, String encodedPassword);
 
     @Mapping(target = "id", source = "user.id")
     @Mapping(target = "email", source = "user.email")
     @Mapping(target = "name", source = "user.name")
     @Mapping(target = "role", source = "user.role")
-    @Mapping(target = "accountStatus", source = "user.account_status")
+    @Mapping(target = "accountStatus", source = "user.accountStatus")
     JwtDataDto toJwtDataDto(User user);
 
     @Mapping(target = "id", source = "user.id")
     @Mapping(target = "email", source = "user.email")
     @Mapping(target = "name", source = "user.name")
-    @Mapping(target = "accountStatus", source = "user.account_status")
+    @Mapping(target = "accountStatus", source = "user.accountStatus")
     @Mapping(target = "role", source = "user.role")
     @Mapping(target = "deleted", source = "user.deleted")
-    @Mapping(target = "createdAt", source = "user.created_at")
-    @Mapping(target = "updatedAt", source = "user.updated_at")
+    @Mapping(target = "createdAt", source = "user.createdAt")
+    @Mapping(target = "updatedAt", source = "user.updatedAt")
     RegisterResponseDto toDto(User user);
 
     @Mapping(target = "id", source = "user.id")
     @Mapping(target = "email", source = "user.email")
     @Mapping(target = "name", source = "user.name")
-    @Mapping(target = "accountStatus", source = "user.account_status")
+    @Mapping(target = "accountStatus", source = "user.accountStatus")
     @Mapping(target = "role", source = "user.role")
     @Mapping(target = "deleted", source = "user.deleted")
-    @Mapping(target = "createdAt", source = "user.created_at")
-    @Mapping(target = "updatedAt", source = "user.updated_at")
+    @Mapping(target = "createdAt", source = "user.createdAt")
+    @Mapping(target = "updatedAt", source = "user.updatedAt")
     UserSearchResponseDto toUserSearchResponseDto(User user);
 
     default Page<UserSearchResponseDto> toUserSearchResponseDto(Page<User> users) {
@@ -61,9 +61,9 @@ public interface UserMapper {
     @Mapping(target = "name", source = "dto.name")
     @Mapping(target = "role", source = "dto.role")
     @Mapping(target = "password", ignore = true)
-    @Mapping(target = "account_status", source = "dto.accountStatus")
+    @Mapping(target = "accountStatus", source = "dto.accountStatus")
     @Mapping(target = "deleted", ignore = true)
-    @Mapping(target = "created_at", ignore = true)
-    @Mapping(target = "updated_at", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     void updateUserFromDto(UserUpdateRequestDto dto, @MappingTarget User user);
 }

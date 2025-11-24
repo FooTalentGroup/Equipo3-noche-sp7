@@ -6,17 +6,19 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Repositorio JPA para la entidad ProductCategory.
- * Proporciona métodos para acceder y manipular categorías de productos en la base de datos.
+ * Proporciona métodos para acceder y manipular categorías de productos en la
+ * base de datos.
  *
  * @author StockIA Team
  * @version 1.0
  * @since 2025-11-20
  */
 @Repository
-public interface ProductCategoryRepository extends JpaRepository<ProductCategory, Long> {
+public interface ProductCategoryRepository extends JpaRepository<ProductCategory, UUID> {
 
     /**
      * Busca todas las categorías activas.
@@ -67,4 +69,3 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
      */
     List<ProductCategory> findByDeletedFalse();
 }
-

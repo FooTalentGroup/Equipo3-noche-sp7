@@ -15,27 +15,26 @@ import java.util.UUID;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
-    Optional<User> findByEmail(String email);
+        Optional<User> findByEmail(String email);
 
-    boolean existsByEmail(String email);
+        boolean existsByEmail(String email);
 
-    boolean existsByRole(Role role);
+        boolean existsByRole(Role role);
 
-    @Query("""
-    SELECT u FROM User u
-    WHERE
-        (:email IS NULL OR :email = '' OR LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%'))) AND
-        (:name IS NULL OR :name = '' OR LOWER(u.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND
-        (:role IS NULL OR u.role = :role) AND
-        (:accountStatus IS NULL OR u.account_status = :accountStatus)
-""")
-    Page<User> searchUsers(
-            @Param("email") String email,
-            @Param("name") String name,
-            @Param("role") Role role,
-            @Param("accountStatus") AccountStatus accountStatus,
-            Pageable pageable
-    );
+        @Query("""
+                            SELECT u FROM User u
+                            WHERE
+                                (:email IS NULL OR :email = '' OR LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%'))) AND
+                                (:name IS NULL OR :name = '' OR LOWER(u.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND
+                                (:role IS NULL OR u.role = :role) AND
+                                (:accountStatus IS NULL OR u.accountStatus = :accountStatus)
+                        """)
+        Page<User> searchUsers(
+                        @Param("email") String email,
+                        @Param("name") String name,
+                        @Param("role") Role role,
+                        @Param("accountStatus") AccountStatus accountStatus,
+                        Pageable pageable);
 
-    boolean existsById( UUID responsibleId);
+        boolean existsById(UUID responsibleId);
 }

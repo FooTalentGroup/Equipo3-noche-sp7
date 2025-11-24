@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -23,7 +24,7 @@ public class ProductRequestDto {
 
     @NotNull(message = "La categoría es obligatoria")
     @Schema(description = "ID de la categoría del producto", example = "1")
-    private Long categoryId;
+    private UUID categoryId;
 
     @NotNull(message = "El precio es obligatorio")
     @DecimalMin(value = "0.0", message = "El precio debe ser mayor o igual a 0")
@@ -38,4 +39,3 @@ public class ProductRequestDto {
     @Schema(description = "Stock mínimo para alertas (opcional, por defecto 5)", example = "5")
     private Integer minStock;
 }
-

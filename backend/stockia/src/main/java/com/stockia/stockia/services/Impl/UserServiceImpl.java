@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserSearchResponseDto updateById(UUID id, @Valid UserUpdateRequestDto request) {
         User user = userRepository.findById(id)
-                .orElseThrow(()-> new UserNotFoundException("Usuario no encontrado"));
+                .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
 
         if (request.email() != null && !request.email().equals(user.getEmail())) {
             if (userRepository.existsByEmail(request.email())) {
@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        userMapper.updateUserFromDto(request,user);
+        userMapper.updateUserFromDto(request, user);
 
         return userMapper.toUserSearchResponseDto(userRepository.save(user));
     }
@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
         user.setDeleted(true);
-        user.setAccount_status(AccountStatus.INACTIVE);
+        user.setAccountStatus(AccountStatus.INACTIVE);
 
         userRepository.save(user);
     }
