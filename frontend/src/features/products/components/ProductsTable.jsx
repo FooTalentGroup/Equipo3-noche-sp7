@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { Edit, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button.jsx';
 import Badge from "@/features/products/components/Badge.jsx";
-
+import { useProducts } from '../context/ProductsContext';
 // =============== HELPERS (NO BORRAR) ===============
 const parsePrice = (val) => {
     if (val == null) return 0;
@@ -17,58 +17,16 @@ const normalize = (s) => String(s || '')
     .replace(/\p{Diacritic}/gu, '')
     .toLowerCase();
 
-const productNames = [
-    'Jugo de Naranja Natural', 'Leche Descremada', 'Pan de Molde Integral', 'Manzanas Rojas',
-    'Yogurt Natural', 'Cereal Corn Flakes', 'Agua Mineral Sin Gas', 'Galletitas de Agua',
-    'Queso Cremoso', 'Mermelada de Durazno', 'Aceite de Oliva', 'Arroz Largo Fino',
-    'Fideos Spaghetti', 'Café Torrado', 'Gaseosa Cola 1.5L', 'Detergente Líquido',
-    'Shampoo Reparador', 'Jabón en Barra', 'Papel Higiénico Doble Hoja', 'Galletas Chocolate'
-];
-
-const categories = ['Bebidas', 'Lácteos', 'Panadería', 'Frutas y Verduras', 'Desayuno', 'Almacén', 'Limpieza', 'Cuidado Personal'];
-const suppliers = ['Distribuidora del Norte', 'Alimentos Sur SRL', 'Proveeduría Central', 'Importadora Este', 'Mayorista Oeste', 'Cooperativa Láctea'];
-
-const randomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
-const randomInRange = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-
-const generateRandomProducts = () => {
-    return Array.from({ length: 50 }, (_, i) => {
-        const costo = randomInRange(800, 12000);
-        const markup = randomInRange(70, 180);
-        const precioSinDescuento = Math.round(costo * (1 + markup / 100));
-
-        const hasDiscount = Math.random() > 0.55;
-        const descuento = hasDiscount ? Math.floor(randomInRange(5, 20)) : 0;
-
-        const precioFinal = descuento > 0
-            ? Math.floor(precioSinDescuento * (1 - descuento / 100))
-            : precioSinDescuento;
-
-        const stockActual = randomInRange(0, 150);
-        const stockMinimo = randomInRange(5, 30);
-
-        return {
-            id: i + 1,
-            producto: randomItem(productNames),
-            categoria: randomItem(categories),
-            costo: `$${costo.toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`,
-            precio: `$${precioFinal.toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`,
-            descuento: descuento,
-            stock_actual: stockActual,
-            stock_minimo: stockMinimo,
-            proveedor: randomItem(suppliers),
-        };
-    });
-};
 // ====================================================
 
 export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc' }) => {
-    const [products, setProducts] = useState(generateRandomProducts());
+    // const [products, setProducts] = useState(generateRandomProducts());
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
+    const {products, deleteProduct} = useProducts()
 
     const handleDelete = (id) => {
-        setProducts(prev => prev.filter(p => p.id !== id));
+        deleteProduct(id);
     };
 
     const getStockBadge = (actual, minimo) => {
@@ -87,25 +45,24 @@ export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc
         if (searchQuery) {
             const term = searchQuery.toLowerCase();
             result = result.filter(p =>
-                p.producto.toLowerCase().includes(term) ||
-                p.categoria.toLowerCase().includes(term) ||
-                p.proveedor.toLowerCase().includes(term)
+                p.name.toLowerCase().includes(term) ||
+                p.category.toLowerCase().includes(term) 
             );
         }
 
         if (filters.category && filters.category !== 'all') {
             const catNorm = normalize(filters.category);
-            result = result.filter(p => normalize(p.categoria) === catNorm);
+            result = result.filter(p => normalize(p.category) === catNorm);
         }
 
         if (filters.stockStatus === 'in') result = result.filter(p => p.stock_actual > 0);
         if (filters.stockStatus === 'out') result = result.filter(p => p.stock_actual === 0);
 
         switch (sort) {
-            case 'name_asc': result.sort((a, b) => a.producto.localeCompare(b.producto)); break;
-            case 'name_desc': result.sort((a, b) => b.producto.localeCompare(a.producto)); break;
-            case 'price_asc': result.sort((a, b) => parsePrice(a.precio) - parsePrice(b.precio)); break;
-            case 'price_desc': result.sort((a, b) => parsePrice(b.precio) - parsePrice(a.precio)); break;
+            case 'name_asc': result.sort((a, b) => a.name.localeCompare(b.name)); break;
+            case 'name_desc': result.sort((a, b) => b.name.localeCompare(a.name)); break;
+            case 'price_asc': result.sort((a, b) => parsePrice(a.price) - parsePrice(b.price)); break;
+            case 'price_desc': result.sort((a, b) => parsePrice(b.price) - parsePrice(a.price)); break;
         }
 
         return result;
@@ -141,43 +98,35 @@ export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                        {paginated.map(product => (
-                            <tr key={product.id} className="hover:bg-gray-50 transition-colors">
-                                <td className="px-6 py-4">
-                                    <div className="w-28">
-                                        {getStockBadge(product.stock_actual, product.stock_minimo)}
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4 font-normal text-[14px] text-[#171717]">{product.producto}</td>
-                                <td className="px-6 py-4 font-normal text-[14px] text-[#525252]">{product.categoria}</td>
-                                <td className="px-6 py-4 font-normal text-[14px] text-[#171717]">{product.precio}</td>
-                                <td className="px-6 py-4">
-                                    {product.descuento > 0 ? (
-                                        <span className="font-normal text-[14px] text-[#525252]">{product.descuento}%</span>
-                                    ) : (
-                                        <span className="font-normal text-[14px] text-[#525252]">0%</span>
-                                    )}
-                                </td>
-                                <td className="px-6 py-4">
-                                    <div className="flex items-center justify-center gap-4">
-                                        <button className="text-gray-500 hover:text-blue-600 cursor-pointer transition">
-                                            <Edit className="w-4 h-4" />
-                                        </button>
-                                        <button onClick={() => handleDelete(product.id)} className="text-red-600 cursor-pointer transition">
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-
-                        {paginated.length === 0 && (
-                            <tr>
-                                <td colSpan={6} className="px-4 py-6 text-center text-gray-500 text-sm">
-                                    No hay productos para mostrar.
-                                </td>
-                            </tr>
-                        )}
+                    {paginated.map(product => (
+                        <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+                            <td className="px-6 py-4">
+                                <div className="w-28">
+                                    {getStockBadge(product.stock_actual, product.min_stock)}
+                                </div>
+                            </td>
+                            <td className="px-6 py-4 font-medium text-gray-900">{product.name}</td>
+                            <td className="px-6 py-4 text-gray-600">{product.category}</td>
+                            <td className="px-6 py-4 font-semibold text-gray-900">{product.price}</td>
+                            <td className="px-6 py-4">
+                                {product.descuento > 0 ? (
+                                    <span className="text-green-600 font-medium">{product.descuento}%</span>
+                                ) : (
+                                    <span className="text-gray-400">0%</span>
+                                )}
+                            </td>
+                            <td className="px-6 py-4">
+                                <div className="flex items-center justify-center gap-4">
+                                    <button className="text-gray-500 hover:text-blue-600 cursor-pointer transition">
+                                        <Edit className="w-4 h-4" />
+                                    </button>
+                                    <button onClick={() => handleDelete(product.id)} className="text-red-600 cursor-pointer transition">
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    ))}
                     </tbody>
                 </table>
             </div>
