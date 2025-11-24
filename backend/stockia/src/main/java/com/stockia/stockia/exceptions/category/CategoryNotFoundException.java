@@ -1,5 +1,7 @@
 package com.stockia.stockia.exceptions.category;
 
+import java.util.UUID;
+
 /**
  * Excepción lanzada cuando no se encuentra una categoría solicitada.
  * Se utiliza principalmente al validar la existencia de una categoría
@@ -24,7 +26,7 @@ public class CategoryNotFoundException extends RuntimeException {
      * Constructor con mensaje y causa.
      *
      * @param message mensaje de error descriptivo
-     * @param cause causa original de la excepción
+     * @param cause   causa original de la excepción
      */
     public CategoryNotFoundException(String message, Throwable cause) {
         super(message, cause);
@@ -36,7 +38,7 @@ public class CategoryNotFoundException extends RuntimeException {
      *
      * @param id ID de la categoría no encontrada
      */
-    public CategoryNotFoundException(Long id) {
+    public CategoryNotFoundException(UUID id) {
         super("Categoría no encontrada con ID: " + id);
     }
 
@@ -47,4 +49,3 @@ public class CategoryNotFoundException extends RuntimeException {
         super("Categoría no encontrada");
     }
 }
-

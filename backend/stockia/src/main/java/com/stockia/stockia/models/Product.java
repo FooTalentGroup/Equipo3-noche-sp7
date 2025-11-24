@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Entidad que representa un producto en el sistema de inventario.
@@ -21,18 +22,18 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "products", indexes = {
-    @Index(name = "idx_product_name", columnList = "name"),
-    @Index(name = "idx_product_category", columnList = "category_id"),
-    @Index(name = "idx_product_deleted", columnList = "deleted"),
-    @Index(name = "idx_product_name_category", columnList = "name, category_id")
+        @Index(name = "idx_product_name", columnList = "name"),
+        @Index(name = "idx_product_category", columnList = "category_id"),
+        @Index(name = "idx_product_deleted", columnList = "deleted"),
+        @Index(name = "idx_product_name_category", columnList = "name, category_id")
 })
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"category"})
-@EqualsAndHashCode(of = {"id"})
+@ToString(exclude = { "category" })
+@EqualsAndHashCode(of = { "id" })
 @EntityListeners(AuditingEntityListener.class)
 public class Product {
 
@@ -40,8 +41,8 @@ public class Product {
      * Identificador único del producto.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
     /**
      * Nombre del producto.
@@ -104,7 +105,6 @@ public class Product {
     @Builder.Default
     private Boolean isAvailable = true;
 
-
     /**
      * Fecha y hora de creación del registro.
      * Se establece automáticamente al crear el producto.
@@ -138,6 +138,7 @@ public class Product {
 
     /**
      * Método de utilidad para verificar si el producto tiene stock bajo.
+     * 
      * @return true si el stock actual es menor que el stock mínimo
      */
     public boolean hasLowStock() {
@@ -162,4 +163,3 @@ public class Product {
         this.deletedAt = null;
     }
 }
-

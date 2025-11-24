@@ -1,25 +1,30 @@
 package com.stockia.stockia.models;
 
+import java.util.UUID;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TokenBlacklist {
+@Table(name = "clients")
+public class Client {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String token;
+    private String name;
 
-    @Column(updatable = false, nullable = false)
-    private LocalDateTime expirationDate;
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    @Column(unique = true, nullable = false)
+    private String phone;
+
+    private Boolean isFrequent;
 }

@@ -26,21 +26,50 @@ public class CustomUserDetails implements UserDetails {
         this.role = user.getRole();
     }
 
-    public UUID getId() { return id; }
-    public Role getRole(){return role;}
-    public User getUser() {return user;}
+    public UUID getId() {
+        return id;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public User getUser() {
+        return user;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
+    @Override
+    public String getUsername() {
+        return username;
+    }
 
-    @Override public String getUsername() { return username; }
-    @Override public String getPassword() { return password; }
-    @Override public boolean isAccountNonExpired() { return true; }
-    @Override public boolean isAccountNonLocked() {
-        return user.getAccount_status() != AccountStatus.SUSPENDED && user.getAccount_status() != AccountStatus.BLOCKED; }
-    @Override public boolean isCredentialsNonExpired() { return true; }
-    @Override public boolean isEnabled() {  return user.getAccount_status() == AccountStatus.ACTIVE; }
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return user.getAccountStatus() != AccountStatus.SUSPENDED && user.getAccountStatus() != AccountStatus.BLOCKED;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return user.getAccountStatus() == AccountStatus.ACTIVE;
+    }
 }
