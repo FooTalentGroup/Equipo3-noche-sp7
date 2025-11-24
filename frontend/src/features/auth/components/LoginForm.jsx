@@ -26,13 +26,13 @@ export function LoginForm() {
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/dashboard";
+  const from = location.state?.from?.pathname || "/";
 
   const login = useLogin({
     onSuccess: (data) => {
@@ -88,7 +88,7 @@ export function LoginForm() {
 
           <FormField
             control={form.control}
-            name="username"
+            name="email"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-sm font-normal font-roboto text-gray-700">
