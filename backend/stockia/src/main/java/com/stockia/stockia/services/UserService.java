@@ -1,21 +1,16 @@
 package com.stockia.stockia.services;
 
-import org.springframework.stereotype.Service;
+import com.stockia.stockia.dtos.user.UserSearchRequestDto;
+import com.stockia.stockia.dtos.user.UserSearchResponseDto;
+import com.stockia.stockia.dtos.user.UserUpdateRequestDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-@Service
-public class UserService {
-    // This class is currently empty, but it can be used to implement user-related services in the future.
-    // For example, methods for user registration, authentication, profile management, etc. can be added here.
+import java.util.UUID;
 
-    // Example method (to be implemented):
-    // public User registerUser(User user) {
-    //     // Logic to register a new user
-    //     return user;
-    // }
-
-    // Example method (to be implemented):
-    // public User authenticateUser(String username, String password) {
-    //     // Logic to authenticate a user
-    //     return authenticatedUser;
-    // }
+public interface UserService {
+    Page<UserSearchResponseDto> searchUsers(UserSearchRequestDto params, Pageable pageable);
+    UserSearchResponseDto findById(UUID id);
+    UserSearchResponseDto updateById(UUID id, UserUpdateRequestDto request);
+    void deleteById(UUID id);
 }
