@@ -1,8 +1,12 @@
 package com.stockia.stockia.documentation.product;
 
+import com.stockia.stockia.documentation.common.SecurityResponses;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -20,29 +24,32 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(
-    summary = "Obtener producto por ID",
-    description = "Retorna la información completa de un producto específico"
+        summary = "Obtener producto por ID",
+        description = "Retorna la información completa de un producto específico. " +
+                "<strong>Solo accesible para usuarios con rol ADMIN o MANAGER.</strong>",
+        security = @SecurityRequirement(name = "bearer-key")
 )
 @ApiResponses({
-    @ApiResponse(
-        responseCode = "200",
-        description = "Producto encontrado",
-        content = @io.swagger.v3.oas.annotations.media.Content(
-            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                value = "{\"success\":true,\"message\":\"Producto encontrado\",\"data\":{\"id\":1,\"name\":\"laptop hp\",\"category\":{\"id\":1,\"name\":\"Electrónica\"},\"price\":999.99,\"photoUrl\":null,\"currentStock\":10,\"minStock\":5,\"isAvailable\":true,\"hasLowStock\":false}}"
-            )
+        @ApiResponse(
+                responseCode = "200",
+                description = "Producto encontrado",
+                content = @Content(
+                        examples = @ExampleObject(
+                                value = "{\"success\":true,\"message\":\"Producto encontrado\",\"data\":{\"id\":1,\"name\":\"laptop hp\",\"category\":{\"id\":1,\"name\":\"Electrónica\"},\"price\":999.99,\"photoUrl\":null,\"currentStock\":10,\"minStock\":5,\"isAvailable\":true,\"hasLowStock\":false}}"
+                        )
+                )
+        ),
+        @ApiResponse(
+                responseCode = "404",
+                description = "Producto no encontrado",
+                content = @Content(
+                        examples = @ExampleObject(
+                                value = "{\"success\":false,\"message\":\"No se encontró el producto con ID: 999\",\"data\":null}"
+                        )
+                )
         )
-    ),
-    @ApiResponse(
-        responseCode = "404",
-        description = "Producto no encontrado",
-        content = @io.swagger.v3.oas.annotations.media.Content(
-            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                value = "{\"success\":false,\"message\":\"No se encontró el producto con ID: 999\",\"data\":null}"
-            )
-        )
-    )
 })
+@SecurityResponses.RequiresAdminOrManager
 public @interface GetProductByIdDoc {
 }
 
