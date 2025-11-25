@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,700&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
@@ -78,6 +79,7 @@
   --sidebar-ring: oklch(0.709 0.01 56.259);
   --btn-primary: oklch(0.483 0.0707 255.51);
   --stokia-neutral-50: oklch(0.97 0.0029 264.54);
+  font-family: 'Roboto Flex', system-ui, sans-serif;
 }
 
 .dark {
@@ -117,10 +119,12 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    font-family: inherit;
   }
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Roboto Flex', system-ui, sans-serif;
   }
 }
 

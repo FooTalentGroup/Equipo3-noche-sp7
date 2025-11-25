@@ -1,5 +1,6 @@
 import initialCategories from '@/features/categories/mockedCategories';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import { getProducts } from '../services/productService';
 
 // =============== HELPERS ===============
 const productNames = [
@@ -42,10 +43,41 @@ const generateRandomProducts = () => {
 const ProductsContext = createContext(undefined);
 
 export function ProductsProvider({ children }) {
-    const [products, setProducts] = useState(generateRandomProducts());
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const response = await getProducts();
+                const list = Array.isArray(response?.data)
+                    ? response.data
+                    : Array.isArray(response?.content)
+                        ? response.content
+                        : Array.isArray(response)
+                            ? response
+                            : [];
+
+                setProducts(list.map(product => ({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    descuento: product.discount || 0,
+                    stock_actual: product.currentStock,
+                    min_stock: product.minStock,
+                    category: product.category?.name || '',
+                    proveedor: product.supplier?.name || '',
+                    photoUrl: product.photoUrl || '',
+                    isAvailable: product.isAvailable,
+                })));
+            } catch (e) {
+                console.error('Error fetching products:', e);
+            }
+        }
+        fetchData();
+    }, []);
 
     const addProduct = (product) => {
-        setProducts(prev => [...prev, { ...product, id: prev.length + 1, category: initialCategories.find(c=>c.id == product.category).name }]);
+        setProducts(prev => [...prev, { ...product, id: prev.length + 1, category: initialCategories.find(c => c.id == product.category).name }]);
     };
 
     const updateProduct = (id, updatedProduct) => {
@@ -70,7 +102,6 @@ export function ProductsProvider({ children }) {
     );
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function useProducts() {
     const context = useContext(ProductsContext);
     if (context === undefined) {

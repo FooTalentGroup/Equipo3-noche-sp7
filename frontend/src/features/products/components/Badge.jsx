@@ -1,35 +1,77 @@
 // components/Badge.jsx
 import React from "react";
+import { BadgeCheck, TriangleAlert, OctagonX } from "lucide-react";
 
 const cn = (...classes) => classes.filter(Boolean).join(" ");
 
 const Badge = ({ variant = "success", children, className, ...props }) => {
     const variants = {
-        // Alto stock → Verde sólido
-        success: "bg-[#3C7D45] text-white",
-
-        // Bajo stock (1 a 10 unidades) → Naranja sólido
-        warning: "bg-[#C56231] text-white",
-
-        // Sin stock (0 unidades) → Rojo sólido
-        destructive: "bg-[#C93939] text-white",
+        success: "bg-[#3C7D45]",
+        warning: "bg-[#C56231]",
+        destructive: "bg-[#C93939]",
     };
 
     const baseClasses = cn(
-        "inline-flex items-center justify-center",
-        "w-full min-h-6 h-6", // height: 24px → h-6 en Tailwind (24/4=6)
-        "px-2",               // padding-left/right: 2 → pero como es pequeño, px-2 queda perfecto
-        "py-0",               // padding-top/bottom controlado por line-height
-        "rounded",            // border-radius: 4px → rounded en Tailwind
-        "text-xs font-semibold leading-6", // Alineación vertical perfecta
+        "flex items-center justify-center",
+        "rounded-[4px]",
         variants[variant],
         className
     );
 
+    let icon = null;
+    const text = typeof children === 'string' ? children.trim().toLowerCase() : '';
+    // Precise icon layout and style
+    const iconStyle = {
+        width: '15px',
+        height: '15px',
+        color: '#FAFAFA',
+    };
+    if (text === "alto stock") icon = <BadgeCheck style={iconStyle} />;
+    else if (text === "bajo stock") icon = <TriangleAlert style={iconStyle} />;
+    else if (text === "sin stock") icon = <OctagonX style={iconStyle} />;
+
     return (
-        <span className={baseClasses} {...props}>
-      {children}
-    </span>
+        <span
+            className={baseClasses}
+            style={{
+                width: '100px',
+                height: '24px',
+                minHeight: '24px',
+                borderRadius: '4px',
+                paddingTop: '3px',
+                paddingBottom: '3px',
+                paddingLeft: '5px',
+                opacity: 1,
+                angle: '0deg'
+            }}
+            {...props}
+        >
+            {icon && (
+                <span className="flex items-center justify-center">
+                    {icon}
+                </span>
+            )}
+            <span
+                className="overflow-hidden text-ellipsis text-center font-medium"
+                style={{
+                    fontFamily: `'Geist', 'Roboto Flex', system-ui, sans-serif`,
+                    fontSize: '12px',
+                    fontStyle: 'normal',
+                    lineHeight: '18px',
+                    letterSpacing: '0.18px',
+                    color: 'var(--general-primary-foreground, #FAFAFA)',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 1,
+                    WebkitBoxOrient: 'vertical',
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                    minWidth: 0,
+                    flex: '1 0 0',
+                }}
+            >
+                {children}
+            </span>
+        </span>
     );
 };
 

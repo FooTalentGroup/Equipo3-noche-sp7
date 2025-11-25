@@ -4,14 +4,6 @@ import { PublicRoute } from "@/infrastructure/router/PublicRoute.jsx";
 
 export const authRoutes = [
   {
-    path: "/",
-    element: (
-      <PublicRoute>
-        <LoginPage />
-      </PublicRoute>
-    ),
-  },
-  {
     path: "/login",
     element: (
       <PublicRoute>
