@@ -23,7 +23,7 @@ export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc
     // const [products, setProducts] = useState(generateRandomProducts());
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
-    const {products, deleteProduct} = useProducts()
+    const { products, deleteProduct } = useProducts()
 
     const handleDelete = (id) => {
         deleteProduct(id);
@@ -46,7 +46,7 @@ export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc
             const term = searchQuery.toLowerCase();
             result = result.filter(p =>
                 p.name.toLowerCase().includes(term) ||
-                p.category.toLowerCase().includes(term) 
+                p.category.toLowerCase().includes(term)
             );
         }
 
@@ -87,46 +87,46 @@ export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1086px] max-h-[673px]">
             <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
-                    <thead className="text-[14px] bg-slate-200 text-[#404040] font-semibold">
+                    <thead className="text-[14px] bg-slate-200 text-[#404040] font-normal h-[46px]">
                         <tr>
-                            <th className="px-6 py-3">Estado</th>
-                            <th className="px-6 py-3">Producto</th>
-                            <th className="px-6 py-3">Categoría</th>
-                            <th className="px-6 py-3">Precio</th>
-                            <th className="px-6 py-3">Descuento</th>
-                            <th className="px-6 py-3 text-center">Acciones</th>
+                            <th className="px-6 py-3 text-[#404040]">Estado</th>
+                            <th className="px-6 py-3 text-[#404040]">Producto</th>
+                            <th className="px-6 py-3 text-[#404040]">Categoría</th>
+                            <th className="px-6 py-3 text-[#404040]">Precio</th>
+                            <th className="px-6 py-3 text-[#404040]">Descuento</th>
+                            <th className="px-6 py-3 text-[#404040] text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                    {paginated.map(product => (
-                        <tr key={product.id} className="hover:bg-gray-50 transition-colors">
-                            <td className="px-6 py-4">
-                                <div className="w-28">
-                                    {getStockBadge(product.stock_actual, product.min_stock)}
-                                </div>
-                            </td>
-                            <td className="px-6 py-4 font-medium text-gray-900">{product.name}</td>
-                            <td className="px-6 py-4 text-gray-600">{product.category}</td>
-                            <td className="px-6 py-4 font-semibold text-gray-900">{product.price}</td>
-                            <td className="px-6 py-4">
-                                {product.descuento > 0 ? (
-                                    <span className="text-green-600 font-medium">{product.descuento}%</span>
-                                ) : (
-                                    <span className="text-gray-400">0%</span>
-                                )}
-                            </td>
-                            <td className="px-6 py-4">
-                                <div className="flex items-center justify-center gap-4">
-                                    <button className="text-gray-500 hover:text-blue-600 cursor-pointer transition">
-                                        <Edit className="w-4 h-4" />
-                                    </button>
-                                    <button onClick={() => handleDelete(product.id)} className="text-red-600 cursor-pointer transition">
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
+                        {paginated.map(product => (
+                            <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+                                <td className="px-6 py-4">
+                                    <div className="w-28">
+                                        {getStockBadge(product.stock_actual, product.min_stock)}
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4 font-normal text-[#171717] text-[14px]">{product.name}</td>
+                                <td className="px-6 py-4 text-[#525252] font-normal text-[14px]">{product.category}</td>
+                                <td className="px-6 py-4 font-normal text-[14px] text-[#171717]">${product.price}</td>
+                                <td className="px-6 py-4">
+                                    {product.descuento > 0 ? (
+                                        <span className="font-normal text-[14px] text-[#525252]">{product.descuento}%</span>
+                                    ) : (
+                                        <span className="font-normal text-[14px] text-[#525252]">0%</span>
+                                    )}
+                                </td>
+                                <td className="px-6 py-4">
+                                    <div className="flex items-center justify-center gap-4">
+                                        <button className="text-gray-500 hover:text-blue-600 cursor-pointer transition">
+                                            <Edit className="w-4 h-4" />
+                                        </button>
+                                        <button onClick={() => handleDelete(product.id)} className="text-red-600 cursor-pointer transition">
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>
