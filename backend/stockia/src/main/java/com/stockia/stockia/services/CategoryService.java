@@ -2,10 +2,12 @@ package com.stockia.stockia.services;
 
 import com.stockia.stockia.dtos.category.CategoryRequestDto;
 import com.stockia.stockia.dtos.category.CategoryResponseDto;
+import com.stockia.stockia.dtos.category.CategorySearchRequestDto;
 import com.stockia.stockia.exceptions.category.CategoryNotFoundException;
 import com.stockia.stockia.exceptions.category.DuplicateCategoryException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -27,27 +29,14 @@ public interface CategoryService {
     CategoryResponseDto createCategory(CategoryRequestDto dto);
 
     /**
-     * Obtiene una categoría por su ID.
+     * Busca categorías con filtros dinámicos (nombre, estado activo, eliminadas).
+     * Soporta paginación y ordenamiento.
      *
-     * @param id ID de la categoría
-     * @return DTO con la categoría encontrada
-     * @throws CategoryNotFoundException si no se encuentra la categoría
+     * @param params Parámetros de búsqueda (nombre, isActive, deleted)
+     * @param pageable Configuración de paginación y ordenamiento
+     * @return Página de categorías que cumplen con los criterios
      */
-    CategoryResponseDto getCategoryById(UUID id);
-
-    /**
-     * Lista todas las categorías (activas e inactivas).
-     *
-     * @return Lista de todas las categorías
-     */
-    List<CategoryResponseDto> getAllCategories();
-
-    /**
-     * Lista solo las categorías activas.
-     *
-     * @return Lista de categorías activas
-     */
-    List<CategoryResponseDto> getActiveCategories();
+    Page<CategoryResponseDto> searchCategories(CategorySearchRequestDto params, Pageable pageable);
 
     /**
      * Actualiza una categoría existente.
@@ -86,13 +75,6 @@ public interface CategoryService {
      * @throws CategoryNotFoundException si no se encuentra la categoría
      */
     void deleteCategory(UUID id);
-
-    /**
-     * Lista las categorías eliminadas.
-     *
-     * @return Lista de categorías eliminadas
-     */
-    List<CategoryResponseDto> getDeletedCategories();
 
     /**
      * Restaura una categoría eliminada.
