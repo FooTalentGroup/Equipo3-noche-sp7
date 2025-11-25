@@ -16,6 +16,7 @@ package com.stockia.stockia.services;
 
 import com.stockia.stockia.models.Client;
 import com.stockia.stockia.repositories.ClientRepository;
+import com.stockia.stockia.exceptions.client.ClientDuplicatedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,12 +40,6 @@ public class ClientService {
      * 
      * @throws RuntimeException si hay error en base de datos
      */
-
-    public static class ClientDuplicatedException extends RuntimeException {
-        public ClientDuplicatedException(String message) {
-            super(message);
-        }
-    }
 
     public Client registerClient(Client newClient) {
         Optional<Client> ExistentClient = clientRepository.findByEmailOrPhone(

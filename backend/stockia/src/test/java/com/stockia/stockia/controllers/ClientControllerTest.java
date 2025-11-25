@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stockia.stockia.dtos.ClientRequestDto;
 import com.stockia.stockia.models.Client;
 import com.stockia.stockia.services.ClientService;
-import com.stockia.stockia.services.ClientService.ClientDuplicatedException;
+import com.stockia.stockia.exceptions.client.ClientDuplicatedException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

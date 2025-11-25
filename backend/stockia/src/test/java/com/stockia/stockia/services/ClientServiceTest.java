@@ -2,7 +2,7 @@ package com.stockia.stockia.services;
 
 import com.stockia.stockia.models.Client;
 import com.stockia.stockia.repositories.ClientRepository;
-import com.stockia.stockia.services.ClientService.ClientDuplicatedException;
+import com.stockia.stockia.exceptions.client.ClientDuplicatedException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
