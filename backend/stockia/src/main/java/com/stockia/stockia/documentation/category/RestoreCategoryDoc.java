@@ -5,11 +5,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import com.stockia.stockia.documentation.common.SecurityResponses;
 
 /**
  * Documentación del endpoint PATCH /api/categories/{id}/restore - Restaurar.
@@ -22,7 +23,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(
     summary = "Restaurar categoría eliminada",
-    description = "Recupera una categoría previamente eliminada (soft delete)"
+    description = "Recupera una categoría previamente eliminada (soft delete). " +
+                  "<strong>Solo accesible para usuarios con rol ADMIN.</strong>",
+    security = @SecurityRequirement(name = "bearer-key")
 )
 @ApiResponses(value = {
     @ApiResponse(
@@ -80,5 +83,6 @@ import java.lang.annotation.Target;
         )
     )
 })
+@SecurityResponses.RequiresAdmin
 public @interface RestoreCategoryDoc {}
 

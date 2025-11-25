@@ -1,9 +1,12 @@
 package com.stockia.stockia.documentation.product;
 
+import com.stockia.stockia.documentation.common.SecurityResponses;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -26,19 +29,22 @@ import java.lang.annotation.Target;
                   "- includeInactive: incluye productos con isAvailable=false (por defecto false) " +
                   "- lowStock: solo productos con stock bajo (por defecto false) " +
                   "- q: búsqueda por texto en el nombre " +
-                  "- categoryId: filtrar por categoría específica"
+                  "- categoryId: filtrar por categoría específica. " +
+                  "<strong>Solo accesible para usuarios con rol ADMIN.</strong>",
+    security = @SecurityRequirement(name = "bearer-key")
 )
 @ApiResponses({
     @ApiResponse(
         responseCode = "200",
         description = "Lista de productos obtenida exitosamente",
-        content = @io.swagger.v3.oas.annotations.media.Content(
-            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+        content = @Content(
+            examples = @ExampleObject(
                 value = "{\"success\":true,\"message\":\"2 producto(s) encontrado(s)\",\"data\":[{\"id\":1,\"name\":\"laptop hp\",\"category\":{\"id\":1,\"name\":\"Electrónica\"},\"price\":999.99,\"currentStock\":2,\"minStock\":5,\"isAvailable\":true,\"hasLowStock\":true}]}"
             )
         )
     )
 })
+@SecurityResponses.RequiresAdmin
 public @interface GetProductsManagementDoc {
 }
 

@@ -12,10 +12,33 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+
+import static com.stockia.stockia.security.constants.SecurityConstants.Roles.*;
+
+/**
+ * Controlador REST para la gestión de productos.
+ *
+ * Endpoints disponibles:
+ * 
+ * - DELETE [/api/products/{id}] → Eliminar producto (soft delete)
+ * - DELETE [/api/products/{id}/permanent] → Eliminar producto permanentemente
+ * - GET [/api/products/{id}] → Obtener producto por ID
+ * - GET [/api/products] → Listar productos activos
+ * - GET [/api/products/management] → Gestión avanzada de productos
+ * - GET [/api/products/deleted] → Listar productos eliminados
+ * - PATCH [/api/products/{id}/restore] → Restaurar producto eliminado
+ * - POST [/api/products] → Registrar nuevo producto
+ * - PUT [/api/products/{id}] → Actualizar producto existente
+ * 
+ * @author StockIA Team (Maidana)
+ * @version 1.0
+ * @since 2025-11-20
+ */
 
 @RestController
 @RequestMapping("/api/products")
@@ -31,6 +54,7 @@ public class ProductController {
 
     @PostMapping
     @CreateProductDoc
+    @PreAuthorize(ADMIN_OR_MANAGER)
     public ResponseEntity<ApiResult<ProductResponseDto>> createProduct(@Valid @RequestBody ProductRequestDto dto) {
         log.info("POST /api/products - Creating product: {}", dto.getName());
         ProductResponseDto product = productService.createProduct(dto);
@@ -41,6 +65,7 @@ public class ProductController {
 
     @GetMapping("/{id}")
     @GetProductByIdDoc
+    @PreAuthorize(ADMIN_OR_MANAGER)
     public ResponseEntity<ApiResult<ProductResponseDto>> getProductById(@ProductIdParam @PathVariable UUID id) {
         log.info("GET /api/products/{} - Fetching product", id);
         ProductResponseDto product = productService.getProductById(id);
@@ -49,6 +74,7 @@ public class ProductController {
 
     @GetMapping
     @GetAllProductsDoc
+    @PreAuthorize(ADMIN_OR_MANAGER)
     public ResponseEntity<ApiResult<List<ProductResponseDto>>> getAllProducts(
             @RequestParam(required = false) String q,
             @RequestParam(required = false) UUID categoryId) {
@@ -71,6 +97,7 @@ public class ProductController {
 
     @GetMapping("/management")
     @GetProductsManagementDoc
+    @PreAuthorize(ADMIN_ONLY)
     public ResponseEntity<ApiResult<List<ProductResponseDto>>> getProductsForManagement(
             @IncludeInactiveParam @RequestParam(required = false, defaultValue = "false") Boolean includeInactive,
             @LowStockParam @RequestParam(required = false, defaultValue = "false") Boolean lowStock,
@@ -95,6 +122,7 @@ public class ProductController {
 
     @PutMapping("/{id}")
     @UpdateProductDoc
+    @PreAuthorize(ADMIN_ONLY)
     public ResponseEntity<ApiResult<ProductResponseDto>> updateProduct(
             @ProductIdParam @PathVariable UUID id, @Valid @RequestBody ProductUpdateDto dto) {
         log.info("PUT /api/products/{} - Updating product", id);
@@ -104,6 +132,7 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     @DeleteProductDoc
+    @PreAuthorize(ADMIN_ONLY)
     public ResponseEntity<ApiResult<Void>> deleteProduct(@ProductIdParam @PathVariable UUID id) {
         log.info("DELETE /api/products/{} - Deleting product", id);
         productService.deleteProduct(id);
@@ -112,6 +141,7 @@ public class ProductController {
 
     @GetMapping("/deleted")
     @GetDeletedProductsDoc
+    @PreAuthorize(ADMIN_ONLY)
     public ResponseEntity<ApiResult<List<ProductResponseDto>>> getDeletedProducts() {
         log.info("GET /api/products/deleted - Fetching deleted products");
         List<ProductResponseDto> products = productService.getDeletedProducts();
@@ -122,6 +152,7 @@ public class ProductController {
 
     @PatchMapping("/{id}/restore")
     @RestoreProductDoc
+    @PreAuthorize(ADMIN_ONLY)
     public ResponseEntity<ApiResult<ProductResponseDto>> restoreProduct(@ProductIdParam @PathVariable UUID id) {
         log.info("PATCH /api/products/{}/restore - Restoring product", id);
         ProductResponseDto product = productService.restoreProduct(id);
@@ -130,6 +161,7 @@ public class ProductController {
 
     @DeleteMapping("/{id}/permanent")
     @PermanentDeleteProductDoc
+    @PreAuthorize(ADMIN_ONLY)
     public ResponseEntity<ApiResult<Void>> permanentlyDeleteProduct(@ProductIdParam @PathVariable UUID id) {
         log.info("DELETE /api/products/{}/permanent - Permanently deleting product", id);
         productService.permanentlyDeleteProduct(id);

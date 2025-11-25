@@ -3,11 +3,14 @@ package com.stockia.stockia.documentation.product;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import com.stockia.stockia.documentation.common.SecurityResponses;
 
 /**
  * Documentación del endpoint: DELETE /api/products/{id}/permanent
@@ -21,14 +24,16 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(
     summary = "Eliminar producto permanentemente",
-    description = "Elimina físicamente el producto de la base de datos. Esta acción es irreversible"
+    description = "Elimina físicamente el producto de la base de datos. Esta acción es irreversible. " +
+                  "<strong>Solo accesible para usuarios con rol ADMIN.</strong>",
+    security = @SecurityRequirement(name = "bearer-key")
 )
 @ApiResponses({
     @ApiResponse(
         responseCode = "200",
         description = "Producto eliminado permanentemente",
-        content = @io.swagger.v3.oas.annotations.media.Content(
-            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+        content = @Content(
+            examples = @ExampleObject(
                 value = "{\"success\":true,\"message\":\"Producto eliminado permanentemente\",\"data\":null}"
             )
         )
@@ -36,13 +41,14 @@ import java.lang.annotation.Target;
     @ApiResponse(
         responseCode = "404",
         description = "Producto no encontrado",
-        content = @io.swagger.v3.oas.annotations.media.Content(
-            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+        content = @Content(
+            examples = @ExampleObject(
                 value = "{\"success\":false,\"message\":\"No se encontró el producto con ID: 999\",\"data\":null}"
             )
         )
     )
 })
+@SecurityResponses.RequiresAdmin
 public @interface PermanentDeleteProductDoc {
 }
 
