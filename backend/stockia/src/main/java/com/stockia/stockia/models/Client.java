@@ -28,5 +28,7 @@ public class Client {
     @Column(unique = true, nullable = false)
     private String phone;
 
-    private Boolean isFrequent;
+    @Builder.Default
+    @Column(name = "is_frequent", nullable = false)
+    private Boolean isFrequent = false;
 }
