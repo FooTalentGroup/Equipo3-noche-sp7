@@ -149,6 +149,10 @@ public class OrderServiceImpl implements OrderService {
                 .unitPrice(itemDto.getUnitPrice())
                 .build();
 
+        // Calcular el total del item ANTES de agregarlo a la orden
+        // Esto previene NullPointerException en calculateTotals()
+        orderItem.calculateItemTotal();
+
         // Agregar item a la orden
         order.addItem(orderItem);
 
