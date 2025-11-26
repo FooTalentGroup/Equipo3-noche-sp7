@@ -3,6 +3,7 @@ import { Edit, Trash2, ChevronLeft, ChevronRight, Loader, LoaderCircle } from 'l
 import { Button } from '@/shared/components/ui/button.jsx';
 import Badge from "@/features/products/components/Badge.jsx";
 import { useProducts } from '../context/ProductsContext';
+import ActionsMenu from './ActionsMenu';
 
 const parsePrice = (val) => {
     if (val == null) return 0;
@@ -127,12 +128,11 @@ export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc
                                 </td>
                                 <td className="px-6 py-4">
                                     <div className="flex items-center justify-center gap-4">
-                                        <button className="text-gray-500 hover:text-blue-600 cursor-pointer transition">
-                                            <Edit className="w-4 h-4" />
-                                        </button>
+                                        <ActionsMenu />
                                         <button onClick={() => handleDelete(product.id)} className="text-red-600 cursor-pointer transition">
                                             <Trash2 className="w-4 h-4" />
                                         </button>
+
                                     </div>
                                 </td>
                             </tr>
