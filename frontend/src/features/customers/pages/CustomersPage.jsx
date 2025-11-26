@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { CustomersFiltersBar } from '@/features/customers/components/CustomersFiltersBar.jsx';
 import { CustomersTable } from '@/features/customers/components/CustomersTable.jsx';
 import { RegisterCustomerPopup } from '@/features/customers/components/RegisterCustomerPopup.jsx';
+import { SuccessModal } from '@/shared/components/ui/SuccessModal.jsx';
 import { getClients, createClient } from '../services/customerService.js';
 import { getAuthToken } from '@/features/auth/utils/authStorage.js';
 
@@ -10,28 +11,34 @@ export default function CustomersPage() {
     const [isRegisterOpen, setIsRegisterOpen] = useState(false);
     const [editingCustomer, setEditingCustomer] = useState(null);
     const [customers, setCustomers] = useState([]);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const fetchClients = useCallback(async () => {
+        const token = getAuthToken();
+        if (!token) return;
+        setIsLoading(true);
+        try {
+            const data = await getClients();
+            setCustomers((data || []).map(c => ({
+                id: c.id,
+                nombre: c.name,
+                email: c.email,
+                telefono: c.phone,
+                ultimaCompra: randomDate(),
+                joined: c.isFrequentClient ?? c.isFrequent ?? false,
+            })));
+        } catch (e) {
+            console.error('Error fetching customers:', e);
+            setCustomers([]);
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
-        async function fetchClients() {
-            const token = getAuthToken();
-            if (!token) return;
-            try {
-                const data = await getClients();
-                // map API to table
-                setCustomers((data || []).map(c => ({
-                    id: c.id,
-                    nombre: c.name,
-                    email: c.email,
-                    telefono: c.phone,
-                    ultimaCompra: randomDate(),
-                    joined: c.isFrequentClient ?? c.isFrequent ?? false
-                })));
-            } catch (e) {
-                setCustomers([]);
-            }
-        }
         fetchClients();
-    }, []);
+    }, [fetchClients]);
 
     function randomDate() {
         const start = new Date(2024, 0, 1);
@@ -62,24 +69,12 @@ export default function CustomersPage() {
                     name: payload.nombre.trim(),
                     email: payload.email.trim(),
                     phone: payload.telefono.trim(),
-                    isFrequentClient: true,
+                    isFrequentClient: false,
                 };
-                const newClient = await createClient(body);
-                if (newClient) {
-                    setCustomers(prev => [
-                        {
-                            id: newClient.id,
-                            nombre: newClient.name,
-                            email: newClient.email,
-                            telefono: newClient.phone,
-                            ultimaCompra: randomDate(),
-                            joined: !!newClient.isFrequentClient,
-                        },
-                        ...prev,
-                    ]);
-                }
+                await createClient(body);
+                await fetchClients();
+                setShowSuccessModal(true);
             } else {
-                // local update for edits (backend endpoint pending)
                 setCustomers(prev => prev.map(c => c.id === payload.id ? { ...c, ...payload } : c));
             }
             closePopup();
@@ -125,6 +120,23 @@ export default function CustomersPage() {
                 onSave={handleSave}
                 initialData={editingCustomer}
             />
+            {showSuccessModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                    <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
+                        <SuccessModal
+                            title="Cliente registrado"
+                            description="El cliente fue registrado correctamente."
+                            primaryButtonText="Registrar otro"
+                            secondaryButtonText="Cerrar"
+                            onPrimaryClick={() => {
+                                setShowSuccessModal(false);
+                                setIsRegisterOpen(true);
+                            }}
+                            onSecondaryClick={() => setShowSuccessModal(false)}
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
