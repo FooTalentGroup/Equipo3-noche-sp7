@@ -1,9 +1,9 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Edit, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Edit, Trash2, ChevronLeft, ChevronRight, Loader, LoaderCircle } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button.jsx';
 import Badge from "@/features/products/components/Badge.jsx";
 import { useProducts } from '../context/ProductsContext';
-// =============== HELPERS (NO BORRAR) ===============
+
 const parsePrice = (val) => {
     if (val == null) return 0;
     if (typeof val === 'number') return val;
@@ -17,13 +17,10 @@ const normalize = (s) => String(s || '')
     .replace(/\p{Diacritic}/gu, '')
     .toLowerCase();
 
-// ====================================================
-
 export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc' }) => {
-    // const [products, setProducts] = useState(generateRandomProducts());
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
-    const { products, deleteProduct } = useProducts()
+    const { products, deleteProduct } = useProducts();
 
     const handleDelete = (id) => {
         deleteProduct(id);
@@ -40,7 +37,7 @@ export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc
     };
 
     const filteredProducts = useMemo(() => {
-        let result = [...products];
+        let result = [...(products || [])];
 
         if (searchQuery) {
             const term = searchQuery.toLowerCase();
@@ -82,6 +79,19 @@ export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc
     }, [totalPages, currentPage]);
 
     const paginated = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+    const isLoading = !products || products.length === 0;
+
+    if (isLoading) {
+        return (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1086px] max-h-[673px] flex items-center justify-center">
+                <div className="flex flex-col items-center justify-center gap-3 my-4">
+                    <LoaderCircle className="h-8 w-8 text-slate-600 animate-spin" />
+                    <span className="text-sm text-gray-600">Cargando productos...</span>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1086px] max-h-[673px]">

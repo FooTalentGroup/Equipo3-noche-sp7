@@ -4,8 +4,8 @@ import { ProductsFiltersBar } from '@/features/products/components/filters/Produ
 import { ProductsFiltersPopup } from '../components/filters/ProductFiltersPopup';
 import { ProductsTable } from "@/features/products/components/ProductsTable.jsx";
 import {
-  Dialog,
-  DialogContent,
+    Dialog,
+    DialogContent,
 } from "@/shared/components/ui/dialog";
 import { CreateProductComponent } from "../components/CreateProductComponent";
 import { Description, DialogTitle } from '@radix-ui/react-dialog';
@@ -14,7 +14,7 @@ export default function ProductsListPage() {
     const location = useLocation();
     const navigate = useNavigate();
     const isCreateModalOpen = location.pathname === '/products/create';
-    
+
     const {
         searchQuery,
         setSearchQuery,
