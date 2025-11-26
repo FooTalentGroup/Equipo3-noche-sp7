@@ -32,9 +32,15 @@ public class SecurityResponses {
             examples = @ExampleObject(
                 value = """
                 {
-                  "success": false,
-                  "message": "Acceso no autorizado. Token inválido o ausente",
-                  "data": null
+                  "statusCode": 401,
+                  "errorCode": "AUTH_ERROR",
+                  "message": "Acceso no autorizado. Token inválido o ausente.",
+                  "details": [
+                    "Token inválido, ausente o expirado.",
+                    "Se requiere estar autenticado para acceder a este recurso"
+                  ],
+                  "timestamp": "2025-11-26T15:10:38.908929300Z",
+                  "path": "/api/resource"
                 }
                 """
             )
@@ -55,9 +61,14 @@ public class SecurityResponses {
             examples = @ExampleObject(
                 value = """
                 {
-                  "success": false,
+                  "statusCode": 403,
+                  "errorCode": "FORBIDDEN",
                   "message": "Acceso denegado. No tienes permisos para realizar esta acción",
-                  "data": null
+                  "details": [
+                    "Se requiere rol ADMIN para acceder a este recurso"
+                  ],
+                  "timestamp": "2025-11-26T15:10:38.908929300Z",
+                  "path": "/api/resource"
                 }
                 """
             )
@@ -78,9 +89,14 @@ public class SecurityResponses {
             examples = @ExampleObject(
                 value = """
                 {
-                  "success": false,
+                  "statusCode": 403,
+                  "errorCode": "FORBIDDEN",
                   "message": "Acceso denegado. No tienes permisos para realizar esta acción",
-                  "data": null
+                  "details": [
+                    "Se requiere rol ADMIN o MANAGER para acceder a este recurso"
+                  ],
+                  "timestamp": "2025-11-26T15:10:38.908929300Z",
+                  "path": "/api/resource"
                 }
                 """
             )

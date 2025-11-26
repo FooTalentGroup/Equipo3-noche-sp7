@@ -121,16 +121,12 @@ import java.lang.annotation.Target;
             examples = @ExampleObject(
                 value = """
                 {
-                  "success": false,
+                  "statusCode": 400,
+                  "errorCode": "BAD_REQUEST",
                   "message": "Parámetros de solicitud inválidos",
-                  "data": {
-                    "errors": [
-                      {
-                        "field": "page",
-                        "message": "El número de página no puede ser negativo"
-                      }
-                    ]
-                  }
+                  "details": ["page: El número de página no puede ser negativo"],
+                  "timestamp": "2025-11-26T15:10:38.908929300Z",
+                  "path": "/api/categories"
                 }
                 """
             )

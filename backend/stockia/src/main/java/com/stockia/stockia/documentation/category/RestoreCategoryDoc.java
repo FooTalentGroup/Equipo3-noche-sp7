@@ -58,9 +58,12 @@ import com.stockia.stockia.documentation.common.SecurityResponses;
             examples = @ExampleObject(
                 value = """
                 {
-                  "success": false,
+                  "statusCode": 404,
+                  "errorCode": "NOT_FOUND",
                   "message": "No se encontró la categoría con ID: 123e4567-e89b-12d3-a456-426614174001",
-                  "data": null
+                  "details": ["La categoría especificada no existe en el sistema"],
+                  "timestamp": "2025-11-26T15:10:38.908929300Z",
+                  "path": "/api/categories/123e4567-e89b-12d3-a456-426614174001/restore"
                 }
                 """
             )
@@ -74,9 +77,12 @@ import com.stockia.stockia.documentation.common.SecurityResponses;
             examples = @ExampleObject(
                 value = """
                 {
-                  "success": false,
+                  "statusCode": 409,
+                  "errorCode": "CONFLICT",
                   "message": "La categoría no está eliminada",
-                  "data": null
+                  "details": ["Solo se pueden restaurar categorías que hayan sido eliminadas previamente"],
+                  "timestamp": "2025-11-26T15:10:38.908929300Z",
+                  "path": "/api/categories/123e4567-e89b-12d3-a456-426614174001/restore"
                 }
                 """
             )

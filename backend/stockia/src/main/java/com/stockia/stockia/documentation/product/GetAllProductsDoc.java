@@ -68,7 +68,7 @@ import java.lang.annotation.Target;
                 description = "Parámetros de búsqueda inválidos",
                 content = @Content(
                         examples = @ExampleObject(
-                                value = "{\"success\":false,\"message\":\"Parámetros de búsqueda inválidos\",\"data\":null}"
+                                value = "{\"statusCode\":400,\"errorCode\":\"BAD_REQUEST\",\"message\":\"Parámetros de búsqueda inválidos\",\"details\":[\"Los parámetros proporcionados no son válidos\"],\"timestamp\":\"2025-11-26T15:10:38.908929300Z\",\"path\":\"/api/products\"}"
                         )
                 )
         )

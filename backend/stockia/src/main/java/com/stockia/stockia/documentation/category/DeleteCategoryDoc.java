@@ -52,9 +52,12 @@ import java.lang.annotation.Target;
             examples = @ExampleObject(
                 value = """
                 {
-                  "success": false,
+                  "statusCode": 404,
+                  "errorCode": "NOT_FOUND",
                   "message": "No se encontró la categoría con ID: 123e4567-e89b-12d3-a456-426614174001",
-                  "data": null
+                  "details": ["La categoría especificada no existe en el sistema"],
+                  "timestamp": "2025-11-26T15:10:38.908929300Z",
+                  "path": "/api/categories/123e4567-e89b-12d3-a456-426614174001"
                 }
                 """
             )
@@ -68,9 +71,12 @@ import java.lang.annotation.Target;
             examples = @ExampleObject(
                 value = """
                 {
-                  "success": false,
+                  "statusCode": 409,
+                  "errorCode": "CONFLICT",
                   "message": "La categoría ya está eliminada",
-                  "data": null
+                  "details": ["La categoría ya fue eliminada previamente"],
+                  "timestamp": "2025-11-26T15:10:38.908929300Z",
+                  "path": "/api/categories/123e4567-e89b-12d3-a456-426614174001"
                 }
                 """
             )

@@ -45,7 +45,7 @@ import java.lang.annotation.Target;
                 description = "Datos inválidos o formato incorrecto",
                 content = @Content(
                         examples = @ExampleObject(
-                                value = "{\"success\":false,\"message\":\"Errores de validación\",\"data\":{\"fields\":{\"name\":\"El nombre del producto es obligatorio\",\"price\":\"El precio debe ser mayor o igual a 0\"},\"errors\":[\"El nombre del producto es obligatorio\",\"El precio debe ser mayor o igual a 0\"]}}"
+                                value = "{\"statusCode\":400,\"errorCode\":\"VALIDATION_ERROR\",\"message\":\"Falló la validación de los campos\",\"details\":[\"name: El nombre del producto es obligatorio\",\"price: El precio debe ser mayor o igual a 0\"],\"timestamp\":\"2025-11-26T15:10:38.908929300Z\",\"path\":\"/api/products\"}"
                         )
                 )
         ),
@@ -54,7 +54,7 @@ import java.lang.annotation.Target;
                 description = "Categoría no encontrada",
                 content = @Content(
                         examples = @ExampleObject(
-                                value = "{\"success\":false,\"message\":\"No se encontró la categoría con ID: 123e4567-e89b-12d3-a456-426614174001\",\"data\":null}"
+                                value = "{\"statusCode\":404,\"errorCode\":\"NOT_FOUND\",\"message\":\"No se encontró la categoría con ID: 123e4567-e89b-12d3-a456-426614174001\",\"details\":[\"La categoría especificada no existe en el sistema\"],\"timestamp\":\"2025-11-26T15:10:38.908929300Z\",\"path\":\"/api/products\"}"
                         )
                 )
         ),
@@ -63,7 +63,7 @@ import java.lang.annotation.Target;
                 description = "Producto duplicado (nombre ya existe)",
                 content = @Content(
                         examples = @ExampleObject(
-                                value = "{\"success\":false,\"message\":\"Producto duplicado. Ya existe un producto con el nombre: laptop hp\",\"data\":null}"
+                                value = "{\"statusCode\":409,\"errorCode\":\"CONFLICT\",\"message\":\"Producto duplicado. Ya existe un producto con el nombre: laptop hp\",\"details\":[\"El nombre del producto debe ser único\"],\"timestamp\":\"2025-11-26T15:10:38.908929300Z\",\"path\":\"/api/products\"}"
                         )
                 )
         ),

@@ -86,14 +86,12 @@ import java.lang.annotation.Target;
             examples = @ExampleObject(
                 value = """
                 {
-                  "success": false,
-                  "message": "Errores de validación",
-                  "data": {
-                    "fields": {
-                      "name": "El nombre no puede exceder 50 caracteres"
-                    },
-                    "errors": ["El nombre no puede exceder 50 caracteres"]
-                  }
+                  "statusCode": 400,
+                  "errorCode": "VALIDATION_ERROR",
+                  "message": "Falló la validación de los campos",
+                  "details": ["name: El nombre no puede exceder 50 caracteres"],
+                  "timestamp": "2025-11-26T15:10:38.908929300Z",
+                  "path": "/api/categories/123e4567-e89b-12d3-a456-426614174001"
                 }
                 """
             )
@@ -107,9 +105,12 @@ import java.lang.annotation.Target;
             examples = @ExampleObject(
                 value = """
                 {
-                  "success": false,
+                  "statusCode": 404,
+                  "errorCode": "NOT_FOUND",
                   "message": "No se encontró la categoría con ID: 123e4567-e89b-12d3-a456-426614174001",
-                  "data": null
+                  "details": ["La categoría especificada no existe en el sistema"],
+                  "timestamp": "2025-11-26T15:10:38.908929300Z",
+                  "path": "/api/categories/123e4567-e89b-12d3-a456-426614174001"
                 }
                 """
             )
@@ -123,9 +124,12 @@ import java.lang.annotation.Target;
             examples = @ExampleObject(
                 value = """
                 {
-                  "success": false,
+                  "statusCode": 409,
+                  "errorCode": "CONFLICT",
                   "message": "Ya existe una categoría con el nombre: Oficina",
-                  "data": null
+                  "details": ["El nombre de la categoría debe ser único"],
+                  "timestamp": "2025-11-26T15:10:38.908929300Z",
+                  "path": "/api/categories/123e4567-e89b-12d3-a456-426614174001"
                 }
                 """
             )
