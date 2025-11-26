@@ -49,13 +49,14 @@ public class SecurityResponses {
     public @interface Unauthorized {}
 
     /**
-     * Respuesta 403 - Acceso denegado (rol ADMIN requerido)
+     * Respuesta 403 - Acceso denegado (requiere permisos de administrador)
+     * NOTA: El mensaje NO revela roles específicos por seguridad.
      */
     @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @ApiResponse(
         responseCode = "403",
-        description = "Acceso denegado - Se requiere rol ADMIN",
+        description = "Acceso denegado - Permisos insuficientes",
         content = @Content(
             mediaType = "application/json",
             examples = @ExampleObject(
@@ -65,7 +66,7 @@ public class SecurityResponses {
                   "errorCode": "FORBIDDEN",
                   "message": "Acceso denegado. No tienes permisos para realizar esta acción",
                   "details": [
-                    "Se requiere rol ADMIN para acceder a este recurso"
+                    "No tienes los permisos necesarios para realizar esta operación"
                   ],
                   "timestamp": "2025-11-26T15:10:38.908929300Z",
                   "path": "/api/resource"
@@ -77,13 +78,14 @@ public class SecurityResponses {
     public @interface ForbiddenAdmin {}
 
     /**
-     * Respuesta 403 - Acceso denegado (rol ADMIN o MANAGER requerido)
+     * Respuesta 403 - Acceso denegado (requiere permisos elevados)
+     * NOTA: El mensaje NO revela roles específicos por seguridad.
      */
     @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @ApiResponse(
         responseCode = "403",
-        description = "Acceso denegado - Se requiere rol ADMIN o MANAGER",
+        description = "Acceso denegado - Permisos insuficientes",
         content = @Content(
             mediaType = "application/json",
             examples = @ExampleObject(
@@ -93,7 +95,7 @@ public class SecurityResponses {
                   "errorCode": "FORBIDDEN",
                   "message": "Acceso denegado. No tienes permisos para realizar esta acción",
                   "details": [
-                    "Se requiere rol ADMIN o MANAGER para acceder a este recurso"
+                    "No tienes los permisos necesarios para realizar esta operación"
                   ],
                   "timestamp": "2025-11-26T15:10:38.908929300Z",
                   "path": "/api/resource"
