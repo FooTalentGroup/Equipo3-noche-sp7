@@ -14,12 +14,14 @@ package com.stockia.stockia.services;
  * 
  */
 
+import com.stockia.stockia.dtos.client.ClientSearchRequestDto;
 import com.stockia.stockia.models.Client;
 import com.stockia.stockia.repositories.ClientRepository;
 import com.stockia.stockia.exceptions.client.ClientDuplicatedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -106,5 +108,26 @@ public class ClientService {
      */
     public Optional<Client> findByPhone(String phone) {
         return clientRepository.findByPhone(phone);
+    }
+
+    /**
+     * Busca clientes con filtros múltiples y paginación.
+     *
+     * Permite buscar clientes filtrando por nombre (parcial), email (exacto),
+     * teléfono (exacto) y si es cliente frecuente.
+     * Todos los filtros son opcionales.
+     *
+     * @param params DTO con los parámetros de búsqueda
+     * @param pageable Configuración de paginación y ordenamiento
+     * @return Page con los clientes que cumplen los criterios
+     */
+    public Page<Client> searchClients(ClientSearchRequestDto params, Pageable pageable) {
+        return clientRepository.searchClients(
+            params.name(),
+            params.email(),
+            params.phone(),
+            params.isFrequent(),
+            pageable
+        );
     }
 }

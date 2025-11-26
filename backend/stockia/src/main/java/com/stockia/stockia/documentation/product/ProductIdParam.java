@@ -16,7 +16,6 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-@Parameter(description = "ID del producto", example = "1")
+@Parameter(description = "ID del producto", example = "123e4567-e89b-12d3-a456-426614174000")
 public @interface ProductIdParam {
 }
-

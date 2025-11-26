@@ -32,9 +32,15 @@ public class SecurityResponses {
             examples = @ExampleObject(
                 value = """
                 {
-                  "success": false,
-                  "message": "Acceso no autorizado. Token inválido o ausente",
-                  "data": null
+                  "statusCode": 401,
+                  "errorCode": "AUTH_ERROR",
+                  "message": "Acceso no autorizado. Token inválido o ausente.",
+                  "details": [
+                    "Token inválido, ausente o expirado.",
+                    "Se requiere estar autenticado para acceder a este recurso"
+                  ],
+                  "timestamp": "2025-11-26T15:10:38.908929300Z",
+                  "path": "/api/resource"
                 }
                 """
             )
@@ -43,21 +49,27 @@ public class SecurityResponses {
     public @interface Unauthorized {}
 
     /**
-     * Respuesta 403 - Acceso denegado (rol ADMIN requerido)
+     * Respuesta 403 - Acceso denegado (requiere permisos de administrador)
+     * NOTA: El mensaje NO revela roles específicos por seguridad.
      */
     @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @ApiResponse(
         responseCode = "403",
-        description = "Acceso denegado - Se requiere rol ADMIN",
+        description = "Acceso denegado - Permisos insuficientes",
         content = @Content(
             mediaType = "application/json",
             examples = @ExampleObject(
                 value = """
                 {
-                  "success": false,
+                  "statusCode": 403,
+                  "errorCode": "FORBIDDEN",
                   "message": "Acceso denegado. No tienes permisos para realizar esta acción",
-                  "data": null
+                  "details": [
+                    "No tienes los permisos necesarios para realizar esta operación"
+                  ],
+                  "timestamp": "2025-11-26T15:10:38.908929300Z",
+                  "path": "/api/resource"
                 }
                 """
             )
@@ -66,21 +78,27 @@ public class SecurityResponses {
     public @interface ForbiddenAdmin {}
 
     /**
-     * Respuesta 403 - Acceso denegado (rol ADMIN o MANAGER requerido)
+     * Respuesta 403 - Acceso denegado (requiere permisos elevados)
+     * NOTA: El mensaje NO revela roles específicos por seguridad.
      */
     @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @ApiResponse(
         responseCode = "403",
-        description = "Acceso denegado - Se requiere rol ADMIN o MANAGER",
+        description = "Acceso denegado - Permisos insuficientes",
         content = @Content(
             mediaType = "application/json",
             examples = @ExampleObject(
                 value = """
                 {
-                  "success": false,
+                  "statusCode": 403,
+                  "errorCode": "FORBIDDEN",
                   "message": "Acceso denegado. No tienes permisos para realizar esta acción",
-                  "data": null
+                  "details": [
+                    "No tienes los permisos necesarios para realizar esta operación"
+                  ],
+                  "timestamp": "2025-11-26T15:10:38.908929300Z",
+                  "path": "/api/resource"
                 }
                 """
             )

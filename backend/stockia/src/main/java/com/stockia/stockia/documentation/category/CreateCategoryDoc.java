@@ -58,16 +58,12 @@ import java.lang.annotation.Target;
             examples = @ExampleObject(
                 value = """
                 {
-                  "success": false,
-                  "message": "Errores de validación",
-                  "data": {
-                    "fields": {
-                      "name": "El nombre de la categoría es obligatorio"
-                    },
-                    "errors": [
-                      "El nombre de la categoría es obligatorio"
-                    ]
-                  }
+                  "statusCode": 400,
+                  "errorCode": "VALIDATION_ERROR",
+                  "message": "Falló la validación de los campos",
+                  "details": ["name: El nombre de la categoría es obligatorio"],
+                  "timestamp": "2025-11-26T15:10:38.908929300Z",
+                  "path": "/api/categories"
                 }
                 """
             )
@@ -81,9 +77,12 @@ import java.lang.annotation.Target;
             examples = @ExampleObject(
                 value = """
                 {
-                  "success": false,
+                  "statusCode": 409,
+                  "errorCode": "CONFLICT",
                   "message": "Ya existe una categoría con el nombre: Deportes",
-                  "data": null
+                  "details": ["El nombre de la categoría debe ser único"],
+                  "timestamp": "2025-11-26T15:10:38.908929300Z",
+                  "path": "/api/categories"
                 }
                 """
             )

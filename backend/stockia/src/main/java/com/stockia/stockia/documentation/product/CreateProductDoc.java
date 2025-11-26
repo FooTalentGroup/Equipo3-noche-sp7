@@ -36,7 +36,7 @@ import java.lang.annotation.Target;
                 description = "Producto creado exitosamente. Retorna el producto con los campos generados automáticamente.",
                 content = @Content(
                         examples = @ExampleObject(
-                                value = "{\"success\":true,\"message\":\"Producto registrado exitosamente\",\"data\":{\"id\":1,\"name\":\"laptop hp\",\"category\":{\"id\":1,\"name\":\"Electrónica\"},\"price\":999.99,\"photoUrl\":null,\"currentStock\":0,\"minStock\":5,\"isAvailable\":true,\"createdAt\":\"2025-11-21T10:30:00\",\"updatedAt\":\"2025-11-21T10:30:00\",\"hasLowStock\":true}}"
+                                value = "{\"success\":true,\"message\":\"Producto registrado exitosamente\",\"data\":{\"id\":\"123e4567-e89b-12d3-a456-426614174000\",\"name\":\"laptop hp\",\"category\":{\"id\":\"123e4567-e89b-12d3-a456-426614174001\",\"name\":\"Electrónica\"},\"price\":999.99,\"photoUrl\":null,\"currentStock\":0,\"minStock\":5,\"isAvailable\":true,\"createdAt\":\"2025-11-21T10:30:00\",\"updatedAt\":\"2025-11-21T10:30:00\",\"hasLowStock\":true}}"
                         )
                 )
         ),
@@ -45,7 +45,7 @@ import java.lang.annotation.Target;
                 description = "Datos inválidos o formato incorrecto",
                 content = @Content(
                         examples = @ExampleObject(
-                                value = "{\"success\":false,\"message\":\"Errores de validación\",\"data\":{\"fields\":{\"name\":\"El nombre del producto es obligatorio\",\"price\":\"El precio debe ser mayor o igual a 0\"},\"errors\":[\"El nombre del producto es obligatorio\",\"El precio debe ser mayor o igual a 0\"]}}"
+                                value = "{\"statusCode\":400,\"errorCode\":\"VALIDATION_ERROR\",\"message\":\"Falló la validación de los campos\",\"details\":[\"name: El nombre del producto es obligatorio\",\"price: El precio debe ser mayor o igual a 0\"],\"timestamp\":\"2025-11-26T15:10:38.908929300Z\",\"path\":\"/api/products\"}"
                         )
                 )
         ),
@@ -54,7 +54,7 @@ import java.lang.annotation.Target;
                 description = "Categoría no encontrada",
                 content = @Content(
                         examples = @ExampleObject(
-                                value = "{\"success\":false,\"message\":\"No se encontró la categoría con ID: 999\",\"data\":null}"
+                                value = "{\"statusCode\":404,\"errorCode\":\"NOT_FOUND\",\"message\":\"No se encontró la categoría con ID: 123e4567-e89b-12d3-a456-426614174001\",\"details\":[\"La categoría especificada no existe en el sistema\"],\"timestamp\":\"2025-11-26T15:10:38.908929300Z\",\"path\":\"/api/products\"}"
                         )
                 )
         ),
@@ -63,7 +63,7 @@ import java.lang.annotation.Target;
                 description = "Producto duplicado (nombre ya existe)",
                 content = @Content(
                         examples = @ExampleObject(
-                                value = "{\"success\":false,\"message\":\"Producto duplicado. Ya existe un producto con el nombre: laptop hp\",\"data\":null}"
+                                value = "{\"statusCode\":409,\"errorCode\":\"CONFLICT\",\"message\":\"Producto duplicado. Ya existe un producto con el nombre: laptop hp\",\"details\":[\"El nombre del producto debe ser único\"],\"timestamp\":\"2025-11-26T15:10:38.908929300Z\",\"path\":\"/api/products\"}"
                         )
                 )
         ),
@@ -72,4 +72,3 @@ import java.lang.annotation.Target;
 @SecurityResponses.RequiresAdminOrManager
 public @interface CreateProductDoc {
 }
-

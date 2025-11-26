@@ -12,7 +12,10 @@ package com.stockia.stockia.repositories;
 import com.stockia.stockia.models.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -76,4 +79,30 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     List<Client> findByIsFrequentTrue();
 
     Optional<Client> findById(UUID id);
+
+    /**
+     * Búsqueda de clientes con filtros múltiples y paginación.
+     *
+     * Permite filtrar por nombre (parcial), email (exacto), teléfono (exacto) y si es frecuente.
+     * Todos los parámetros son opcionales (null = no filtrar por ese campo).
+     *
+     * @param name Nombre del cliente (búsqueda parcial, case-insensitive)
+     * @param email Email del cliente (búsqueda exacta)
+     * @param phone Teléfono del cliente (búsqueda exacta)
+     * @param isFrequent true para frecuentes, false para no frecuentes, null para todos
+     * @param pageable Configuración de paginación y ordenamiento
+     * @return Page con los clientes que cumplen los criterios
+     */
+    @Query("SELECT c FROM Client c WHERE " +
+           "(:name IS NULL OR LOWER(c.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
+           "(:email IS NULL OR c.email = :email) AND " +
+           "(:phone IS NULL OR c.phone = :phone) AND " +
+           "(:isFrequent IS NULL OR c.isFrequent = :isFrequent)")
+    Page<Client> searchClients(
+        @Param("name") String name,
+        @Param("email") String email,
+        @Param("phone") String phone,
+        @Param("isFrequent") Boolean isFrequent,
+        Pageable pageable
+    );
 }

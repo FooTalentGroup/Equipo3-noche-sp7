@@ -1,6 +1,7 @@
 package com.stockia.stockia.security.handler;
 
 import com.stockia.stockia.exceptions.ErrorResponse;
+import com.stockia.stockia.security.constants.SecurityConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,6 +14,12 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Manejador personalizado para errores de acceso denegado (403 Forbidden).
+ * Se activa cuando un usuario autenticado intenta acceder a un recurso para el cual no tiene permisos.
+ *
+ * IMPORTANTE: Los mensajes NO revelan qué roles específicos se requieren por seguridad.
+ */
 @Component
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
@@ -22,13 +29,18 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request,
                        HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException {
-        log.error("❌ AccessDeniedHandler invoked for URI: {}", request.getRequestURI());
 
+        // Log interno (solo para debugging, no se envía al cliente)
+        log.warn("❌ Access denied for user at URI: {} - Reason: {}",
+                request.getRequestURI(),
+                accessDeniedException.getMessage());
+
+        // Respuesta genérica que NO revela información sobre roles
         ErrorResponse error = new ErrorResponse(
                 HttpServletResponse.SC_FORBIDDEN,
                 "FORBIDDEN",
-                "Acceso denegado. No tienes permisos para acceder a este recurso.",
-                List.of("El usuario no tiene autorización suficiente para realizar esta acción."),
+                SecurityConstants.Messages.FORBIDDEN,
+                List.of("No tienes los permisos necesarios para realizar esta operación"),
                 request.getRequestURI()
         );
 
@@ -36,7 +48,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         response.setContentType("application/json;charset=UTF-8");
         new ObjectMapper().writeValue(response.getOutputStream(), error);
     }
-
 
 }
 

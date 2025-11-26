@@ -35,7 +35,7 @@ import java.lang.annotation.Target;
                 description = "Producto encontrado",
                 content = @Content(
                         examples = @ExampleObject(
-                                value = "{\"success\":true,\"message\":\"Producto encontrado\",\"data\":{\"id\":1,\"name\":\"laptop hp\",\"category\":{\"id\":1,\"name\":\"Electrónica\"},\"price\":999.99,\"photoUrl\":null,\"currentStock\":10,\"minStock\":5,\"isAvailable\":true,\"hasLowStock\":false}}"
+                                value = "{\"success\":true,\"message\":\"Producto encontrado\",\"data\":{\"id\":\"123e4567-e89b-12d3-a456-426614174000\",\"name\":\"laptop hp\",\"category\":{\"id\":\"123e4567-e89b-12d3-a456-426614174001\",\"name\":\"Electrónica\"},\"price\":999.99,\"photoUrl\":null,\"currentStock\":10,\"minStock\":5,\"isAvailable\":true,\"hasLowStock\":false}}"
                         )
                 )
         ),
@@ -44,7 +44,7 @@ import java.lang.annotation.Target;
                 description = "Producto no encontrado",
                 content = @Content(
                         examples = @ExampleObject(
-                                value = "{\"success\":false,\"message\":\"No se encontró el producto con ID: 999\",\"data\":null}"
+                                value = "{\"statusCode\":404,\"errorCode\":\"NOT_FOUND\",\"message\":\"No se encontró el producto con ID: 123e4567-e89b-12d3-a456-426614174000\",\"details\":[\"El producto especificado no existe en el sistema\"],\"timestamp\":\"2025-11-26T15:10:38.908929300Z\",\"path\":\"/api/products/123e4567-e89b-12d3-a456-426614174000\"}"
                         )
                 )
         )
@@ -52,4 +52,3 @@ import java.lang.annotation.Target;
 @SecurityResponses.RequiresAdminOrManager
 public @interface GetProductByIdDoc {
 }
-

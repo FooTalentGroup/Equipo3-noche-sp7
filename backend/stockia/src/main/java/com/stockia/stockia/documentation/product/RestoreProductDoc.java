@@ -34,7 +34,7 @@ import com.stockia.stockia.documentation.common.SecurityResponses;
         description = "Producto restaurado exitosamente",
         content = @Content(
             examples = @ExampleObject(
-                value = "{\"success\":true,\"message\":\"Producto restaurado exitosamente\",\"data\":{\"id\":5,\"name\":\"mouse inalambrico\",\"category\":{\"id\":1,\"name\":\"Electrónica\"},\"price\":29.99,\"isAvailable\":true}}"
+                value = "{\"success\":true,\"message\":\"Producto restaurado exitosamente\",\"data\":{\"id\":\"123e4567-e89b-12d3-a456-426614174000\",\"name\":\"mouse inalambrico\",\"category\":{\"id\":\"123e4567-e89b-12d3-a456-426614174001\",\"name\":\"Electrónica\"},\"price\":29.99,\"isAvailable\":true}}"
             )
         )
     ),
@@ -43,7 +43,7 @@ import com.stockia.stockia.documentation.common.SecurityResponses;
         description = "Producto no encontrado",
         content = @Content(
             examples = @ExampleObject(
-                value = "{\"success\":false,\"message\":\"No se encontró el producto con ID: 999\",\"data\":null}"
+                value = "{\"statusCode\":404,\"errorCode\":\"NOT_FOUND\",\"message\":\"No se encontró el producto con ID: 123e4567-e89b-12d3-a456-426614174000\",\"details\":[\"El producto especificado no existe en el sistema\"],\"timestamp\":\"2025-11-26T15:10:38.908929300Z\",\"path\":\"/api/products/123e4567-e89b-12d3-a456-426614174000/restore\"}"
             )
         )
     ),
@@ -52,7 +52,7 @@ import com.stockia.stockia.documentation.common.SecurityResponses;
         description = "El producto no está eliminado",
         content = @Content(
             examples = @ExampleObject(
-                value = "{\"success\":false,\"message\":\"El producto no está eliminado\",\"data\":null}"
+                value = "{\"statusCode\":400,\"errorCode\":\"BAD_REQUEST\",\"message\":\"El producto no está eliminado\",\"details\":[\"Solo se pueden restaurar productos que hayan sido eliminados previamente\"],\"timestamp\":\"2025-11-26T15:10:38.908929300Z\",\"path\":\"/api/products/123e4567-e89b-12d3-a456-426614174000/restore\"}"
             )
         )
     )
@@ -60,4 +60,3 @@ import com.stockia.stockia.documentation.common.SecurityResponses;
 @SecurityResponses.RequiresAdmin
 public @interface RestoreProductDoc {
 }
-

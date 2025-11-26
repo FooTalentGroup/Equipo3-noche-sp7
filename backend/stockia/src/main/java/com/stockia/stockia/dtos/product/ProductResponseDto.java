@@ -18,7 +18,7 @@ import java.util.UUID;
 @Schema(description = "Información completa de un producto")
 public class ProductResponseDto {
 
-    @Schema(description = "Identificador único del producto", example = "1")
+    @Schema(description = "Identificador único del producto", example = "550e8400-e29b-41d4-a716-446655440000")
     private UUID id;
 
     @Schema(description = "Nombre del producto", example = "Laptop HP Pavilion 15")

@@ -1,32 +1,23 @@
 package com.stockia.stockia.controllers;
 
-import com.stockia.stockia.documentation.category.CategoryControllerTag;
-import com.stockia.stockia.documentation.category.CategoryIdParam;
-import com.stockia.stockia.documentation.category.CreateCategoryDoc;
-import com.stockia.stockia.documentation.category.GetAllCategoriesDoc;
-import com.stockia.stockia.documentation.category.GetActiveCategoriesDoc;
-import com.stockia.stockia.documentation.category.GetCategoryByIdDoc;
-import com.stockia.stockia.documentation.category.GetDeletedCategoriesDoc;
-import com.stockia.stockia.documentation.category.UpdateCategoryDoc;
-import com.stockia.stockia.documentation.category.DeactivateCategoryDoc;
-import com.stockia.stockia.documentation.category.ActivateCategoryDoc;
-import com.stockia.stockia.documentation.category.DeleteCategoryDoc;
-import com.stockia.stockia.documentation.category.RestoreCategoryDoc;
-import com.stockia.stockia.documentation.category.PermanentDeleteCategoryDoc;
+import com.stockia.stockia.documentation.category.*;
 import com.stockia.stockia.dtos.category.CategoryRequestDto;
 import com.stockia.stockia.dtos.category.CategoryResponseDto;
+import com.stockia.stockia.dtos.category.CategorySearchRequestDto;
+import com.stockia.stockia.dtos.category.CategoryUpdateDto;
 import com.stockia.stockia.services.CategoryService;
 import com.stockia.stockia.utils.ApiResult;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 import static com.stockia.stockia.security.constants.SecurityConstants.Roles.*;
@@ -38,24 +29,18 @@ import static com.stockia.stockia.security.constants.SecurityConstants.Roles.*;
  * 
  * - DELETE [/api/categories/{id}] → Eliminar categoría (soft delete)
  * - DELETE [/api/categories/{id}/permanent] → Eliminar categoría permanentemente
- * - GET [/api/categories/{id}] → Obtener categoría por ID
- * - GET [/api/categories] → Listar todas las categorías
- * - GET [/api/categories/deleted] → Listar categorías eliminadas
- * - GET [/api/categories/active] → Listar categorías activas
+ * - GET [/api/categories] → Buscar y listar categorías con filtros (nombre, isActive, deleted)
  * - PATCH [/api/categories/{id}/restore] → Restaurar categoría eliminada
  * - PATCH [/api/categories/{id}/deactivate] → Desactivar categoría
  * - PATCH [/api/categories/{id}/activate] → Activar categoría
  * - POST [/api/categories] → Crear nueva categoría
- * - PUT [/api/categories/{id} → Actualizar categoría
- * 
- * @author StockIA Team (Maidana)
- * @version 1.0
- * @since 2025-11-20
+ * - PUT [/api/categories/{id}] → Actualizar categoría
+ *
  */
+@CategoryControllerTag
 @RestController
 @RequestMapping("/api/categories")
 @RequiredArgsConstructor
-@Tag(name = "04 - Categorías", description = "Endpoints para la gestión de categorías")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -80,16 +65,22 @@ public class CategoryController {
     }
 
     /**
-     * Lista todas las categorías (activas e inactivas).
+     * Busca y lista categorías con filtros opcionales.
+     * Soporta filtrado por nombre, estado activo y estado de eliminación.
+     * Soporta paginación y ordenamiento.
      *
-     * @return ResponseEntity con lista de categorías (200)
+     * @param params Parámetros de búsqueda (nombre, isActive, deleted)
+     * @param pageable Configuración de paginación y ordenamiento
+     * @return ResponseEntity con página de categorías (200)
      */
     @GetMapping
     @GetAllCategoriesDoc
     @PreAuthorize(ADMIN_OR_MANAGER)
-    public ResponseEntity<ApiResult<List<CategoryResponseDto>>> getAllCategories() {
+    public ResponseEntity<ApiResult<Page<CategoryResponseDto>>> searchCategories(
+            @ParameterObject @Valid CategorySearchRequestDto params,
+            @ParameterObject Pageable pageable) {
 
-        List<CategoryResponseDto> categories = categoryService.getAllCategories();
+        Page<CategoryResponseDto> categories = categoryService.searchCategories(params, pageable);
 
         return ResponseEntity.ok(
                 ApiResult.success("Categorías obtenidas exitosamente", categories)
@@ -97,46 +88,11 @@ public class CategoryController {
     }
 
     /**
-     * Lista solo las categorías activas.
-     *
-     * @return ResponseEntity con lista de categorías activas (200)
-     */
-    @GetMapping("/active")
-    @GetActiveCategoriesDoc
-    @PreAuthorize(ADMIN_OR_MANAGER)
-    public ResponseEntity<ApiResult<List<CategoryResponseDto>>> getActiveCategories() {
-
-        List<CategoryResponseDto> categories = categoryService.getActiveCategories();
-
-        return ResponseEntity.ok(
-                ApiResult.success("Categorías activas obtenidas exitosamente", categories)
-        );
-    }
-
-    /**
-     * Obtiene una categoría por su ID.
-     *
-     * @param id ID de la categoría
-     * @return ResponseEntity con la categoría encontrada (200)
-     */
-    @GetMapping("/{id}")
-    @GetCategoryByIdDoc
-    @PreAuthorize(ADMIN_OR_MANAGER)
-    public ResponseEntity<ApiResult<CategoryResponseDto>> getCategoryById(
-            @PathVariable @CategoryIdParam UUID id) {
-
-        CategoryResponseDto category = categoryService.getCategoryById(id);
-
-        return ResponseEntity.ok(
-                ApiResult.success("Categoría obtenida exitosamente", category)
-        );
-    }
-
-    /**
-     * Actualiza una categoría existente.
+     * Actualiza una categoría existente (actualización parcial).
+     * Solo se actualizan los campos proporcionados.
      *
      * @param id ID de la categoría a actualizar
-     * @param dto Nuevos datos de la categoría
+     * @param dto Nuevos datos de la categoría (todos los campos son opcionales)
      * @return ResponseEntity con la categoría actualizada (200)
      */
     @PutMapping("/{id}")
@@ -144,7 +100,7 @@ public class CategoryController {
     @PreAuthorize(ADMIN_ONLY)
     public ResponseEntity<ApiResult<CategoryResponseDto>> updateCategory(
             @PathVariable @CategoryIdParam UUID id,
-            @Valid @RequestBody CategoryRequestDto dto) {
+            @Valid @RequestBody CategoryUpdateDto dto) {
 
         CategoryResponseDto category = categoryService.updateCategory(id, dto);
 
@@ -169,61 +125,6 @@ public class CategoryController {
 
         return ResponseEntity.ok(
                 ApiResult.success("Categoría eliminada exitosamente")
-        );
-    }
-
-    /**
-     * Desactiva una categoría (marca como inactiva).
-     *
-     * @param id ID de la categoría a desactivar
-     * @return ResponseEntity con mensaje de éxito (200)
-     */
-    @PatchMapping("/{id}/deactivate")
-    @DeactivateCategoryDoc
-    @PreAuthorize(ADMIN_ONLY)
-    public ResponseEntity<ApiResult<Void>> deactivateCategory(
-            @PathVariable @CategoryIdParam UUID id) {
-
-        categoryService.deactivateCategory(id);
-
-        return ResponseEntity.ok(
-                ApiResult.success("Categoría desactivada exitosamente")
-        );
-    }
-
-    /**
-     * Activa una categoría previamente desactivada.
-     *
-     * @param id ID de la categoría a activar
-     * @return ResponseEntity con la categoría activada (200)
-     */
-    @PatchMapping("/{id}/activate")
-    @ActivateCategoryDoc
-    @PreAuthorize(ADMIN_ONLY)
-    public ResponseEntity<ApiResult<CategoryResponseDto>> activateCategory(
-            @PathVariable @CategoryIdParam UUID id) {
-
-        CategoryResponseDto category = categoryService.activateCategory(id);
-
-        return ResponseEntity.ok(
-                ApiResult.success("Categoría activada exitosamente", category)
-        );
-    }
-
-    /**
-     * Lista las categorías eliminadas.
-     *
-     * @return ResponseEntity con lista de categorías eliminadas (200)
-     */
-    @GetMapping("/deleted")
-    @GetDeletedCategoriesDoc
-    @PreAuthorize(ADMIN_ONLY)
-    public ResponseEntity<ApiResult<List<CategoryResponseDto>>> getDeletedCategories() {
-
-        List<CategoryResponseDto> categories = categoryService.getDeletedCategories();
-
-        return ResponseEntity.ok(
-                ApiResult.success("Categorías eliminadas obtenidas exitosamente", categories)
         );
     }
 
