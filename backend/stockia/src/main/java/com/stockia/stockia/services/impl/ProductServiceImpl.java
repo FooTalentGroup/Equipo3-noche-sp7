@@ -2,6 +2,7 @@ package com.stockia.stockia.services.Impl;
 
 import com.stockia.stockia.dtos.product.ProductRequestDto;
 import com.stockia.stockia.dtos.product.ProductResponseDto;
+import com.stockia.stockia.dtos.product.ProductSearchRequestDto;
 import com.stockia.stockia.dtos.product.ProductUpdateDto;
 import com.stockia.stockia.exceptions.category.CategoryNotFoundException;
 import com.stockia.stockia.exceptions.product.DuplicateProductException;
@@ -14,10 +15,11 @@ import com.stockia.stockia.repositories.ProductRepository;
 import com.stockia.stockia.services.ProductService;
 import com.stockia.stockia.utils.SoftDeletableValidator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -75,102 +77,20 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductResponseDto> getAllActiveProducts() {
-        log.info("Fetching all active products");
-        // Solo productos disponibles (isAvailable=true) y no eliminados (deleted=false)
-        List<Product> products = productRepository.findByDeletedFalse().stream()
-                .filter(Product::getIsAvailable)
-                .toList();
-        return productMapper.toResponseDtoList(products);
-    }
+    public Page<ProductResponseDto> searchProducts(ProductSearchRequestDto params, Pageable pageable) {
+        log.info("Searching products with filters - deleted: {}, includeInactive: {}, lowStock: {}, query: {}, categoryId: {}",
+                params.deleted(), params.includeInactive(), params.lowStock(), params.q(), params.categoryId());
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<ProductResponseDto> getProductsWithFilters(Boolean includeInactive, Boolean lowStock) {
-        log.info("Fetching products with filters - includeInactive: {}, lowStock: {}", includeInactive, lowStock);
-        List<Product> products;
+        Page<Product> products = productRepository.searchProducts(
+                params.q(),
+                params.categoryId(),
+                params.deleted(),
+                params.includeInactive(),
+                params.lowStock(),
+                pageable
+        );
 
-        // Paso 1: Filtrar por disponibilidad (includeInactive)
-        if (includeInactive != null && includeInactive) {
-            // Incluye productos activos e inactivos (isAvailable=true/false), pero NO
-            // eliminados
-            products = productRepository.findByDeletedFalse();
-        } else {
-            // Solo productos activos (isAvailable=true) y no eliminados
-            products = productRepository.findByDeletedFalse().stream()
-                    .filter(Product::getIsAvailable)
-                    .toList();
-        }
-
-        // Paso 2: Filtrar por stock bajo (lowStock)
-        if (lowStock != null && lowStock) {
-            products = products.stream()
-                    .filter(Product::hasLowStock)
-                    .toList();
-        }
-
-        return productMapper.toResponseDtoList(products);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<ProductResponseDto> searchProducts(String name, UUID categoryId) {
-        log.info("Searching products: name={}, categoryId={}", name, categoryId);
-        List<Product> products;
-        if (name != null && categoryId != null) {
-            products = productRepository.findByNameContainingIgnoreCaseAndCategoryIdAndDeletedFalse(name, categoryId);
-        } else if (name != null) {
-            products = productRepository.findByNameContainingIgnoreCaseAndDeletedFalse(name);
-        } else if (categoryId != null) {
-            products = productRepository.findByCategoryIdAndDeletedFalse(categoryId);
-        } else {
-            products = productRepository.findByDeletedFalse();
-        }
-
-        // Filtrar solo productos disponibles (isAvailable=true)
-        products = products.stream()
-                .filter(Product::getIsAvailable)
-                .toList();
-
-        return productMapper.toResponseDtoList(products);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<ProductResponseDto> searchProductsWithManagementFilters(String query, UUID categoryId,
-            Boolean includeInactive, Boolean lowStock) {
-        log.info(
-                "Searching products with management filters - query: {}, categoryId: {}, includeInactive: {}, lowStock: {}",
-                query, categoryId, includeInactive, lowStock);
-
-        // Paso 1: Búsqueda base
-        List<Product> products;
-        if (query != null && categoryId != null) {
-            products = productRepository.findByNameContainingIgnoreCaseAndCategoryIdAndDeletedFalse(query, categoryId);
-        } else if (query != null) {
-            products = productRepository.findByNameContainingIgnoreCaseAndDeletedFalse(query);
-        } else if (categoryId != null) {
-            products = productRepository.findByCategoryIdAndDeletedFalse(categoryId);
-        } else {
-            products = productRepository.findByDeletedFalse();
-        }
-
-        // Paso 2: Aplicar filtros de gestión
-        // Filtrar por disponibilidad
-        if (includeInactive == null || !includeInactive) {
-            products = products.stream()
-                    .filter(Product::getIsAvailable)
-                    .toList();
-        }
-
-        // Filtrar por stock bajo
-        if (lowStock != null && lowStock) {
-            products = products.stream()
-                    .filter(Product::hasLowStock)
-                    .toList();
-        }
-
-        return productMapper.toResponseDtoList(products);
+        return products.map(productMapper::toResponseDto);
     }
 
     @Override
@@ -220,13 +140,6 @@ public class ProductServiceImpl implements ProductService {
         log.info("Product deleted with ID: {}", id);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<ProductResponseDto> getDeletedProducts() {
-        log.info("Fetching deleted products");
-        List<Product> products = productRepository.findByDeletedTrue();
-        return productMapper.toResponseDtoList(products);
-    }
 
     @Override
     @Transactional

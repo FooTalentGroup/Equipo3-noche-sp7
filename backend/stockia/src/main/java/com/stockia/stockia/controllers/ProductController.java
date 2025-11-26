@@ -3,19 +3,21 @@ package com.stockia.stockia.controllers;
 import com.stockia.stockia.documentation.product.*;
 import com.stockia.stockia.dtos.product.ProductRequestDto;
 import com.stockia.stockia.dtos.product.ProductResponseDto;
+import com.stockia.stockia.dtos.product.ProductSearchRequestDto;
 import com.stockia.stockia.dtos.product.ProductUpdateDto;
 import com.stockia.stockia.services.ProductService;
 import com.stockia.stockia.utils.ApiResult;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 import static com.stockia.stockia.security.constants.SecurityConstants.Roles.*;
@@ -24,25 +26,17 @@ import static com.stockia.stockia.security.constants.SecurityConstants.Roles.*;
  * Controlador REST para la gestión de productos.
  *
  * Endpoints disponibles:
- * 
  * - DELETE [/api/products/{id}] → Eliminar producto (soft delete)
  * - DELETE [/api/products/{id}/permanent] → Eliminar producto permanentemente
  * - GET [/api/products/{id}] → Obtener producto por ID
- * - GET [/api/products] → Listar productos activos
- * - GET [/api/products/management] → Gestión avanzada de productos
- * - GET [/api/products/deleted] → Listar productos eliminados
+ * - GET [/api/products] → Listar todos los productos con paginación (filtros: deleted, includeInactive, lowStock, q, categoryId)
  * - PATCH [/api/products/{id}/restore] → Restaurar producto eliminado
  * - POST [/api/products] → Registrar nuevo producto
  * - PUT [/api/products/{id}] → Actualizar producto existente
- * 
- * @author StockIA Team (Maidana)
- * @version 1.0
- * @since 2025-11-20
  */
-
+@ProductControllerTag
 @RestController
 @RequestMapping("/api/products")
-@Tag(name = "03 - Productos", description = "Endpoints para la gestión de productos")
 @Slf4j
 public class ProductController {
 
@@ -75,49 +69,15 @@ public class ProductController {
     @GetMapping
     @GetAllProductsDoc
     @PreAuthorize(ADMIN_OR_MANAGER)
-    public ResponseEntity<ApiResult<List<ProductResponseDto>>> getAllProducts(
-            @RequestParam(required = false) String q,
-            @RequestParam(required = false) UUID categoryId) {
-        log.info("GET /api/products - q: {}, categoryId: {}", q, categoryId);
+    public ResponseEntity<ApiResult<Page<ProductResponseDto>>> getAllProducts(
+            @ParameterObject @Valid ProductSearchRequestDto params,
+            @ParameterObject Pageable pageable) {
+        log.info("GET /api/products - deleted: {}, includeInactive: {}, lowStock: {}, q: {}, categoryId: {}",
+                params.deleted(), params.includeInactive(), params.lowStock(), params.q(), params.categoryId());
 
-        // Si hay parámetros de búsqueda, usar el método de búsqueda
-        if (q != null || categoryId != null) {
-            List<ProductResponseDto> products = productService.searchProducts(q, categoryId);
-            String message = products.isEmpty() ? "No se encontraron productos"
-                    : products.size() + " producto(s) encontrado(s)";
-            return ResponseEntity.ok(ApiResult.success(message, products));
-        }
+        Page<ProductResponseDto> products = productService.searchProducts(params, pageable);
 
-        // Si no hay parámetros, listar todos los activos
-        List<ProductResponseDto> products = productService.getAllActiveProducts();
-        String message = products.isEmpty() ? "No hay productos registrados"
-                : products.size() + " producto(s) encontrado(s)";
-        return ResponseEntity.ok(ApiResult.success(message, products));
-    }
-
-    @GetMapping("/management")
-    @GetProductsManagementDoc
-    @PreAuthorize(ADMIN_ONLY)
-    public ResponseEntity<ApiResult<List<ProductResponseDto>>> getProductsForManagement(
-            @IncludeInactiveParam @RequestParam(required = false, defaultValue = "false") Boolean includeInactive,
-            @LowStockParam @RequestParam(required = false, defaultValue = "false") Boolean lowStock,
-            @RequestParam(required = false) String q,
-            @RequestParam(required = false) UUID categoryId) {
-        log.info("GET /api/products/management - includeInactive: {}, lowStock: {}, q: {}, categoryId: {}",
-                includeInactive, lowStock, q, categoryId);
-
-        List<ProductResponseDto> products;
-
-        // Si hay parámetros de búsqueda, aplicar filtros de gestión sobre la búsqueda
-        if (q != null || categoryId != null) {
-            products = productService.searchProductsWithManagementFilters(q, categoryId, includeInactive, lowStock);
-        } else {
-            products = productService.getProductsWithFilters(includeInactive, lowStock);
-        }
-
-        String message = products.isEmpty() ? "No hay productos registrados"
-                : products.size() + " producto(s) encontrado(s)";
-        return ResponseEntity.ok(ApiResult.success(message, products));
+        return ResponseEntity.ok(ApiResult.success("Productos obtenidos exitosamente", products));
     }
 
     @PutMapping("/{id}")
@@ -137,17 +97,6 @@ public class ProductController {
         log.info("DELETE /api/products/{} - Deleting product", id);
         productService.deleteProduct(id);
         return ResponseEntity.ok(ApiResult.success("Producto eliminado exitosamente"));
-    }
-
-    @GetMapping("/deleted")
-    @GetDeletedProductsDoc
-    @PreAuthorize(ADMIN_ONLY)
-    public ResponseEntity<ApiResult<List<ProductResponseDto>>> getDeletedProducts() {
-        log.info("GET /api/products/deleted - Fetching deleted products");
-        List<ProductResponseDto> products = productService.getDeletedProducts();
-        String message = products.isEmpty() ? "No hay productos eliminados"
-                : products.size() + " producto(s) eliminado(s)";
-        return ResponseEntity.ok(ApiResult.success(message, products));
     }
 
     @PatchMapping("/{id}/restore")

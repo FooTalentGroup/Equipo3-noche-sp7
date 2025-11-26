@@ -1,6 +1,8 @@
 package com.stockia.stockia.repositories;
 
 import com.stockia.stockia.models.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -139,4 +141,34 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
        @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Product p " +
                      "WHERE p.name = :name AND p.deleted = false AND p.id != :excludeId")
        boolean existsActiveProductByNameExcludingId(@Param("name") String name, @Param("excludeId") UUID excludeId);
+
+       /**
+        * Busca productos con filtros dinámicos (nombre, categoría, estado de eliminación,
+        * disponibilidad, stock bajo).
+        * Soporta paginación y ordenamiento.
+        *
+        * @param query Filtro por nombre (búsqueda parcial, case-insensitive)
+        * @param categoryId Filtro por categoría (null = todas)
+        * @param deleted Filtro por estado de eliminación (null = todos)
+        * @param includeInactive Incluir productos inactivos (null o false = solo activos)
+        * @param lowStock Filtrar solo productos con stock bajo (null o false = todos)
+        * @param pageable Configuración de paginación y ordenamiento
+        * @return Página de productos que cumplen con los criterios
+        */
+       @Query("""
+               SELECT p FROM Product p
+               WHERE
+                   (:query IS NULL OR :query = '' OR LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%'))) AND
+                   (:categoryId IS NULL OR p.category.id = :categoryId) AND
+                   (:deleted IS NULL OR p.deleted = :deleted) AND
+                   (:includeInactive = true OR p.isAvailable = true) AND
+                   (:lowStock = false OR p.currentStock <= p.minStock)
+               """)
+       Page<Product> searchProducts(
+               @Param("query") String query,
+               @Param("categoryId") UUID categoryId,
+               @Param("deleted") Boolean deleted,
+               @Param("includeInactive") Boolean includeInactive,
+               @Param("lowStock") Boolean lowStock,
+               Pageable pageable);
 }
