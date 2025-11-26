@@ -35,9 +35,6 @@ import static com.stockia.stockia.security.constants.SecurityConstants.Roles.*;
  * - POST [/api/categories] → Crear nueva categoría
  * - PUT [/api/categories/{id}] → Actualizar categoría
  *
- * @author StockIA Team (Maidana)
- * @version 1.1
- * @since 2025-11-20
  */
 @CategoryControllerTag
 @RestController
@@ -126,44 +123,6 @@ public class CategoryController {
 
         return ResponseEntity.ok(
                 ApiResult.success("Categoría eliminada exitosamente")
-        );
-    }
-
-    /**
-     * Desactiva una categoría (marca como inactiva).
-     *
-     * @param id ID de la categoría a desactivar
-     * @return ResponseEntity con mensaje de éxito (200)
-     */
-    @PatchMapping("/{id}/deactivate")
-    @DeactivateCategoryDoc
-    @PreAuthorize(ADMIN_ONLY)
-    public ResponseEntity<ApiResult<Void>> deactivateCategory(
-            @PathVariable @CategoryIdParam UUID id) {
-
-        categoryService.deactivateCategory(id);
-
-        return ResponseEntity.ok(
-                ApiResult.success("Categoría desactivada exitosamente")
-        );
-    }
-
-    /**
-     * Activa una categoría previamente desactivada.
-     *
-     * @param id ID de la categoría a activar
-     * @return ResponseEntity con la categoría activada (200)
-     */
-    @PatchMapping("/{id}/activate")
-    @ActivateCategoryDoc
-    @PreAuthorize(ADMIN_ONLY)
-    public ResponseEntity<ApiResult<CategoryResponseDto>> activateCategory(
-            @PathVariable @CategoryIdParam UUID id) {
-
-        CategoryResponseDto category = categoryService.activateCategory(id);
-
-        return ResponseEntity.ok(
-                ApiResult.success("Categoría activada exitosamente", category)
         );
     }
 

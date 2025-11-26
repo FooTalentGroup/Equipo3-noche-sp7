@@ -100,37 +100,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public void deactivateCategory(UUID id) {
-        log.info("Desactivando categoría con ID: {}", id);
-
-        ProductCategory category = categoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryNotFoundException(
-                        "No se encontró la categoría con ID: " + id));
-
-        category.setIsActive(false);
-        categoryRepository.save(category);
-
-        log.info("Categoría desactivada exitosamente: {}", category.getName());
-    }
-
-    @Override
-    @Transactional
-    public CategoryResponseDto activateCategory(UUID id) {
-        log.info("Activando categoría con ID: {}", id);
-
-        ProductCategory category = categoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryNotFoundException(
-                        "No se encontró la categoría con ID: " + id));
-
-        category.setIsActive(true);
-        ProductCategory activatedCategory = categoryRepository.save(category);
-
-        log.info("Categoría activada exitosamente: {}", activatedCategory.getName());
-        return categoryMapper.toResponseDto(activatedCategory);
-    }
-
-    @Override
-    @Transactional
     public void deleteCategory(UUID id) {
         log.info("Eliminando categoría con ID: {}", id);
 

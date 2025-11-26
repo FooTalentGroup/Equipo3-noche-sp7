@@ -50,24 +50,6 @@ public interface CategoryService {
     CategoryResponseDto updateCategory(UUID id, CategoryRequestDto dto);
 
     /**
-     * Desactiva una categoría (soft delete).
-     * No elimina físicamente, solo marca como inactiva.
-     *
-     * @param id ID de la categoría a desactivar
-     * @throws CategoryNotFoundException si no se encuentra la categoría
-     */
-    void deactivateCategory(UUID id);
-
-    /**
-     * Activa una categoría previamente desactivada.
-     *
-     * @param id ID de la categoría a activar
-     * @return DTO con la categoría activada
-     * @throws CategoryNotFoundException si no se encuentra la categoría
-     */
-    CategoryResponseDto activateCategory(UUID id);
-
-    /**
      * Elimina una categoría (soft delete).
      * Marca la categoría como eliminada sin borrarla físicamente.
      *
