@@ -36,7 +36,7 @@ import java.lang.annotation.Target;
                 description = "Producto creado exitosamente. Retorna el producto con los campos generados automáticamente.",
                 content = @Content(
                         examples = @ExampleObject(
-                                value = "{\"success\":true,\"message\":\"Producto registrado exitosamente\",\"data\":{\"id\":1,\"name\":\"laptop hp\",\"category\":{\"id\":1,\"name\":\"Electrónica\"},\"price\":999.99,\"photoUrl\":null,\"currentStock\":0,\"minStock\":5,\"isAvailable\":true,\"createdAt\":\"2025-11-21T10:30:00\",\"updatedAt\":\"2025-11-21T10:30:00\",\"hasLowStock\":true}}"
+                                value = "{\"success\":true,\"message\":\"Producto registrado exitosamente\",\"data\":{\"id\":\"123e4567-e89b-12d3-a456-426614174000\",\"name\":\"laptop hp\",\"category\":{\"id\":\"123e4567-e89b-12d3-a456-426614174001\",\"name\":\"Electrónica\"},\"price\":999.99,\"photoUrl\":null,\"currentStock\":0,\"minStock\":5,\"isAvailable\":true,\"createdAt\":\"2025-11-21T10:30:00\",\"updatedAt\":\"2025-11-21T10:30:00\",\"hasLowStock\":true}}"
                         )
                 )
         ),
@@ -54,7 +54,7 @@ import java.lang.annotation.Target;
                 description = "Categoría no encontrada",
                 content = @Content(
                         examples = @ExampleObject(
-                                value = "{\"success\":false,\"message\":\"No se encontró la categoría con ID: 999\",\"data\":null}"
+                                value = "{\"success\":false,\"message\":\"No se encontró la categoría con ID: 123e4567-e89b-12d3-a456-426614174001\",\"data\":null}"
                         )
                 )
         ),
@@ -72,4 +72,3 @@ import java.lang.annotation.Target;
 @SecurityResponses.RequiresAdminOrManager
 public @interface CreateProductDoc {
 }
-

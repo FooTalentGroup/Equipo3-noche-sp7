@@ -53,7 +53,7 @@ import com.stockia.stockia.documentation.common.SecurityResponses;
                 value = """
                 {
                   "success": false,
-                  "message": "No se encontró la categoría con ID: 999",
+                  "message": "No se encontró la categoría con ID: 123e4567-e89b-12d3-a456-426614174001",
                   "data": null
                 }
                 """
@@ -63,4 +63,3 @@ import com.stockia.stockia.documentation.common.SecurityResponses;
 })
 @SecurityResponses.RequiresAdmin
 public @interface PermanentDeleteCategoryDoc {}
-

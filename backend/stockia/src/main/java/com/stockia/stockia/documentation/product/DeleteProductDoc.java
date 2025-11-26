@@ -43,7 +43,7 @@ import com.stockia.stockia.documentation.common.SecurityResponses;
         description = "Producto no encontrado",
         content = @Content(
             examples = @ExampleObject(
-                value = "{\"success\":false,\"message\":\"No se encontró el producto con ID: 999\",\"data\":null}"
+                value = "{\"success\":false,\"message\":\"No se encontró el producto con ID: 123e4567-e89b-12d3-a456-426614174000\",\"data\":null}"
             )
         )
     )
@@ -51,4 +51,3 @@ import com.stockia.stockia.documentation.common.SecurityResponses;
 @SecurityResponses.RequiresAdmin
 public @interface DeleteProductDoc {
 }
-

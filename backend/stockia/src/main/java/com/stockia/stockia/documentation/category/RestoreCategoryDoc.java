@@ -39,7 +39,7 @@ import com.stockia.stockia.documentation.common.SecurityResponses;
                   "success": true,
                   "message": "Categoría restaurada exitosamente",
                   "data": {
-                    "id": 5,
+                    "id": "123e4567-e89b-12d3-a456-426614174001",
                     "name": "Categoría restaurada",
                     "description": "Restaurada desde eliminados",
                     "isActive": false,
@@ -59,7 +59,7 @@ import com.stockia.stockia.documentation.common.SecurityResponses;
                 value = """
                 {
                   "success": false,
-                  "message": "No se encontró la categoría con ID: 999",
+                  "message": "No se encontró la categoría con ID: 123e4567-e89b-12d3-a456-426614174001",
                   "data": null
                 }
                 """
@@ -85,4 +85,3 @@ import com.stockia.stockia.documentation.common.SecurityResponses;
 })
 @SecurityResponses.RequiresAdmin
 public @interface RestoreCategoryDoc {}
-

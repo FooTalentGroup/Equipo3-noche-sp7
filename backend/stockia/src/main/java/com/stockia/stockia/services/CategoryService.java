@@ -3,6 +3,7 @@ package com.stockia.stockia.services;
 import com.stockia.stockia.dtos.category.CategoryRequestDto;
 import com.stockia.stockia.dtos.category.CategoryResponseDto;
 import com.stockia.stockia.dtos.category.CategorySearchRequestDto;
+import com.stockia.stockia.dtos.category.CategoryUpdateDto;
 import com.stockia.stockia.exceptions.category.CategoryNotFoundException;
 import com.stockia.stockia.exceptions.category.DuplicateCategoryException;
 import org.springframework.data.domain.Page;
@@ -39,15 +40,16 @@ public interface CategoryService {
     Page<CategoryResponseDto> searchCategories(CategorySearchRequestDto params, Pageable pageable);
 
     /**
-     * Actualiza una categoría existente.
+     * Actualiza una categoría existente (actualización parcial).
+     * Solo se actualizan los campos proporcionados.
      *
      * @param id  ID de la categoría a actualizar
-     * @param dto Nuevos datos de la categoría
+     * @param dto Nuevos datos de la categoría (todos los campos son opcionales)
      * @return DTO con la categoría actualizada
      * @throws CategoryNotFoundException  si no se encuentra la categoría
      * @throws DuplicateCategoryException si el nuevo nombre ya existe
      */
-    CategoryResponseDto updateCategory(UUID id, CategoryRequestDto dto);
+    CategoryResponseDto updateCategory(UUID id, CategoryUpdateDto dto);
 
     /**
      * Elimina una categoría (soft delete).

@@ -23,7 +23,7 @@ public class ProductRequestDto {
     private String name;
 
     @NotNull(message = "La categoría es obligatoria")
-    @Schema(description = "ID de la categoría del producto", example = "1")
+    @Schema(description = "ID de la categoría del producto", example = "550e8400-e29b-41d4-a716-446655440000")
     private UUID categoryId;
 
     @NotNull(message = "El precio es obligatorio")

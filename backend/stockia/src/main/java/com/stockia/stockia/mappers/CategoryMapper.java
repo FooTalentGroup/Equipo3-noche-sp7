@@ -2,6 +2,7 @@ package com.stockia.stockia.mappers;
 
 import com.stockia.stockia.dtos.category.CategoryRequestDto;
 import com.stockia.stockia.dtos.category.CategoryResponseDto;
+import com.stockia.stockia.dtos.category.CategoryUpdateDto;
 import com.stockia.stockia.models.ProductCategory;
 import org.springframework.stereotype.Component;
 
@@ -73,7 +74,7 @@ public class CategoryMapper {
     }
 
     /**
-     * Actualiza una entidad existente con los datos del DTO.
+     * Actualiza una entidad existente con los datos del DTO (para creación/actualización completa).
      *
      * @param category Entidad existente
      * @param dto DTO con nuevos datos
@@ -84,6 +85,29 @@ public class CategoryMapper {
         }
 
         if (dto.getName() != null) {
+            category.setName(dto.getName());
+        }
+        if (dto.getDescription() != null) {
+            category.setDescription(dto.getDescription());
+        }
+        if (dto.getIsActive() != null) {
+            category.setIsActive(dto.getIsActive());
+        }
+    }
+
+    /**
+     * Actualiza una entidad existente con los datos del DTO (para actualización parcial).
+     * Solo actualiza los campos que no son null.
+     *
+     * @param category Entidad existente
+     * @param dto DTO con nuevos datos (todos opcionales)
+     */
+    public void updateEntityFromDto(ProductCategory category, CategoryUpdateDto dto) {
+        if (category == null || dto == null) {
+            return;
+        }
+
+        if (dto.getName() != null && !dto.getName().trim().isEmpty()) {
             category.setName(dto.getName());
         }
         if (dto.getDescription() != null) {

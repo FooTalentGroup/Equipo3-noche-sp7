@@ -3,6 +3,7 @@ package com.stockia.stockia.services.Impl;
 import com.stockia.stockia.dtos.category.CategoryRequestDto;
 import com.stockia.stockia.dtos.category.CategoryResponseDto;
 import com.stockia.stockia.dtos.category.CategorySearchRequestDto;
+import com.stockia.stockia.dtos.category.CategoryUpdateDto;
 import com.stockia.stockia.exceptions.category.CategoryNotFoundException;
 import com.stockia.stockia.exceptions.category.DuplicateCategoryException;
 import com.stockia.stockia.mappers.CategoryMapper;
@@ -72,7 +73,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public CategoryResponseDto updateCategory(UUID id, CategoryRequestDto dto) {
+    public CategoryResponseDto updateCategory(UUID id, CategoryUpdateDto dto) {
         log.info("Actualizando categoría con ID: {}", id);
 
         // Buscar la categoría existente
@@ -80,17 +81,17 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new CategoryNotFoundException(
                         "No se encontró la categoría con ID: " + id));
 
-        // Validar nombre duplicado (si cambió el nombre)
-        if (!category.getName().equalsIgnoreCase(dto.getName())) {
+        // Validar nombre duplicado solo si se está cambiando el nombre
+        if (dto.getName() != null && !dto.getName().trim().isEmpty()
+                && !category.getName().equalsIgnoreCase(dto.getName())) {
             categoryRepository.findByNameIgnoreCase(dto.getName())
                     .ifPresent(existing -> {
                         throw new DuplicateCategoryException(
-                                "Ya existe una categoría con el nombre: "
-                                        + dto.getName());
+                                "Ya existe una categoría con el nombre: " + dto.getName());
                     });
         }
 
-        // Actualizar campos
+        // Actualizar solo los campos proporcionados
         categoryMapper.updateEntityFromDto(category, dto);
         ProductCategory updatedCategory = categoryRepository.save(category);
 

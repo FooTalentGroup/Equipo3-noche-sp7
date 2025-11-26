@@ -4,6 +4,7 @@ import com.stockia.stockia.documentation.category.*;
 import com.stockia.stockia.dtos.category.CategoryRequestDto;
 import com.stockia.stockia.dtos.category.CategoryResponseDto;
 import com.stockia.stockia.dtos.category.CategorySearchRequestDto;
+import com.stockia.stockia.dtos.category.CategoryUpdateDto;
 import com.stockia.stockia.services.CategoryService;
 import com.stockia.stockia.utils.ApiResult;
 
@@ -87,10 +88,11 @@ public class CategoryController {
     }
 
     /**
-     * Actualiza una categoría existente.
+     * Actualiza una categoría existente (actualización parcial).
+     * Solo se actualizan los campos proporcionados.
      *
      * @param id ID de la categoría a actualizar
-     * @param dto Nuevos datos de la categoría
+     * @param dto Nuevos datos de la categoría (todos los campos son opcionales)
      * @return ResponseEntity con la categoría actualizada (200)
      */
     @PutMapping("/{id}")
@@ -98,7 +100,7 @@ public class CategoryController {
     @PreAuthorize(ADMIN_ONLY)
     public ResponseEntity<ApiResult<CategoryResponseDto>> updateCategory(
             @PathVariable @CategoryIdParam UUID id,
-            @Valid @RequestBody CategoryRequestDto dto) {
+            @Valid @RequestBody CategoryUpdateDto dto) {
 
         CategoryResponseDto category = categoryService.updateCategory(id, dto);
 
