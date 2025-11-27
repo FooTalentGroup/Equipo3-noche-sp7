@@ -56,7 +56,7 @@ import java.lang.annotation.*;
                           "message": "Usuario no encontrado con id: ...",
                           "details": "...",
                           "timestamp": "2025-11-10T20:12:00Z",
-                          "path": "/api/users/getUserById/..."
+                          "path": "/api/users/{id}"
                         }
                         """))),
     @ApiResponse(responseCode = "403",
@@ -70,7 +70,7 @@ import java.lang.annotation.*;
                   "message": "Acceso denegado",
                   "details": "...",
                   "timestamp": "2025-11-10T20:12:00Z",
-                  "path": "/api/users/getUserById/..."
+                  "path": "/api/users/{id}"
                 }
             """)
         )
@@ -85,7 +85,7 @@ import java.lang.annotation.*;
                   "message": "Acceso no autorizado",
                   "details": "...",
                   "timestamp": "2025-11-10T20:12:00Z",
-                  "path": "/api/users/getUserById/..."
+                  "path": "/api/users/{id}"
                 }
             """)
         )
@@ -106,7 +106,7 @@ import java.lang.annotation.*;
                           "message": "Error inesperado",
                           "details": "...",
                           "timestamp": "2025-11-10T20:12:00Z",
-                          "path": "/api/users/getUserById/..."
+                          "path": "/api/users/{id}"
                         }
                         """))),
 })

@@ -1,4 +1,4 @@
-package com.stockia.stockia.documentation.user;
+package com.stockia.stockia.documentation.inventoryMovement;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,61 +13,56 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Operation(
-    summary = "Obtener todos los usuarios",
+    summary = "Obtener movimiento de inventario por ID",
     description = """
-        Retorna la lista paginada de usuarios del sistema.
-        También funciona con filtros. Si no se añade ningún filtro, traerá todos los usuarios del sistema.
-        
-        <strong>Solo accesible para usuarios con rol ADMIN.</strong>
+             Devuelve los detalles de un movimiento de inventario específico mediante su ID. \\s
+             Accesible para usuarios Autenticados.
         """,
         security = @SecurityRequirement(name = "bearer-key")
 )
 @ApiResponses(value = {
-        @ApiResponse(
-                responseCode = "200",
-                description = "Lista paginada de usuarios obtenida exitosamente",
-                content = @Content(
-                        mediaType = "application/json",
-                        schema = @Schema(example = """
+    @ApiResponse(
+        responseCode = "200",
+        description = "Movimiento de inventario encontrado exitosamente",
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(example = """
                 {
-                  "content": [
-                    {
-                      "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-                      "email": "juan.perez@example.com",
-                      "role": "ADMIN"
-                    },
-                    {
-                      "userId": "3fa85f64-5717-4562-b3fc-2c963f66af01",
-                      "email": "john.doe@example.com",
-                      "role": "MANAGER"
-                    }
-                  ],
-                  "pageable": {
-                    "pageNumber": 0,
-                    "pageSize": 10,
-                    "sort": {
-                      "sorted": true,
-                      "unsorted": false,
-                      "empty": false
-                    }
-                  },
-                  "totalPages": 5,
-                  "totalElements": 50,
-                  "last": false,
-                  "size": 10,
-                  "number": 0,
-                  "sort": {
-                    "sorted": true,
-                    "unsorted": false,
-                    "empty": false
-                  },
-                  "first": true,
-                  "numberOfElements": 10,
-                  "empty": false
+                  "success": true,
+                  "message": "Movimiento de inventario encontrado exitosamente.",
+                  "data": {
+                    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                    "productId": "3fa32420-5717-5717-b3fc-b3fc3f66b3fc",
+                    "productName": "",
+                    "movementType": "",
+                    "quantity": "",
+                    "reason": "",
+                    "userId": "",
+                    ...
+                  }
                 }
                 """)
-                )
-        ),
+        )
+    ),
+    @ApiResponse(
+        responseCode = "404",
+        description = "Movimiento de inventario no encontrado",
+        content =
+        @Content(
+            mediaType = "application/json",
+            schema =
+            @Schema(
+                example =
+                    """
+                        {
+                          "statusCode": 404,
+                          "errorCode": "NOT_FOUND",
+                          "message": "Movimiento de inventario no encontrado con id: ...",
+                          "details": "...",
+                          "timestamp": "2025-11-10T20:12:00Z",
+                          "path": "/api/inventory-movements/{id}"
+                        }
+                        """))),
     @ApiResponse(responseCode = "403",
         description = "Acceso denegado por falta de permisos. Usuario con rol no autorizado.",
         content = @Content(
@@ -79,7 +74,7 @@ import java.lang.annotation.*;
                   "message": "Acceso denegado",
                   "details": "...",
                   "timestamp": "2025-11-10T20:12:00Z",
-                  "path": "/api/users"
+                  "path": "/api/inventory-movements/{id}"
                 }
             """)
         )
@@ -94,7 +89,7 @@ import java.lang.annotation.*;
                   "message": "Acceso no autorizado",
                   "details": "...",
                   "timestamp": "2025-11-10T20:12:00Z",
-                  "path": "/api/users"
+                  "path": "/api/inventory-movements/{id}"
                 }
             """)
         )
@@ -115,9 +110,9 @@ import java.lang.annotation.*;
                           "message": "Error inesperado",
                           "details": "...",
                           "timestamp": "2025-11-10T20:12:00Z",
-                          "path": "/api/users"
+                          "path": "/api/inventory-movements/{id}"
                         }
                         """))),
-
 })
-public @interface GetAllUsersEndpointDoc {}
+public @interface GetMovementByIdEndpointDoc {
+}

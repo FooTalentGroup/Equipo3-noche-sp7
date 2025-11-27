@@ -1,4 +1,4 @@
-package com.stockia.stockia.documentation.inventory;
+package com.stockia.stockia.documentation.inventoryMovement;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -100,5 +100,5 @@ import java.lang.annotation.*;
                     }
                 """)))
 })
-public @interface RegisterInventoryMovementEndpointDoc {
+public @interface RegisterMovementEndpointDoc {
 }
