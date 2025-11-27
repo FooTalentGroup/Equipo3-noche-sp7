@@ -38,7 +38,7 @@ export default function ProductsListPage() {
     };
 
     return (
-        <div className="products-page">
+        <div className="w-full max-w-5xl">
             <ProductsFiltersBar
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}

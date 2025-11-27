@@ -60,14 +60,14 @@ export const UserMenu = () => {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 px-6 py-6 text-gray-600 hover:bg-gray-200 w-full transition"
+        className="flex items-center gap-3 p-6 text-stokia-neutral-600 hover:bg-gray-200 w-full transition"
       >
-        <User className="h-5 w-5 text-gray-600" />
-        <span className="text-sm">{username}</span>
+        <User className="h-[18px] w-[18px] text-stokia-neutral-600" />
+        <span className="text-base!">{username}</span>
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg border border-gray-200 py-1 z-50">
+        <div className="absolute -top-10 right-0 mt-2 w-48 bg-white shadow-lg border border-gray-200 py-1 z-50">
           <button
             onClick={handleLogout}
             disabled={logout.isPending}
