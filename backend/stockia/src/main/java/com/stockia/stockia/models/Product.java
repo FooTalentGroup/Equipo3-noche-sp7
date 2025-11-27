@@ -46,11 +46,12 @@ public class Product {
 
     /**
      * Nombre del producto.
-     * No puede estar vacío y tiene un máximo de 100 caracteres.
+     * No puede estar vacío, tiene un máximo de 100 caracteres y debe ser único.
+     * Los nombres se almacenan en lowercase para consistencia.
      */
     @NotBlank(message = "El nombre del producto es obligatorio")
     @Size(max = 100, message = "El nombre no puede exceder 100 caracteres")
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 100, unique = true)
     private String name;
 
     /**

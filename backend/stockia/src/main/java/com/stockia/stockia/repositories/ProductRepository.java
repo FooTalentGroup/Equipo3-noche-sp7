@@ -119,27 +119,27 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
        /**
         * Verifica si existe un producto activo con el mismo nombre.
         * El nombre del producto debe ser único en todo el sistema.
-        * Nota: Los nombres se almacenan en lowercase para consistencia.
+        * Nota: La comparación es case-insensitive para evitar duplicados por mayúsculas/minúsculas.
         *
-        * @param name nombre del producto (debe estar en lowercase)
+        * @param name nombre del producto (se convierte a lowercase internamente)
         * @return true si existe un producto activo con ese nombre
         */
        @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Product p " +
-                     "WHERE p.name = :name AND p.deleted = false")
+                     "WHERE LOWER(p.name) = LOWER(:name) AND p.deleted = false")
        boolean existsActiveProductByName(@Param("name") String name);
 
        /**
         * Verifica si existe un producto activo con el mismo nombre, excluyendo un ID
         * específico.
         * Útil para validaciones en actualizaciones.
-        * Nota: Los nombres se almacenan en lowercase para consistencia.
+        * Nota: La comparación es case-insensitive para evitar duplicados por mayúsculas/minúsculas.
         *
-        * @param name      nombre del producto (debe estar en lowercase)
+        * @param name      nombre del producto (se convierte a lowercase internamente)
         * @param excludeId ID del producto a excluir de la búsqueda
         * @return true si existe otro producto activo con ese nombre
         */
        @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Product p " +
-                     "WHERE p.name = :name AND p.deleted = false AND p.id != :excludeId")
+                     "WHERE LOWER(p.name) = LOWER(:name) AND p.deleted = false AND p.id != :excludeId")
        boolean existsActiveProductByNameExcludingId(@Param("name") String name, @Param("excludeId") UUID excludeId);
 
        /**

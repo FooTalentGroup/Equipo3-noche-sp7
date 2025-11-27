@@ -30,79 +30,79 @@ public class CategorySeeder {
 
         List<ProductCategory> categories = List.of(
                 ProductCategory.builder()
-                        .name("Sándwiches")
+                        .name("sándwiches")
                         .description("Variedad de sándwiches fríos y calientes: clásicos, gourmets y especiales para llevar.")
                         .isActive(true)
                         .build(),
 
                 ProductCategory.builder()
-                        .name("Omelettes")
+                        .name("omelettes")
                         .description("Omelettes preparados al momento con combinaciones de quesos, vegetales y proteínas.")
                         .isActive(true)
                         .build(),
 
                 ProductCategory.builder()
-                        .name("Rolls")
+                        .name("rolls")
                         .description("Rolls salados y dulces: opciones frescas y rellenas ideales como snack o entrada.")
                         .isActive(true)
                         .build(),
 
                 ProductCategory.builder()
-                        .name("Tartas")
+                        .name("tartas")
                         .description("Tartas saladas caseras: masa crocante con rellenos de verduras, carnes o quesos.")
                         .isActive(true)
                         .build(),
 
                 ProductCategory.builder()
-                        .name("Ensaladas")
+                        .name("ensaladas")
                         .description("Ensaladas frescas y nutritivas, desde clásicas hasta combinaciones especiales.")
                         .isActive(true)
                         .build(),
 
                 ProductCategory.builder()
-                        .name("Smoothies")
+                        .name("smoothies")
                         .description("Batidos de frutas naturales y cremosos, preparados con yogur o leches vegetales.")
                         .isActive(true)
                         .build(),
 
                 ProductCategory.builder()
-                        .name("Postres")
+                        .name("postres")
                         .description("Postres caseros y porciones individuales: tortas, flanes, pudines y más.")
                         .isActive(true)
                         .build(),
 
                 ProductCategory.builder()
-                        .name("Bebidas Frías")
+                        .name("bebidas frías")
                         .description("Bebidas frías: jugos naturales, refrescos, aguas saborizadas y licuados.")
                         .isActive(true)
                         .build(),
 
                 ProductCategory.builder()
-                        .name("Bebidas Calientes")
+                        .name("bebidas calientes")
                         .description("Bebidas calientes: café, té, chocolatadas y especialidades calientes.")
                         .isActive(true)
                         .build(),
 
                 ProductCategory.builder()
-                        .name("Budines")
+                        .name("budines")
                         .description("Budines caseros en porciones individuales: variedad de sabores dulces y húmedos.")
                         .isActive(true)
                         .build(),
 
                 ProductCategory.builder()
-                        .name("Alfajores")
+                        .name("alfajores")
                         .description("Alfajores tradicionales y rellenos especiales, listos para disfrutar o regalar.")
                         .isActive(true)
                         .build(),
 
                 ProductCategory.builder()
-                        .name("Yoghurt")
+                        .name("yoghurt")
                         .description("Yogur natural y saborizado, ideal para acompañar bowls y smoothies.")
                         .isActive(true)
                         .build(),
 
                 ProductCategory.builder()
-                        .name("Mini Tortas")
+                        .name("mini tortas")
                         .description("Mini tortas y porciones individuales: perfectas para cafés y celebraciones pequeñas.")
                         .isActive(true)
                         .build()

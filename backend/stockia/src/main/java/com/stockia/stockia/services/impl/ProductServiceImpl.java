@@ -118,12 +118,28 @@ public class ProductServiceImpl implements ProductService {
                     throw new DuplicateProductException(
                             "Producto duplicado. Ya existe otro producto con el nombre: " + normalizedName);
                 }
-                // Establecer el nombre normalizado en el DTO antes de mapear
-                dto.setName(normalizedName);
+                // Establecer el nombre normalizado
+                product.setName(normalizedName);
             }
         }
 
-        productMapper.updateEntityFromDto(product, dto);
+        // Actualizar los demás campos (price, photoUrl, stock, etc.)
+        if (dto.getPrice() != null) {
+            product.setPrice(dto.getPrice());
+        }
+        if (dto.getPhotoUrl() != null) {
+            product.setPhotoUrl(dto.getPhotoUrl());
+        }
+        if (dto.getCurrentStock() != null) {
+            product.setCurrentStock(dto.getCurrentStock());
+        }
+        if (dto.getMinStock() != null) {
+            product.setMinStock(dto.getMinStock());
+        }
+        if (dto.getIsAvailable() != null) {
+            product.setIsAvailable(dto.getIsAvailable());
+        }
+
         Product updatedProduct = productRepository.save(product);
         log.info("Product updated with ID: {}", updatedProduct.getId());
         return productMapper.toResponseDto(updatedProduct);

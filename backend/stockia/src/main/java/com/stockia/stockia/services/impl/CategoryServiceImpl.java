@@ -40,15 +40,19 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponseDto createCategory(CategoryRequestDto dto) {
         log.info("Creando nueva categoría: {}", dto.getName());
 
+        // Normalizar nombre a lowercase para consistencia
+        String normalizedName = dto.getName().trim().toLowerCase();
+
         // Validar que no exista una categoría con el mismo nombre
-        categoryRepository.findByNameIgnoreCase(dto.getName())
+        categoryRepository.findByNameIgnoreCase(normalizedName)
                 .ifPresent(existing -> {
                     throw new DuplicateCategoryException(
-                            "Ya existe una categoría con el nombre: " + dto.getName());
+                            "Ya existe una categoría con el nombre: " + normalizedName);
                 });
 
         // Crear y guardar la categoría
         ProductCategory category = categoryMapper.toEntity(dto);
+        category.setName(normalizedName); // Establecer el nombre normalizado
         ProductCategory savedCategory = categoryRepository.save(category);
 
         log.info("Categoría creada exitosamente con ID: {}", savedCategory.getId());
@@ -81,18 +85,30 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new CategoryNotFoundException(
                         "No se encontró la categoría con ID: " + id));
 
-        // Validar nombre duplicado solo si se está cambiando el nombre
-        if (dto.getName() != null && !dto.getName().trim().isEmpty()
-                && !category.getName().equalsIgnoreCase(dto.getName())) {
-            categoryRepository.findByNameIgnoreCase(dto.getName())
-                    .ifPresent(existing -> {
-                        throw new DuplicateCategoryException(
-                                "Ya existe una categoría con el nombre: " + dto.getName());
-                    });
+        // Validar y normalizar nombre único si se está cambiando
+        if (dto.getName() != null && !dto.getName().trim().isEmpty()) {
+            String normalizedName = dto.getName().trim().toLowerCase();
+
+            // Solo validar si el nombre normalizado es diferente al actual
+            if (!normalizedName.equals(category.getName())) {
+                categoryRepository.findByNameIgnoreCase(normalizedName)
+                        .ifPresent(existing -> {
+                            throw new DuplicateCategoryException(
+                                    "Ya existe una categoría con el nombre: " + normalizedName);
+                        });
+                // Establecer el nombre normalizado
+                category.setName(normalizedName);
+            }
         }
 
-        // Actualizar solo los campos proporcionados
-        categoryMapper.updateEntityFromDto(category, dto);
+        // Actualizar solo los demás campos proporcionados (excepto nombre que ya se actualizó)
+        if (dto.getDescription() != null) {
+            category.setDescription(dto.getDescription());
+        }
+        if (dto.getIsActive() != null) {
+            category.setIsActive(dto.getIsActive());
+        }
+
         ProductCategory updatedCategory = categoryRepository.save(category);
 
         log.info("Categoría actualizada exitosamente: {}", updatedCategory.getName());
