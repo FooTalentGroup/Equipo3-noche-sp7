@@ -1,33 +1,19 @@
 import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/shared/components/ui/form";
+import { Form } from "@/shared/components/ui/form";
 import { Button } from "@/shared/components/ui/button";
 import { useCreateProduct } from "../hooks/useCreateProduct";
-import { ImageDropzone } from "@/shared/components/ui/ImageDropzone";
 import { FormSelectField } from "./ProductFormSelectField";
 import { LoadingModal } from "@/shared/components/ui/LoadingModal";
 import { SuccessModal } from "@/shared/components/ui/SuccessModal";
 import { FormInputField } from "@/features/products/components/ProductFormInputField";
 import { useCategories } from "@/features/categories/context/CategoriesContext";
-import { useProducts } from "@/features/products/context/ProductsContext";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/shared/components/ui/alert-dialog";
+import { useProduct } from "../hooks/useProduct";
+import { UnifiedImageField } from "./ImageUnified";
+import { BackErrorAlert } from "./BackErrorAlert";
+import { ConfirmDialog } from "./ConfirmDialog";
+import { useState } from "react";
+import { Trash2 } from "lucide-react";
 
 export function CreateProductComponent() {
   const navigate = useNavigate();
@@ -36,31 +22,36 @@ export function CreateProductComponent() {
 
   const { form, handlePost, handleError, isPending, isSuccess, resetSuccess } =
     useCreateProduct();
-  const { categories } = useCategories();
-  const { products } = useProducts();
+  const { categories, isFetching } = useCategories();
+  const { isLoading, error, product } = useProduct();
+
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   useEffect(() => {
-    console.log(isEditing && id);
     if (isEditing && id) {
-      const product = products.find((p) => p.id === parseInt(id));
-      if (product) {
+      if (product && !isLoading) {
         form.reset({
           name: product.name,
-          category: product.category.id,
-          min_stock: product.min_stock,
-          price: parseFloat(product.price.replace(/[^0-9.-]+/g, "")),
-          image_file: null,
+          categoryId: product.category.id,
+          minStock: product.minStock,
+          price: parseFloat(product.price),
+          photoUrl: product.photoUrl || null,
         });
       }
     }
-  }, [isEditing, id, products, form]);
+  }, [isEditing, id, form, product]);
 
   const handleRegisterAnother = () => {
-    form.reset();
     if (resetSuccess) resetSuccess();
   };
 
-  const handleGoToProducts = () => {
+  const handleAcceptEdit = () => {
+    form.handleSubmit(handlePost, handleError)();
+    setIsConfirmOpen(false);
+  };
+
+  const handleClicCancel = () => {
+    form.reset();
     navigate("/products");
   };
 
@@ -77,6 +68,7 @@ export function CreateProductComponent() {
               : "Completa la ficha técnica del producto para agregarlo al inventario"}
           </h5>
         </section>
+        {error && <BackErrorAlert alertTitle={error.message} />}
         <form
           className="flex flex-col gap-6 w-full max-w-2xl pt-12"
           onSubmit={form.handleSubmit(handlePost, handleError)}
@@ -93,10 +85,11 @@ export function CreateProductComponent() {
                 />
                 <FormSelectField
                   control={form.control}
-                  name="category"
+                  name="categoryId"
                   label="Categoría"
                   placeholder="Seleccionar categoría"
                   required
+                  isLoading={isFetching}
                   options={categories.map((c) => ({
                     value: c.id,
                     label: c.name,
@@ -107,7 +100,7 @@ export function CreateProductComponent() {
               <div className="flex flex-col md:flex-row w-full gap-6">
                 <FormInputField
                   control={form.control}
-                  name="min_stock"
+                  name="minStock"
                   label="Stock mínimo"
                   type="number"
                   step="1"
@@ -125,49 +118,25 @@ export function CreateProductComponent() {
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="image_file"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col w-full">
-                    <FormLabel className="w-full md:w-28 self-start">
-                      <b>Multimedia</b>
-                    </FormLabel>
-                    <div className="w-full" style={{ flex: 1 }}>
-                      <FormControl>
-                        <ImageDropzone
-                          value={field.value}
-                          onChange={field.onChange}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </div>
-                  </FormItem>
-                )}
-              />
+              <UnifiedImageField form={form} />
             </section>
           </div>
-          <section id="footer" className="flex justify-end gap-3">
-            <Button
-              type="button"
-              onClick={() => navigate("/products")}
-              variant="outline"
-            >
+          <section id="footer" className="flex justify-start gap-3">
+            <Button type="button" onClick={handleClicCancel} variant="outline">
               Cancelar
             </Button>
             {!isEditing ? (
-              <Button type="submit" className="bg-btn-primary">
-                {isPending ? "Guardando..." : "Registrar Producto"}
+              <Button type="submit" variant="stokia">
+                {isPending ? "Guardando..." : "Aceptar Registro"}
               </Button>
             ) : (
-              <ConfirmDialog
-                buttonTitle="Guardar cambios"
-                onAccept={form.handleSubmit(handlePost, handleError)}
-                onOpenDialog={async () => {
-                  const isValid = await form.trigger();
-                  return isValid;
-                }}
-              />
+              <Button
+                className={"bg-btn-primary"}
+                type="button"
+                onClick={() => setIsConfirmOpen(true)}
+              >
+                Guardar cambios
+              </Button>
             )}
           </section>
         </form>
@@ -188,66 +157,28 @@ export function CreateProductComponent() {
               ? "Los cambios han sido guardados."
               : 'Serás redirigido a "Productos" en 5 segundos.'
           }
-          primaryButtonText={
-            isEditing ? "Seguir editando" : "Registrar otro producto"
-          }
+          primaryButtonText={isEditing ? "Seguir editando" : "Nuevo registro"}
           secondaryButtonText="Volver"
           onPrimaryClick={
             isEditing
               ? () => resetSuccess && resetSuccess()
               : handleRegisterAnother
           }
-          onSecondaryClick={handleGoToProducts}
+          onSecondaryClick={handleClicCancel}
+        />
+      )}
+      {isEditing && (
+        <ConfirmDialog
+          isOpen={isConfirmOpen}
+          handleOpenChange={setIsConfirmOpen}
+          buttonTitle="Guardar cambios"
+          onAccept={handleAcceptEdit}
+          onOpenDialog={async () => {
+            const isValid = await form.trigger();
+            return isValid;
+          }}
         />
       )}
     </div>
   );
 }
-
-const ConfirmDialog = ({
-  buttonTitle = "Confirmar",
-  cancelTitle = "Cancelar",
-  acceptTitle = "Sí, confirmar",
-  dialogTitle = "¿Desea confirmar los cambios?",
-  dialogDescription = "La información del producto se actualizará en el inventario",
-  onAccept = () => {},
-  onCancel = () => {},
-  onOpenDialog = async () => true,
-}) => {
-  const [open, setOpen] = React.useState(false);
-
-  const handleOpenChange = async (newOpen) => {
-    if (newOpen) {
-      const canOpen = await onOpenDialog();
-      if (canOpen) {
-        setOpen(true);
-      }
-    } else {
-      setOpen(false);
-    }
-  };
-
-  return (
-    <AlertDialog open={open} onOpenChange={handleOpenChange}>
-      <AlertDialogTrigger asChild>
-        <Button type="button" className="bg-btn-primary">
-          {buttonTitle}
-        </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{dialogTitle}</AlertDialogTitle>
-          <AlertDialogDescription>{dialogDescription}</AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel onClick={onCancel}>
-            {cancelTitle}
-          </AlertDialogCancel>
-          <AlertDialogAction onClick={onAccept} className="bg-btn-primary">
-            {acceptTitle}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
-};
