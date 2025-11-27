@@ -60,7 +60,7 @@ export const updateProduct = async (id, productData) => {
 };
 
 export const deleteProduct = async (id) => {
-  const { data } = await apiClient.delete(`/api/products/${id}`);
+  const { data } = await apiClient.delete(`/api/products/${id}/permanent`);
   return data;
 };
 
