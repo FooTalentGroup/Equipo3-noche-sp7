@@ -1,7 +1,7 @@
 package com.stockia.stockia.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.stockia.stockia.dtos.ClientRequestDto;
+import com.stockia.stockia.dtos.client.ClientRequestDto;
 import com.stockia.stockia.models.Client;
 import com.stockia.stockia.services.ClientService;
 import com.stockia.stockia.exceptions.client.ClientDuplicatedException;
