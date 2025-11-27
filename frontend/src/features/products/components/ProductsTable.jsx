@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Edit, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Edit, Trash2, ChevronLeft, ChevronRight, Loader, LoaderCircle } from "lucide-react";
 import { Button } from "@/shared/components/ui/button.jsx";
 import Badge from "@/features/products/components/Badge.jsx";
 import { useProducts } from "../context/ProductsContext";
@@ -7,7 +7,8 @@ import { useNavigate } from "react-router";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { useDeleteProduct } from "../hooks/useDeleteProduct";
 import { Trash } from "lucide-react";
-// =============== HELPERS (NO BORRAR) ===============
+import ActionsMenu from './ActionsMenu';
+
 const parsePrice = (val) => {
   if (val == null) return 0;
   if (typeof val === "number") return val;
@@ -54,8 +55,8 @@ export const ProductsTable = ({
     return <Badge variant="success">Alto stock</Badge>;
   };
 
-  const filteredProducts = useMemo(() => {
-    let result = [...products];
+    const filteredProducts = useMemo(() => {
+        let result = [...(products || [])];
 
     if (searchQuery) {
       const term = searchQuery.toLowerCase();
@@ -107,77 +108,67 @@ export const ProductsTable = ({
     }
   }, [totalPages, currentPage]);
 
-  const paginated = filteredProducts.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+    const paginated = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1086px] max-h-[673px]">
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left">
-          <thead className="text-[14px] bg-slate-200 text-[#404040] font-normal h-[46px]">
-            <tr>
-              <th className="px-6 py-3 text-[#404040]">Estado</th>
-              <th className="px-6 py-3 text-[#404040]">Producto</th>
-              <th className="px-6 py-3 text-[#404040]">Categoría</th>
-              <th className="px-6 py-3 text-[#404040]">Precio</th>
-              <th className="px-6 py-3 text-[#404040]">Descuento</th>
-              <th className="px-6 py-3 text-[#404040] text-center">Acciones</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {paginated.map((product) => (
-              <tr
-                key={product.id}
-                className="hover:bg-gray-50 transition-colors"
-              >
-                <td className="px-6 py-4">
-                  <div className="w-28">
-                    {getStockBadge(product.stock_actual, product.min_stock)}
-                  </div>
-                </td>
-                <td className="px-6 py-4 font-normal text-[#171717] text-[14px]">
-                  {product.name}
-                </td>
-                <td className="px-6 py-4 text-[#525252] font-normal text-[14px]">
-                  {product.category}
-                </td>
-                <td className="px-6 py-4 font-normal text-[14px] text-[#171717]">
-                  ${product.price}
-                </td>
-                <td className="px-6 py-4">
-                  {product.descuento > 0 ? (
-                    <span className="font-normal text-[14px] text-[#525252]">
-                      {product.descuento}%
-                    </span>
-                  ) : (
-                    <span className="font-normal text-[14px] text-[#525252]">
-                      0%
-                    </span>
-                  )}
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center justify-center gap-4">
-                    <button
-                      onClick={() => navigate(`/products/edit/${product.id}`)}
-                      className="text-gray-500 hover:text-blue-600 cursor-pointer transition"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleOpenDelete(product.id)}
-                      className="text-destructive cursor-pointer transition"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    const isLoading = !products || products.length === 0;
+
+    if (isLoading) {
+        return (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1086px] max-h-[673px] flex items-center justify-center">
+                <div className="flex flex-col items-center justify-center gap-3 my-4">
+                    <LoaderCircle className="h-8 w-8 text-slate-600 animate-spin" />
+                    <span className="text-sm text-gray-600">Cargando productos...</span>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1086px] max-h-[673px]">
+            <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                    <thead className="text-[14px] bg-slate-200 text-[#404040] font-normal h-[46px]">
+                        <tr>
+                            <th className="px-6 py-3 text-[#404040]">Estado</th>
+                            <th className="px-6 py-3 text-[#404040]">Producto</th>
+                            <th className="px-6 py-3 text-[#404040]">Categoría</th>
+                            <th className="px-6 py-3 text-[#404040]">Precio</th>
+                            <th className="px-6 py-3 text-[#404040]">Descuento</th>
+                            <th className="px-6 py-3 text-[#404040] text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                        {paginated.map(product => (
+                            <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+                                <td className="px-6 py-4">
+                                    <div className="w-28">
+                                        {getStockBadge(product.stock_actual, product.min_stock)}
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4 font-normal text-[#171717] text-[14px]">{product.name}</td>
+                                <td className="px-6 py-4 text-[#525252] font-normal text-[14px]">{product.category}</td>
+                                <td className="px-6 py-4 font-normal text-[14px] text-[#171717]">${product.price}</td>
+                                <td className="px-6 py-4">
+                                    {product.descuento > 0 ? (
+                                        <span className="font-normal text-[14px] text-[#525252]">{product.descuento}%</span>
+                                    ) : (
+                                        <span className="font-normal text-[14px] text-[#525252]">0%</span>
+                                    )}
+                                </td>
+                                <td className="px-6 py-4">
+                                    <div className="flex items-center justify-center gap-4">
+                                        <ActionsMenu />
+                                        <button onClick={() => handleDelete(product.id)} className="text-red-600 cursor-pointer transition">
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
 
       <div className="flex items-center justify-center px-6 py-3 bg-gray-50 border-t">
         <div className="flex items-center gap-2">

@@ -23,7 +23,7 @@ export function TopBar() {
 
     return (
         <div
-            className="sticky top-0 z-40 flex items-center"
+            className="top-0 z-40 flex items-center"
             style={{
                 display: 'flex',
                 width: '1188px',
