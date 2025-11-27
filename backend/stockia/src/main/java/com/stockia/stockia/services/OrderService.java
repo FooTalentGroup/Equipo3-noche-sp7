@@ -3,7 +3,10 @@ package com.stockia.stockia.services;
 import com.stockia.stockia.dtos.order.CancelOrderRequestDto;
 import com.stockia.stockia.dtos.order.OrderRequestDto;
 import com.stockia.stockia.dtos.order.OrderResponseDto;
+import com.stockia.stockia.dtos.order.OrderSearchRequestDto;
 import com.stockia.stockia.enums.OrderStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.UUID;
@@ -50,6 +53,19 @@ public interface OrderService {
      * @return Lista de órdenes
      */
     List<OrderResponseDto> getAllOrders();
+
+    /**
+     * Busca órdenes con paginación y filtros múltiples.
+     *
+     * Permite filtrar por número de orden, nombre de cliente, estado,
+     * método de pago, estado de pago y rango de fechas.
+     * Todos los filtros son opcionales.
+     *
+     * @param searchParams Parámetros de búsqueda y filtrado
+     * @param pageable     Configuración de paginación y ordenamiento
+     * @return Page con las órdenes que cumplen los criterios
+     */
+    Page<OrderResponseDto> searchOrders(OrderSearchRequestDto searchParams, Pageable pageable);
 
     /**
      * Obtiene todas las órdenes con un estado específico.
