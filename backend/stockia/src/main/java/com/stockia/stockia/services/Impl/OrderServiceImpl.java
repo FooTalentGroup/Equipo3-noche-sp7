@@ -4,6 +4,7 @@ import com.stockia.stockia.dtos.order.CancelOrderRequestDto;
 import com.stockia.stockia.dtos.order.OrderItemRequestDto;
 import com.stockia.stockia.dtos.order.OrderRequestDto;
 import com.stockia.stockia.dtos.order.OrderResponseDto;
+import com.stockia.stockia.dtos.order.OrderSearchRequestDto;
 import com.stockia.stockia.enums.MovementType;
 import com.stockia.stockia.enums.OrderStatus;
 import com.stockia.stockia.exceptions.UnauthorizedException;
@@ -19,6 +20,8 @@ import com.stockia.stockia.services.OrderService;
 import com.stockia.stockia.services.OrderPdfService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -50,7 +53,6 @@ import java.util.UUID;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
-    private final OrderItemRepository orderItemRepository;
     private final ProductRepository productRepository;
     private final ClientRepository clientRepository;
     private final UserRepository userRepository;
@@ -230,6 +232,46 @@ public class OrderServiceImpl implements OrderService {
         log.info("Fetching all orders");
         List<Order> orders = orderRepository.findAllByOrderByOrderDateDesc();
         return orderMapper.toResponseDtoList(orders);
+    }
+
+    /**
+     * Busca órdenes con paginación y filtros múltiples.
+     * Convierte las fechas de LocalDate a LocalDateTime para la búsqueda.
+     *
+     * @param searchParams Parámetros de búsqueda
+     * @param pageable     Configuración de paginación
+     * @return Page con las órdenes encontradas
+     */
+    @Override
+    public Page<OrderResponseDto> searchOrders(OrderSearchRequestDto searchParams, Pageable pageable) {
+        log.info(
+                "Searching orders with params: orderNumber={}, customerName={}, status={}, paymentMethod={}, paymentStatus={}, startDate={}, endDate={}",
+                searchParams.orderNumber(), searchParams.customerName(), searchParams.status(),
+                searchParams.paymentMethod(), searchParams.paymentStatus(),
+                searchParams.startDate(), searchParams.endDate());
+
+        // Convertir fechas de LocalDate a LocalDateTime
+        LocalDateTime startDateTime = searchParams.startDate() != null
+                ? searchParams.startDate().atStartOfDay()
+                : null;
+
+        LocalDateTime endDateTime = searchParams.endDate() != null
+                ? searchParams.endDate().atTime(23, 59, 59)
+                : null;
+
+        // Buscar en el repositorio
+        Page<Order> ordersPage = orderRepository.searchOrders(
+                searchParams.orderNumber(),
+                searchParams.customerName(),
+                searchParams.status(),
+                searchParams.paymentMethod(),
+                searchParams.paymentStatus(),
+                startDateTime,
+                endDateTime,
+                pageable);
+
+        // Mapear a DTOs
+        return ordersPage.map(orderMapper::toResponseDto);
     }
 
     @Override

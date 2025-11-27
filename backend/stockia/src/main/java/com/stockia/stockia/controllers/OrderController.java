@@ -4,6 +4,7 @@ import com.stockia.stockia.documentation.order.*;
 import com.stockia.stockia.dtos.order.CancelOrderRequestDto;
 import com.stockia.stockia.dtos.order.OrderRequestDto;
 import com.stockia.stockia.dtos.order.OrderResponseDto;
+import com.stockia.stockia.dtos.order.OrderSearchRequestDto;
 import com.stockia.stockia.enums.OrderStatus;
 import com.stockia.stockia.services.OrderService;
 import com.stockia.stockia.utils.ApiResult;
@@ -11,6 +12,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -83,19 +86,38 @@ public class OrderController {
     }
 
     /**
-     * Obtiene todas las órdenes del sistema.
-     * 
-     * @return Lista de todas las órdenes
+     * Obtiene todas las órdenes del sistema con paginación y filtros opcionales.
+     *
+     * Permite filtrar por:
+     * - orderNumber: Número de orden (búsqueda parcial)
+     * - customerName: Nombre del cliente (búsqueda parcial)
+     * - status: Estado de la orden (PENDING, CONFIRMED, DELIVERED, CANCELLED)
+     * - paymentMethod: Método de pago
+     * - paymentStatus: Estado del pago
+     * - startDate y endDate: Rango de fechas
+     *
+     * Ejemplos de uso:
+     * - GET /api/orders?page=0&size=20
+     * - GET /api/orders?status=CONFIRMED&page=0&size=10
+     * - GET /api/orders?customerName=María&page=0
+     * - GET /api/orders?startDate=2025-11-01&endDate=2025-11-30
+     *
+     * @param searchParams Parámetros de búsqueda opcionales
+     * @param pageable     Configuración de paginación y ordenamiento
+     * @return Página de órdenes que cumplen con los criterios
      */
     @GetMapping
     @GetAllOrdersDoc
     @PreAuthorize(ADMIN_OR_MANAGER)
-    public ResponseEntity<ApiResult<List<OrderResponseDto>>> getAllOrders() {
-        log.info("GET /api/orders - Fetching all orders");
-        List<OrderResponseDto> orders = orderService.getAllOrders();
-        String message = orders.isEmpty() ? "No hay órdenes registradas"
-                : orders.size() + " orden(es) encontrada(s)";
-        return ResponseEntity.ok(ApiResult.success(message, orders));
+    public ResponseEntity<ApiResult<Page<OrderResponseDto>>> getAllOrders(
+            @org.springdoc.core.annotations.ParameterObject OrderSearchRequestDto searchParams,
+            @org.springdoc.core.annotations.ParameterObject Pageable pageable) {
+        log.info("GET /api/orders - Fetching orders with filters");
+        Page<OrderResponseDto> ordersPage = orderService.searchOrders(searchParams, pageable);
+        String message = ordersPage.isEmpty()
+                ? "No se encontraron órdenes"
+                : String.format("%d orden(es) encontrada(s)", ordersPage.getTotalElements());
+        return ResponseEntity.ok(ApiResult.success(message, ordersPage));
     }
 
     /**

@@ -154,9 +154,6 @@ public class ClientService {
      *                                                                       por
      *                                                                       otro
      *                                                                       cliente
-     *                                                                       por
-     *                                                                       otro
-     *                                                                       cliente
      */
     public Client updateClient(UUID id, Client updatedData) {
         Client existingClient = clientRepository.findById(id)
