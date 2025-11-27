@@ -296,6 +296,54 @@ public class ProductCategoryExceptionHandler {
         };
     }
 
+    /**
+     * Maneja violaciones de integridad de la base de datos (ej: constraint UNIQUE).
+     * Esto captura duplicados que llegan a la BD si la validación en código falla.
+     */
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(
+            org.springframework.dao.DataIntegrityViolationException ex, HttpServletRequest request) {
+
+        log.warn("Data integrity violation in products/categories: {}", ex.getMessage());
+
+        String message = "Error de integridad de datos";
+        List<String> details = new ArrayList<>();
+
+        // Extraer información más específica del mensaje de error
+        String exceptionMessage = ex.getMessage().toLowerCase();
+
+        if (exceptionMessage.contains("unique") || exceptionMessage.contains("duplicate")) {
+            if (exceptionMessage.contains("product") && exceptionMessage.contains("name")) {
+                message = "Producto duplicado. Ya existe un producto con ese nombre";
+                details.add("El nombre del producto debe ser único");
+                details.add("Intenta con un nombre diferente");
+            } else if (exceptionMessage.contains("category") && exceptionMessage.contains("name")) {
+                message = "Categoría duplicada. Ya existe una categoría con ese nombre";
+                details.add("El nombre de la categoría debe ser único");
+                details.add("Intenta con un nombre diferente");
+            } else {
+                message = "El recurso ya existe en el sistema";
+                details.add("Ya existe un registro con los mismos datos únicos");
+            }
+        } else if (exceptionMessage.contains("foreign key") || exceptionMessage.contains("constraint")) {
+            message = "Error de referencia de datos";
+            details.add("No se puede completar la operación debido a restricciones de integridad");
+            details.add("Verifica que los datos relacionados existan");
+        } else {
+            details.add("No se pudo completar la operación por una restricción de base de datos");
+        }
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                "DATA_INTEGRITY_VIOLATION",
+                message,
+                details,
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
     @ExceptionHandler(DuplicateProductException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateProductException(
             DuplicateProductException ex, HttpServletRequest request) {
