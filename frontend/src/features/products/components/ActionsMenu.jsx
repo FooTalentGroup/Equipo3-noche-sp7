@@ -2,7 +2,10 @@ import { Menu, Transition } from "@headlessui/react";
 import { Edit } from "lucide-react";
 import { Fragment } from "react";
 
-export default function ActionsMenu() {
+export default function ActionsMenu({
+    handleEdit = () => {},
+    handleDelete = () => {},
+}) {
     return (
         <Menu as="div" className="relative inline-block text-left">
             {/* Button */}
@@ -36,6 +39,7 @@ export default function ActionsMenu() {
                         <Menu.Item>
                             {({ active }) => (
                                 <button
+                                    onClick={handleEdit}
                                     className={`
                                         ${active ? "bg-gray-200" : ""}
                                         w-full text-left px-4 py-2
@@ -86,6 +90,7 @@ export default function ActionsMenu() {
                         <Menu.Item>
                             {({ active }) => (
                                 <button
+                                    onClick={handleDelete}
                                     className={`
                                         ${active ? "bg-gray-200" : ""}
                                         w-full text-left px-4 py-2

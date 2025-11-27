@@ -1,5 +1,5 @@
-import { useQuery, useMutation } from '@tanstack/react-query';
-import apiClient from '../services/apiClient.js';
+import { useQuery, useMutation } from "@tanstack/react-query";
+import apiClient from "../services/apiClient.js";
 
 export const useApiQuery = (queryKey, url, options = {}) => {
   return useQuery({
@@ -10,7 +10,21 @@ export const useApiQuery = (queryKey, url, options = {}) => {
     },
     staleTime: 60 * 1000,
     refetchOnWindowFocus: false,
-    ...options
+    ...options,
+  });
+};
+
+export const useApiQueryFn = (queryKey, serviceFn, queryOptions = {}) => {
+  return useQuery({
+    queryKey,
+    queryFn: async () => {
+      const response = await serviceFn();
+      return response.data;
+    },
+    staleTime: 60 * 1000,
+    refetchOnWindowFocus: false,
+    retry: false,
+    ...queryOptions,
   });
 };
 
@@ -20,45 +34,45 @@ export const useApiMutation = (mutationFn, options = {}) => {
   return useMutation({
     mutationFn,
     onSuccess: (data, variables, context) => {
-      console.log('useApiMutation - onSuccess ejecutado:', {
+      console.log("useApiMutation - onSuccess ejecutado:", {
         data,
         variables,
-        context
+        context,
       });
       if (onSuccess) {
         onSuccess(data, variables, context);
       }
     },
     onError: (error, variables, context) => {
-      console.error('useApiMutation - onError ejecutado:', {
+      console.error("useApiMutation - onError ejecutado:", {
         error,
         variables,
-        context
+        context,
       });
       if (onError) {
         onError(error, variables, context);
       }
     },
-    ...restOptions
+    ...restOptions,
   });
 };
 
 export const useApiPost = (url, options = {}) => {
-  return useApiMutation(async data => {
+  return useApiMutation(async (data) => {
     const response = await apiClient.post(url, data, options.config);
     return response.data;
   }, options);
 };
 
 export const useApiPut = (url, options = {}) => {
-  return useApiMutation(async data => {
+  return useApiMutation(async (data) => {
     const response = await apiClient.put(url, data, options.config);
     return response.data;
   }, options);
 };
 
 export const useApiPatch = (url, options = {}) => {
-  return useApiMutation(async data => {
+  return useApiMutation(async (data) => {
     const response = await apiClient.patch(url, data, options.config);
     return response.data;
   }, options);
