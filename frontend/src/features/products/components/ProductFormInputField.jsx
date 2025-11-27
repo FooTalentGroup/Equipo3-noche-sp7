@@ -19,6 +19,7 @@ export function FormInputField({
   onChange,
   required = false,
   startIcon: StartIcon,
+  disabled = false,
 }) {
   return (
     <FormField
@@ -28,7 +29,7 @@ export function FormInputField({
         <FormItem className="w-full">
           <FormLabel className="w-full flex items-center gap-1">
             <b>{label}</b>
-            {required && <span className="text-red-500">*</span>}
+            {required && <span className="text-destructive">*</span>}
           </FormLabel>
 
           <div className="w-full flex flex-col" style={{ flex: 1 }}>
@@ -49,12 +50,14 @@ export function FormInputField({
                   type={type}
                   step={step}
                   placeholder={placeholder}
+                  disabled={disabled}
                   className={cn(
                     "bg-card",
                     StartIcon && "pl-9",
-                    fieldState.error && "pr-9"
+                    fieldState.error && "pr-9 border-destructive focus-visible:ring-destructive"
                   )}
                   maxLength={100}
+                  aria-invalid={!!fieldState.error}
                   onFocus={(e) => {
                     if (type === "number" && e.target.value === "0") {
                       field.onChange("");
