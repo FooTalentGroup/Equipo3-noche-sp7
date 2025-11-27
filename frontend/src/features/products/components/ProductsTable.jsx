@@ -157,8 +157,8 @@ export const ProductsTable = ({
                                 </td>
                                 <td className="px-6 py-4">
                                     <div className="flex items-center justify-center gap-4">
-                                        <ActionsMenu />
-                                        <button onClick={() => handleDelete(product.id)} className="text-red-600 cursor-pointer transition">
+                                        <ActionsMenu handleEdit={() => navigate(`/products/edit/${product.id}`)} handleDelete={() => handleOpenDelete(product.id)} />
+                                        <button onClick={() => handleOpenDelete(product.id)} className="text-destructive cursor-pointer transition">
                                             <Trash2 className="w-4 h-4" />
                                         </button>
 
