@@ -3,20 +3,19 @@ import { useApiQueryFn } from "@/shared/hooks/useApi";
 import { getCategories } from "../services/categoriesService";
 
 const CategoriesContext = createContext(undefined);
-
 export function CategoriesProvider({ children }) {
   const { data, isFetching, isLoading, error } = useApiQueryFn(
     ["categories"], 
     getCategories
   );
-
-  const categories = data ?? [];
+  const categories = data && data.content ? data.content : [];
 
   const getCategoryById = (id) => {
     return categories.find((c) => c.id === id);
   };
 
   const getCategoryByName = (name) => {
+    if (!name) return undefined;
     return categories.find((c) => c.name.toLowerCase() === name.toLowerCase());
   };
 
@@ -35,7 +34,6 @@ export function CategoriesProvider({ children }) {
     </CategoriesContext.Provider>
   );
 }
-
 // eslint-disable-next-line react-refresh/only-export-components
 export function useCategories() {
   const context = useContext(CategoriesContext);
@@ -44,5 +42,6 @@ export function useCategories() {
       "useCategories debe usarse dentro de un CategoriesProvider"
     );
   }
+  
   return context;
 }
