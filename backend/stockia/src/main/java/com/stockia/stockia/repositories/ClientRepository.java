@@ -83,26 +83,47 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     /**
      * Búsqueda de clientes con filtros múltiples y paginación.
      *
-     * Permite filtrar por nombre (parcial), email (exacto), teléfono (exacto) y si es frecuente.
+     * Permite filtrar por nombre (parcial), email (exacto), teléfono (exacto) y si
+     * es frecuente.
      * Todos los parámetros son opcionales (null = no filtrar por ese campo).
      *
-     * @param name Nombre del cliente (búsqueda parcial, case-insensitive)
-     * @param email Email del cliente (búsqueda exacta)
-     * @param phone Teléfono del cliente (búsqueda exacta)
-     * @param isFrequent true para frecuentes, false para no frecuentes, null para todos
-     * @param pageable Configuración de paginación y ordenamiento
+     * @param name       Nombre del cliente (búsqueda parcial, case-insensitive)
+     * @param email      Email del cliente (búsqueda exacta)
+     * @param phone      Teléfono del cliente (búsqueda exacta)
+     * @param isFrequent true para frecuentes, false para no frecuentes, null para
+     *                   todos
+     * @param pageable   Configuración de paginación y ordenamiento
      * @return Page con los clientes que cumplen los criterios
      */
     @Query("SELECT c FROM Client c WHERE " +
-           "(:name IS NULL OR LOWER(c.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
-           "(:email IS NULL OR c.email = :email) AND " +
-           "(:phone IS NULL OR c.phone = :phone) AND " +
-           "(:isFrequent IS NULL OR c.isFrequent = :isFrequent)")
+            "(:name IS NULL OR LOWER(c.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
+            "(:email IS NULL OR c.email = :email) AND " +
+            "(:phone IS NULL OR c.phone = :phone) AND " +
+            "(:isFrequent IS NULL OR c.isFrequent = :isFrequent)")
     Page<Client> searchClients(
-        @Param("name") String name,
-        @Param("email") String email,
-        @Param("phone") String phone,
-        @Param("isFrequent") Boolean isFrequent,
-        Pageable pageable
-    );
+            @Param("name") String name,
+            @Param("email") String email,
+            @Param("phone") String phone,
+            @Param("isFrequent") Boolean isFrequent,
+            Pageable pageable);
+
+    /**
+     * Busca un cliente por email excluyendo un ID específico.
+     * Útil para validar unicidad de email al actualizar un cliente.
+     *
+     * @param email Email a buscar
+     * @param id    ID del cliente a excluir de la búsqueda
+     * @return Optional con el cliente si existe otro con ese email
+     */
+    Optional<Client> findByEmailAndIdNot(String email, UUID id);
+
+    /**
+     * Busca un cliente por teléfono excluyendo un ID específico.
+     * Útil para validar unicidad de teléfono al actualizar un cliente.
+     *
+     * @param phone Teléfono a buscar
+     * @param id    ID del cliente a excluir de la búsqueda
+     * @return Optional con el cliente si existe otro con ese teléfono
+     */
+    Optional<Client> findByPhoneAndIdNot(String phone, UUID id);
 }

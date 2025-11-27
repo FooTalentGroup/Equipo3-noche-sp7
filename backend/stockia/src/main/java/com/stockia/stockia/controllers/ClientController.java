@@ -3,7 +3,8 @@ package com.stockia.stockia.controllers;
 import com.stockia.stockia.documentation.client.GetAllClientsWithFiltersDoc;
 import com.stockia.stockia.documentation.client.GetClientByIdEndpointDoc;
 import com.stockia.stockia.documentation.client.RegisterClientEndpointDoc;
-import com.stockia.stockia.dtos.ClientRequestDto;
+import com.stockia.stockia.documentation.client.UpdateClientEndpointDoc;
+import com.stockia.stockia.dtos.client.ClientRequestDto;
 import com.stockia.stockia.dtos.client.ClientSearchRequestDto;
 import com.stockia.stockia.exceptions.client.ClientNotFoundException;
 import com.stockia.stockia.models.Client;
@@ -26,7 +27,8 @@ import static com.stockia.stockia.security.constants.SecurityConstants.Roles.ADM
 
 /**
  * Controlador REST para la gestión de clientes.
- * Expone endpoints para el registro, búsqueda y consulta de clientes.
+ * Expone endpoints para el registro, búsqueda, consulta y actualización de
+ * clientes.
  */
 @RestController
 @RequestMapping("/api/clients")
@@ -44,7 +46,7 @@ public class ClientController {
                 .name(clientDto.getName())
                 .email(clientDto.getEmail())
                 .phone(clientDto.getPhone())
-                .isFrequent(clientDto.getIsFrequentClient())
+                .isFrequent(clientDto.getIsFrequent())
                 .build();
 
         Client clientRegistrado = clientService.registerClient(newClient);
@@ -77,6 +79,24 @@ public class ClientController {
 
         Page<Client> clientsPage = clientService.searchClients(searchParams, pageable);
         return ResponseEntity.ok(ApiResult.success(clientsPage, "Clientes obtenidos exitosamente"));
+    }
+
+    @UpdateClientEndpointDoc
+    @PreAuthorize(ADMIN_OR_MANAGER)
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResult<?>> updateClient(
+            @PathVariable UUID id,
+            @Valid @RequestBody ClientRequestDto clientDto) {
+
+        Client updatedClient = Client.builder()
+                .name(clientDto.getName())
+                .email(clientDto.getEmail())
+                .phone(clientDto.getPhone())
+                .isFrequent(clientDto.getIsFrequent())
+                .build();
+
+        Client clientActualizado = clientService.updateClient(id, updatedClient);
+        return ResponseEntity.ok(ApiResult.success(clientActualizado, "Cliente actualizado exitosamente"));
     }
 
     @GetClientByIdEndpointDoc
