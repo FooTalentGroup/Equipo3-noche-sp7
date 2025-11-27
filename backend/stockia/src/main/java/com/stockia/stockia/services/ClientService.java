@@ -117,17 +117,70 @@ public class ClientService {
      * teléfono (exacto) y si es cliente frecuente.
      * Todos los filtros son opcionales.
      *
-     * @param params DTO con los parámetros de búsqueda
+     * @param params   DTO con los parámetros de búsqueda
      * @param pageable Configuración de paginación y ordenamiento
      * @return Page con los clientes que cumplen los criterios
      */
     public Page<Client> searchClients(ClientSearchRequestDto params, Pageable pageable) {
         return clientRepository.searchClients(
-            params.name(),
-            params.email(),
-            params.phone(),
-            params.isFrequent(),
-            pageable
-        );
+                params.name(),
+                params.email(),
+                params.phone(),
+                params.isFrequent(),
+                pageable);
+    }
+
+    /**
+     * Actualiza un cliente existente.
+     *
+     * Valida que:
+     * - El cliente existe
+     * - Si se cambió el email, que no esté asociado a otro cliente
+     * - Si se cambió el teléfono, que no esté asociado a otro cliente
+     *
+     * @param id          ID del cliente a actualizar
+     * @param updatedData Datos actualizados del cliente
+     * @return Cliente actualizado
+     * @throws com.stockia.stockia.exceptions.client.ClientNotFoundException si el
+     *                                                                       cliente
+     *                                                                       no
+     *                                                                       existe
+     * @throws ClientDuplicatedException                                     si el
+     *                                                                       email o
+     *                                                                       teléfono
+     *                                                                       ya
+     *                                                                       están
+     *                                                                       en uso
+     *                                                                       por
+     *                                                                       otro
+     *                                                                       cliente
+     *                                                                       por
+     *                                                                       otro
+     *                                                                       cliente
+     */
+    public Client updateClient(UUID id, Client updatedData) {
+        Client existingClient = clientRepository.findById(id)
+                .orElseThrow(() -> new com.stockia.stockia.exceptions.client.ClientNotFoundException(id));
+
+        if (!existingClient.getEmail().equals(updatedData.getEmail())) {
+            Optional<Client> clientWithEmail = clientRepository.findByEmailAndIdNot(updatedData.getEmail(), id);
+            if (clientWithEmail.isPresent()) {
+                throw new ClientDuplicatedException("El email ya está asociado a otro cliente");
+            }
+        }
+
+        if (!existingClient.getPhone().equals(updatedData.getPhone())) {
+            Optional<Client> clientWithPhone = clientRepository.findByPhoneAndIdNot(updatedData.getPhone(), id);
+            if (clientWithPhone.isPresent()) {
+                throw new ClientDuplicatedException("El teléfono ya está asociado a otro cliente");
+            }
+        }
+
+        existingClient.setName(updatedData.getName());
+        existingClient.setEmail(updatedData.getEmail());
+        existingClient.setPhone(updatedData.getPhone());
+        existingClient.setIsFrequent(updatedData.getIsFrequent());
+
+        return clientRepository.save(existingClient);
     }
 }

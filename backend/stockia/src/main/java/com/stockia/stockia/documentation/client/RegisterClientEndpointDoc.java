@@ -16,40 +16,46 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Operation(summary = "Registrar nuevo cliente",
-        description = "Registra un nuevo cliente en el sistema. El email y teléfono deben ser únicos.",
-        security = @SecurityRequirement(name = "bearer-key"))
+@Operation(summary = "Registrar nuevo cliente", description = "Registra un nuevo cliente en el sistema. El email y teléfono deben ser únicos. "
+    +
+    "El campo isFrequent indica si el cliente es frecuente (true) o no (false).", security = @SecurityRequirement(name = "bearer-key"))
 @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "Cliente creado exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(example = """
-                    {
-                      "id": "550e8400-e29b-41d4-a716-446655440000",
-                      "name": "Juan Pérez",
-                      "email": "juan.perez@email.com",
-                      "phone": "555-1234",
-                      "isFrequent": false
-                    }
-                """))),
-        @ApiResponse(responseCode = "400", description = "Error de validación", content = @Content(mediaType = "application/json", schema = @Schema(example = """
-                    {
-                      "statusCode": 400,
-                      "message": "Falló la validación de los campos",
-                      "errorCode": "VALIDATION_ERROR",
-                      "details": [
-                        "email: El email es requerido",
-                        "phone: El teléfono es requerido"
-                      ],
-                      "path": "/api/clients"
-                    }
-                """))),
-        @ApiResponse(responseCode = "409", description = "Conflicto - Cliente duplicado", content = @Content(mediaType = "application/json", schema = @Schema(example = """
-                    {
-                      "statusCode": 409,
-                      "message": "El cliente ya está registrado con ese correo o teléfono",
-                      "errorCode": "CLIENT_DUPLICATED",
-                      "details": [],
-                      "path": "/api/clients"
-                    }
-                """)))
+    @ApiResponse(responseCode = "201", description = "Cliente creado exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(example = """
+        {
+          "success": true,
+          "data": {
+            "id": "550e8400-e29b-41d4-a716-446655440000",
+            "name": "María García López",
+            "email": "maria.garcia@example.com",
+            "phone": "+5491123456789",
+            "isFrequent": true
+          },
+          "message": "Cliente registrado exitosamente"
+        }
+        """))),
+    @ApiResponse(responseCode = "400", description = "Error de validación", content = @Content(mediaType = "application/json", schema = @Schema(example = """
+        {
+          "statusCode": 400,
+          "message": "Falló la validación de los campos",
+          "errorCode": "VALIDATION_ERROR",
+          "details": [
+            "name: El nombre es obligatorio",
+            "email: El formato del correo electrónico es inválido",
+            "phone: El teléfono debe comenzar con código de país (+XX) seguido de 8-12 dígitos. Ejemplo: +54911234567",
+            "isFrequent: Debe indicar si es cliente frecuente"
+          ],
+          "path": "/api/clients"
+        }
+        """))),
+    @ApiResponse(responseCode = "409", description = "Conflicto - Cliente duplicado", content = @Content(mediaType = "application/json", schema = @Schema(example = """
+        {
+          "statusCode": 409,
+          "message": "El cliente ya está registrado con ese correo o teléfono",
+          "errorCode": "CLIENT_DUPLICATED",
+          "details": [],
+          "path": "/api/clients"
+        }
+        """)))
 })
 public @interface RegisterClientEndpointDoc {
 }

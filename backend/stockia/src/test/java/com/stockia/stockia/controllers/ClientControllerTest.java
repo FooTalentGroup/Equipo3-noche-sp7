@@ -94,7 +94,7 @@ class ClientControllerTest {
                 requestDto.setName("Laura Sánchez");
                 requestDto.setEmail("laura@test.com");
                 requestDto.setPhone("+5491123456789");
-                requestDto.setIsFrequentClient(false);
+                requestDto.setIsFrequent(false);
 
                 Client savedClient = new Client();
                 savedClient.setId(UUID.randomUUID());
@@ -178,7 +178,7 @@ class ClientControllerTest {
                 requestDto.setName("Cliente Duplicado");
                 requestDto.setEmail("duplicado@test.com");
                 requestDto.setPhone("+573123456789");
-                requestDto.setIsFrequentClient(true);
+                requestDto.setIsFrequent(true);
 
                 when(clientService.registerClient(any(Client.class)))
                                 .thenThrow(new ClientDuplicatedException(
