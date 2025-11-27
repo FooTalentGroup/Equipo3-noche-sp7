@@ -124,7 +124,7 @@ export const ProductsTable = ({
     }
 
     return (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1086px] max-h-[673px]">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 max-w-[1086px] max-h-[673px]">
             <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
                     <thead className="text-[14px] bg-slate-200 text-[#404040] font-normal h-[46px]">

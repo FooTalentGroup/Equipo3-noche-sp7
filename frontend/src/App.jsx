@@ -11,11 +11,11 @@ export default function App() {
     <>
       <CategoriesProvider>
         <ProductsProvider>
-          <div className="app-wrapper mx-auto flex">
+          <div className="flex h-full w-full overflow-hidden">
             <SideMenu />
-            <div className="flex-1 min-h-screen bg-white">
+            <div className="flex-1 flex flex-col">
               <TopBar />
-              <main className="p-6">
+              <main className="p-6 flex-1 overflow-auto justify-items-center">
                 <Outlet />
               </main>
             </div>

@@ -12,7 +12,7 @@ export function ProductsProvider({ children }) {
     async function fetchData() {
       try {
         const response = await getProducts();
-        const list = Array.isArray(response?.data) ? response.data : [];
+        const list = response && response.data ? response.data.content : [];
         setProducts(list.map((product) => productMapper(product)));
       } catch (e) {
         console.error("Error fetching products:", e);
