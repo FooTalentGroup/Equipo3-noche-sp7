@@ -1,7 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
     Dialog,
     DialogContent,
@@ -12,6 +10,7 @@ import {
 import { Button } from '@/shared/components/ui/button.jsx';
 import { Input } from '@/shared/components/ui/input.jsx';
 import { Textarea } from '@/shared/components/ui/textarea.jsx';
+import { Label } from '@/shared/components/ui/label.jsx';
 import {
     Form,
     FormControl,
@@ -20,27 +19,17 @@ import {
     FormLabel,
     FormMessage,
 } from '@/shared/components/ui/form.jsx';
-import { ArrowDownCircle, ArrowRightLeft, ArrowUpCircle, Building2, ClipboardList, Package } from 'lucide-react';
+import { ArrowDownCircle, ArrowRightLeft, ArrowUpCircle, Building2, ClipboardList, Package, LoaderCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { createInventoryMovement } from '@/features/products/services/inventoryService.js';
-import { useApiMutation } from '@/shared/hooks/useApi.js';
-import { toast } from 'sonner';
-
-const adjustmentSchema = z.object({
-    quantity: z.coerce.number({ required_error: 'La cantidad es obligatoria' })
-        .int('La cantidad debe ser un número entero')
-        .min(1, 'La cantidad debe ser mayor a 0'),
-    supplier: z.string().max(100, 'Máximo 100 caracteres').optional().or(z.literal('')),
-    cost: z.coerce.number({ required_error: 'El costo es obligatorio' })
-        .min(0, 'El costo debe ser mayor o igual a 0'),
-    observations: z.string().max(500, 'Máximo 500 caracteres').optional().or(z.literal('')),
-});
+import { createInventoryMovement } from '../services/inventoryService.js';
+import { useProducts } from '../context/ProductsContext.jsx';
 
 export function ProductAdjustmentDialog({ open, onOpenChange, product }) {
     const [activeTab, setActiveTab] = useState('entrada');
-    const productRef = useRef(product);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { updateProduct } = useProducts();
+
     const form = useForm({
-        resolver: zodResolver(adjustmentSchema),
         defaultValues: {
             quantity: '',
             supplier: '',
@@ -50,63 +39,67 @@ export function ProductAdjustmentDialog({ open, onOpenChange, product }) {
     });
 
     useEffect(() => {
-        productRef.current = product;
-    }, [product]);
-
-    useEffect(() => {
-        if (!open) return;
-        const supplierValue = productRef.current?.supplierName
-            ?? productRef.current?.proveedor
-            ?? '';
-
-        setActiveTab('entrada');
-        form.reset({
-            quantity: '',
-            supplier: supplierValue,
-            cost: '',
-            observations: '',
-        });
-    }, [open, form]);
-
-    const movementMutation = useApiMutation(createInventoryMovement, {
-        onSuccess: () => {
-            toast.success('Movimiento registrado correctamente');
-            handleClose();
-        },
-        onError: (error) => {
-            console.error('Error creating movement', error);
-            toast.error('No se pudo registrar el movimiento. Intenta nuevamente.');
-        },
-    });
+        if (open) {
+            setActiveTab('entrada');
+            form.reset({
+                quantity: '',
+                supplier: product?.proveedor || '',
+                cost: '',
+                observations: '',
+            });
+        }
+    }, [open, product, form]);
 
     const currentStock = Number(product?.currentStock ?? product?.stock_actual ?? 0);
-    const quantityValue = Number(form.watch('quantity') || 0);
+    const quantityValue = form.watch('quantity');
+    const quantityNumber = Number.parseInt(quantityValue || '0', 10) || 0;
     const resultingStock = useMemo(() => {
         return activeTab === 'entrada'
-            ? currentStock + quantityValue
-            : Math.max(0, currentStock - quantityValue);
-    }, [activeTab, currentStock, quantityValue]);
+            ? currentStock + quantityNumber
+            : Math.max(0, currentStock - quantityNumber);
+    }, [activeTab, currentStock, quantityNumber]);
 
     const handleClose = () => {
-        if (movementMutation.isPending) return;
+        form.reset();
         onOpenChange?.(false);
     };
 
-    const onSubmit = (values) => {
-        const targetProduct = productRef.current;
-
-        if (!targetProduct?.id) {
-            toast.error('No se encontró información del producto.');
+    const onSubmit = async (data) => {
+        if (!product?.id) {
+            console.error('Product ID is required');
             return;
         }
 
-        movementMutation.mutate({
-            productId: targetProduct.id,
-            movementType: activeTab === 'entrada' ? 'IN' : 'OUT',
-            quantity: Number(values.quantity),
-            reason: values.observations?.trim() || '',
-            purchaseCost: Number(values.cost),
-        });
+        setIsSubmitting(true);
+        try {
+            const movementData = {
+                productId: product.id,
+                movementType: activeTab === 'entrada' ? 'IN' : 'OUT',
+                quantity: Number.parseInt(data.quantity, 10),
+                reason: data.observations || '',
+                purchaseCost: Number.parseFloat(data.cost || '0'),
+            };
+
+            await createInventoryMovement(movementData);
+
+            // Update the product stock in context
+            const newStock = activeTab === 'entrada'
+                ? currentStock + movementData.quantity
+                : Math.max(0, currentStock - movementData.quantity);
+
+            updateProduct(product.id, {
+                ...product,
+                currentStock: newStock,
+                stock_actual: newStock,
+            });
+
+            handleClose();
+        } catch (error) {
+            console.error('Error creating inventory movement:', error);
+            // You might want to show an error toast here
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const categoryLabel = product?.category?.name ?? product?.categoryName ?? product?.category ?? 'Sin categoría';
@@ -140,12 +133,14 @@ export function ProductAdjustmentDialog({ open, onOpenChange, product }) {
                             <div className="flex flex-col gap-2 text-sm text-slate-600">
                                 <span className="flex items-center gap-2">
                                     <Building2 className="h-4 w-4 text-slate-700" />
-                                    {categoryLabel}
+                                    {typeof product?.category === 'string' ? product.category : (product?.categoryObj?.name || product?.category || 'Sin categoría')}
                                 </span>
-                                <span className="flex items-center gap-2">
-                                    <ClipboardList className="h-4 w-4 text-slate-700" />
-                                    {supplierLabel}
-                                </span>
+                                {product?.proveedor && (
+                                    <span className="flex items-center gap-2">
+                                        <ClipboardList className="h-4 w-4 text-slate-700" />
+                                        {product.proveedor}
+                                    </span>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -185,6 +180,20 @@ export function ProductAdjustmentDialog({ open, onOpenChange, product }) {
                                 <FormField
                                     control={form.control}
                                     name="quantity"
+                                    rules={{
+                                        required: 'La cantidad es requerida',
+                                        min: { value: 1, message: 'La cantidad debe ser mayor a 0' },
+                                        validate: (value) => {
+                                            const num = Number.parseInt(value, 10);
+                                            if (isNaN(num) || num <= 0) {
+                                                return 'La cantidad debe ser mayor a 0';
+                                            }
+                                            if (activeTab === 'salida' && num > currentStock) {
+                                                return 'La cantidad no puede ser mayor al stock actual';
+                                            }
+                                            return true;
+                                        },
+                                    }}
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-gray-700">
@@ -193,10 +202,14 @@ export function ProductAdjustmentDialog({ open, onOpenChange, product }) {
                                             <FormControl>
                                                 <Input
                                                     type="number"
-                                                    min={1}
+                                                    min={0}
                                                     placeholder="Ingresar cantidad"
                                                     className="mt-2 bg-white"
                                                     {...field}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        field.onChange(value);
+                                                    }}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -219,7 +232,7 @@ export function ProductAdjustmentDialog({ open, onOpenChange, product }) {
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-gray-700">
-                                                Proveedor <span className="text-slate-500">(opcional)</span>
+                                                Proveedor
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
@@ -235,6 +248,17 @@ export function ProductAdjustmentDialog({ open, onOpenChange, product }) {
                                 <FormField
                                     control={form.control}
                                     name="cost"
+                                    rules={{
+                                        required: 'El costo de compra es requerido',
+                                        min: { value: 0, message: 'El costo debe ser mayor o igual a 0' },
+                                        validate: (value) => {
+                                            const num = Number.parseFloat(value);
+                                            if (isNaN(num) || num < 0) {
+                                                return 'El costo debe ser mayor o igual a 0';
+                                            }
+                                            return true;
+                                        },
+                                    }}
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-gray-700">
@@ -278,11 +302,18 @@ export function ProductAdjustmentDialog({ open, onOpenChange, product }) {
                             />
 
                             <div className="flex flex-col md:flex-row justify-end gap-3 pt-4">
-                                <Button type="button" variant="outline" onClick={handleClose} disabled={movementMutation.isPending}>
+                                <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting}>
                                     Cancelar
                                 </Button>
-                                <Button type="submit" className="bg-slate-800 hover:bg-slate-900" disabled={movementMutation.isPending}>
-                                    {movementMutation.isPending ? 'Guardando...' : 'Guardar movimiento'}
+                                <Button type="submit" className="bg-slate-800 hover:bg-slate-900" disabled={isSubmitting}>
+                                    {isSubmitting ? (
+                                        <>
+                                            <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                                            Guardando...
+                                        </>
+                                    ) : (
+                                        'Guardar movimiento'
+                                    )}
                                 </Button>
                             </div>
                         </form>

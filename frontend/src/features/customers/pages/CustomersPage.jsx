@@ -20,19 +20,14 @@ export default function CustomersPage() {
         pageSize: 10,
     });
 
-    const fetchClients = useCallback(async (page = 0, search = '') => {
-        const token = getAuthToken();
-        if (!token) return;
+    const fetchClients = useCallback(async () => {
+        console.log('fetchClients called');
         setIsLoading(true);
         try {
-            const response = await getClients({
-                page,
-                size: 10,
-                name: search || undefined,
-            });
-            
-            const content = response?.content || [];
-            setCustomers(content.map(c => ({
+            console.log('Calling getClients...');
+            const data = await getClients();
+            console.log('getClients returned:', data);
+            setCustomers((data.clients || []).map(c => ({
                 id: c.id,
                 nombre: c.name,
                 email: c.email,
@@ -40,11 +35,11 @@ export default function CustomersPage() {
                 ultimaCompra: randomDate(),
                 joined: c.isFrequentClient ?? c.isFrequent ?? false,
             })));
-            
+
             setPagination({
-                totalPages: response?.totalPages ?? 0,
-                totalElements: response?.totalElements ?? content.length,
-                pageSize: response?.size ?? 10,
+                totalPages: data?.totalPages ?? 0,
+                totalElements: data?.totalElements ?? content.length,
+                pageSize: data?.size ?? 10,
             });
         } catch (e) {
             console.error('Error fetching customers:', e);
@@ -137,9 +132,6 @@ export default function CustomersPage() {
                 onEdit={openEdit}
                 onDelete={handleDelete}
                 isLoading={isLoading}
-                currentPage={currentPage}
-                totalPages={pagination.totalPages}
-                onPageChange={setCurrentPage}
             />
             <RegisterCustomerPopup
                 open={isRegisterOpen}

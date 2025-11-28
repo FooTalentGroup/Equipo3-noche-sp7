@@ -1,52 +1,47 @@
-import { createContext, useContext, useState } from 'react';
-import initialCategories from '../mockedCategories';
+import { createContext, useContext } from "react";
+import { useApiQueryFn } from "@/shared/hooks/useApi";
+import { getCategories } from "../services/categoriesService";
 
 const CategoriesContext = createContext(undefined);
-
 export function CategoriesProvider({ children }) {
-    const [categories, setCategories] = useState(initialCategories);
+  const { data, isFetching, isLoading, error } = useApiQueryFn(
+    ["categories"], 
+    getCategories
+  );
+  const categories = data && data.content ? data.content : [];
 
-    const addCategory = (category) => {
-        setCategories(prev => [...prev, { ...category, id: prev.length + 1 }]);
-    };
+  const getCategoryById = (id) => {
+    return categories.find((c) => c.id === id);
+  };
 
-    const updateCategory = (id, updatedCategory) => {
-        setCategories(prev => prev.map(c => c.id === id ? { ...c, ...updatedCategory } : c));
-    };
+  const getCategoryByName = (name) => {
+    if (!name) return undefined;
+    return categories.find((c) => c.name.toLowerCase() === name.toLowerCase());
+  };
 
-    const deleteCategory = (id) => {
-        setCategories(prev => prev.filter(c => c.id !== id));
-    };
+  const value = {
+    categories,
+    isFetching,
+    isLoading,
+    error,
+    getCategoryById,
+    getCategoryByName,
+  };
 
-    const getCategoryById = (id) => {
-        return categories.find(c => c.id === id);
-    };
-
-    const getCategoryByName = (name) => {
-        return categories.find(c => c.name.toLowerCase() === name.toLowerCase());
-    };
-
-    const value = {
-        categories,
-        addCategory,
-        updateCategory,
-        deleteCategory,
-        getCategoryById,
-        getCategoryByName,
-    };
-
-    return (
-        <CategoriesContext.Provider value={value}>
-            {children}
-        </CategoriesContext.Provider>
-    );
+  return (
+    <CategoriesContext.Provider value={value}>
+      {children}
+    </CategoriesContext.Provider>
+  );
 }
-
 // eslint-disable-next-line react-refresh/only-export-components
 export function useCategories() {
-    const context = useContext(CategoriesContext);
-    if (context === undefined) {
-        throw new Error('useCategories debe usarse dentro de un CategoriesProvider');
-    }
-    return context;
+  const context = useContext(CategoriesContext);
+  if (context === undefined) {
+    throw new Error(
+      "useCategories debe usarse dentro de un CategoriesProvider"
+    );
+  }
+  
+  return context;
 }

@@ -42,6 +42,7 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --color-btn-primary: var(--btn-primary);
   --color-stokia-neutral-50: var(--stokia-neutral-50);
+  --color-stokia-neutral-600: var(--stokia-neutral-600);
 }
 
 :root {
@@ -60,7 +61,7 @@
   --muted-foreground: oklch(0.553 0.013 58.071);
   --accent: oklch(0.97 0.001 106.424);
   --accent-foreground: oklch(0.216 0.006 56.043);
-  --destructive: oklch(0.577 0.245 27.325);
+  --destructive: oklch(0.56 0.18 25.21);
   --border: oklch(0.923 0.003 48.717);
   --input: oklch(0.923 0.003 48.717);
   --ring: oklch(0.709 0.01 56.259);
@@ -69,7 +70,7 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0.001 106.423);
+  --sidebar: oklch(0.9699 0.003 264.54);
   --sidebar-foreground: oklch(0.147 0.004 49.25);
   --sidebar-primary: oklch(0.216 0.006 56.043);
   --sidebar-primary-foreground: oklch(0.985 0.001 106.423);
@@ -77,8 +78,9 @@
   --sidebar-accent-foreground: oklch(0.216 0.006 56.043);
   --sidebar-border: oklch(0.923 0.003 48.717);
   --sidebar-ring: oklch(0.709 0.01 56.259);
-  --btn-primary: oklch(0.483 0.0707 255.51);
+  --btn-primary: oklch(0.48 0.07 255.52);
   --stokia-neutral-50: oklch(0.97 0.0029 264.54);
+  --stokia-neutral-600: oklch(0.4785 0.0177 235.72);
   font-family: 'Roboto Flex', system-ui, sans-serif;
 }
 
@@ -128,14 +130,6 @@
   }
 }
 
-.app-wrapper {
-  max-width: 1440px;
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  box-sizing: border-box;
-}
-
 @media (min-width: 1280px) {
   .app-wrapper {
     padding-left: 24px;
@@ -144,7 +138,6 @@
 }
 
 aside {
-  max-height: 1024px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -153,4 +146,5 @@ html,
 body,
 #root {
   height: 100%;
+  width: 100%
 }

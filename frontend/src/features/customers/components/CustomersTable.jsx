@@ -1,27 +1,35 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Edit, Trash2, ChevronLeft, ChevronRight, LoaderCircle } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import Skeleton from '@/shared/components/ui/Skeleton';
 
-export function CustomersTable({ 
-    customers = [], 
-    searchQuery = '', 
-    onEdit, 
-    onDelete,
-    isLoading: externalLoading = false,
-    currentPage: externalCurrentPage = 0,
-    totalPages: externalTotalPages = 0,
-    onPageChange,
-}) {
-    // Use backend pagination if provided, otherwise fallback to frontend
-    const useBackendPagination = onPageChange !== undefined;
-    const currentPage = useBackendPagination ? externalCurrentPage : 0;
-    const totalPages = useBackendPagination ? externalTotalPages : 1;
-    
-    // For backend pagination, customers are already filtered and paginated
-    const displayCustomers = useBackendPagination ? customers : customers;
-    
-    const isLoading = externalLoading || (!useBackendPagination && (!customers || customers.length === 0));
+export function CustomersTable({ customers = [], searchQuery = '', onEdit, onDelete, isLoading = false }) {
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
+    const filtered = useMemo(() => {
+        const q = (searchQuery || '').trim().toLowerCase();
+        if (!q) return customers;
+        return customers.filter(c =>
+            String(c.nombre || '').toLowerCase().includes(q) ||
+            String(c.email || '').toLowerCase().includes(q) ||
+            String(c.telefono || '').toLowerCase().includes(q)
+        );
+    }, [customers, searchQuery]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery]);
+
+    const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
+
+    useEffect(() => {
+        if (currentPage > totalPages) {
+            setCurrentPage(1);
+        }
+    }, [totalPages, currentPage]);
+
+    const paginated = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
     if (isLoading) {
         return (
@@ -51,7 +59,7 @@ export function CustomersTable({
                     </thead>
 
                     <tbody className="divide-y divide-gray-100">
-                        {displayCustomers.map(c => (
+                        {customers.map(c => (
                             <tr key={c.id} className="hover:bg-gray-50 transition-colors">
                                 <td className="px-6 py-4 font-normal text-[#171717] text-[14px]">{c.nombre}</td>
                                 <td className="px-6 py-4 font-normal text-[#525252] text-[14px]">{c.email}</td>
@@ -70,7 +78,7 @@ export function CustomersTable({
                             </tr>
                         ))}
 
-                        {!isLoading && displayCustomers.length === 0 && (
+                        {!isLoading && customers.length === 0 && (
                             <tr>
                                 <td colSpan={5} className="px-6 py-6 text-center text-gray-500 text-sm">
                                     No hay clientes para mostrar.

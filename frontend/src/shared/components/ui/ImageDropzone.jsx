@@ -1,4 +1,3 @@
-
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { ImageIcon } from "lucide-react";
@@ -20,6 +19,20 @@ export function ImageDropzone({ value, onChange }) {
     accept: { "image/*": [] },
   });
 
+  const getPreviewUrl = () => {
+    if (!value) return null;
+    
+    if (typeof value === 'string') {
+      return value;
+    }
+    if (value instanceof File) {
+      return URL.createObjectURL(value);
+    }
+    return null;
+  };
+
+  const previewUrl = getPreviewUrl();
+
   return (
     <div
       {...getRootProps()}
@@ -31,10 +44,10 @@ export function ImageDropzone({ value, onChange }) {
         <p className="text-sm text-muted-foreground">
           Suelta la imagen aquí...
         </p>
-      ) : value ? (
+      ) : previewUrl ? (
         <div className="flex flex-col items-center gap-3">
           <img
-            src={URL.createObjectURL(value)}
+            src={previewUrl}
             alt="preview"
             className="w-40 h-40 object-cover rounded-md shadow"
           />
@@ -53,10 +66,10 @@ export function ImageDropzone({ value, onChange }) {
       ) : (
         <div className="flex flex-col items-center gap-1">
           <span className="flex items-center justify-center bg-gray-100 rounded-full p-2">
-            <ImageIcon className="h-5 w-5 text-gray-500" />
+            <ImageIcon className="h-5 w-5 text-muted-foreground" />
           </span>
           <p className="font-medium">Adjunta una imagen</p>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-muted-foreground">
             Arrastre aquí la imagen o cárguela desde su ordenador
           </p>
         </div>
