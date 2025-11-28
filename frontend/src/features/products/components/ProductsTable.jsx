@@ -47,10 +47,11 @@ export const ProductsTable = ({
 
   // eslint-disable-next-line no-unused-vars
   const getStockBadge = (actual, minimo) => {
-    if (actual === 0) {
+    const stock = actual ?? 0;
+    if (stock === 0) {
       return <Badge variant="destructive">Sin stock</Badge>;
     }
-    if (actual <= 10) {
+    if (stock <= 10) {
       return <Badge variant="warning">Bajo stock</Badge>;
     }
     return <Badge variant="success">Alto stock</Badge>;
@@ -67,19 +68,22 @@ export const ProductsTable = ({
       result = result.filter(
         (p) =>
           p.name.toLowerCase().includes(term) ||
-          p.category.toLowerCase().includes(term)
+          (typeof p.category === 'string' ? p.category : (p.categoryObj?.name || '')).toLowerCase().includes(term)
       );
     }
 
     if (filters.category && filters.category !== "all") {
       const catNorm = normalize(filters.category);
-      result = result.filter((p) => normalize(p.category) === catNorm);
+      result = result.filter((p) => {
+        const categoryName = typeof p.category === 'string' ? p.category : (p.categoryObj?.name || '');
+        return normalize(categoryName) === catNorm;
+      });
     }
 
     if (filters.stockStatus === "in")
-      result = result.filter((p) => p.stock_actual > 0);
+      result = result.filter((p) => (p.stock_actual ?? p.currentStock ?? 0) > 0);
     if (filters.stockStatus === "out")
-      result = result.filter((p) => p.stock_actual === 0);
+      result = result.filter((p) => (p.stock_actual ?? p.currentStock ?? 0) === 0);
 
     switch (sort) {
       case "name_asc":
@@ -137,8 +141,8 @@ export const ProductsTable = ({
   // MAIN UI
   // -------------------------
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 max-w-[1086px] max-h-[673px]">
-      <div className="overflow-x-auto">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 max-w-[1086px] flex flex-col max-h-[673px]">
+      <div className="overflow-x-auto overflow-y-auto flex-1">
         <table className="w-full text-sm text-left">
           <thead className="text-[14px] bg-slate-200 text-[#404040] font-normal h-[46px] sticky top-0 z-10">
             <tr>
@@ -156,12 +160,14 @@ export const ProductsTable = ({
               <tr key={product.id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-6 py-4">
                   <div className="w-28">
-                    {getStockBadge(product.stock_actual, product.min_stock)}
+                    {getStockBadge(product.currentStock ?? product.stock_actual, product.minStock ?? product.min_stock)}
                   </div>
                 </td>
 
                 <td className="px-6 py-4 text-[#171717] text-[14px]">{product.name}</td>
-                <td className="px-6 py-4 text-[#525252] text-[14px]">{product.category}</td>
+                <td className="px-6 py-4 text-[#525252] text-[14px]">
+                  {typeof product.category === 'string' ? product.category : (product.categoryObj?.name || product.category || 'Sin categoría')}
+                </td>
                 <td className="px-6 py-4 text-[#171717] text-[14px]">${product.price}</td>
 
                 <td className="px-6 py-4 text-[#525252] text-[14px]">
@@ -170,7 +176,7 @@ export const ProductsTable = ({
 
                 <td className="px-6 py-4">
                   <div className="flex items-center justify-center gap-4">
-                    <ActionsMenu handleEdit={() => navigate(`/products/edit/${product.id}`)} handleDelete={() => handleOpenDelete(product.id)} />
+                    <ActionsMenu product={product} handleEdit={() => navigate(`/products/edit/${product.id}`)} handleDelete={() => handleOpenDelete(product.id)} />
                     <button onClick={() => handleOpenDelete(product.id)} className="text-destructive cursor-pointer transition">
                       <Trash2 className="w-4 h-4" />
                     </button>

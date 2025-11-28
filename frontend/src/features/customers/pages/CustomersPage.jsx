@@ -15,12 +15,13 @@ export default function CustomersPage() {
     const [isLoading, setIsLoading] = useState(false);
 
     const fetchClients = useCallback(async () => {
-        const token = getAuthToken();
-        if (!token) return;
+        console.log('fetchClients called');
         setIsLoading(true);
         try {
+            console.log('Calling getClients...');
             const data = await getClients();
-            setCustomers((data || []).map(c => ({
+            console.log('getClients returned:', data);
+            setCustomers((data.clients || []).map(c => ({
                 id: c.id,
                 nombre: c.name,
                 email: c.email,
@@ -113,6 +114,7 @@ export default function CustomersPage() {
                 searchQuery={searchQuery}
                 onEdit={openEdit}
                 onDelete={handleDelete}
+                isLoading={isLoading}
             />
             <RegisterCustomerPopup
                 open={isRegisterOpen}
