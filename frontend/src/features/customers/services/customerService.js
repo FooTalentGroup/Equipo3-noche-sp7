@@ -1,61 +1,55 @@
+// src/features/customers/services/customerService.js
 import apiClient from "@/shared/services/apiClient.js";
 
-// Helper to safely extract data (handles axios response structure)
+// Safely extract data from axios response
 const unwrap = (response) => response?.data?.data ?? response;
 
-export const getClients = async (page = 0, size = 20, sort = "") => {
-  console.log("getClients function called");
-  try {
-    const params = { page, size };
-    if (sort) params.sort = sort;
+export const getCustomers = async ({
+  page = 0,
+  size = 10,
+  search = "",
+  sort = "",
+} = {}) => {
+  const params = { page, size };
+  if (search) params.search = search;
+  if (sort) params.sort = sort;
 
+  try {
+    console.log("[customerService] Fetching customers:", params);
     const response = await apiClient.get("/api/clients", { params });
     const data = unwrap(response);
 
-    console.log("Full API response:", data);
+    const content = Array.isArray(data?.content) ? data.content : [];
 
-    // Spring Page response → the actual array is in "content"
-    const clients = Array.isArray(data.content) ? data.content : [];
-
-    console.log("Extracted clients:", clients);
-
-    // Optionally return more info (useful for pagination UI)
     return {
-      clients,
-      totalElements: data.totalElements || 0,
-      totalPages: data.totalPages || 0,
-      currentPage: data.number || 0,
-      pageSize: data.size || size,
-      isLast: data.last || false,
+      customers: content,
+      totalElements: data?.totalElements ?? content.length,
+      totalPages: data?.totalPages ?? 1,
+      currentPage: data?.number ?? page,
+      pageSize: data?.size ?? size,
     };
   } catch (error) {
-    console.error("Error in getClients:", error);
+    console.error("Error fetching customers:", error);
     throw error;
   }
 };
 
-export const getClientById = async (id) => {
+export const createCustomer = async (customerData) => {
   try {
-    const response = await apiClient.get(`/api/clients/${id}`);
-    const data = unwrap(response);
-
-    // For single object, backend might return { data: client } or just the client
-    return data?.data ?? data ?? null;
+    const response = await apiClient.post("/api/clients", customerData); // Fixed: use /clients
+    return unwrap(response);
   } catch (error) {
-    console.error("Error fetching client by ID:", error);
+    console.error("Error creating customer:", error);
     throw error;
   }
 };
 
-export const createClient = async (clientData) => {
+export const updateCustomer = async (id, customerData) => {
   try {
-    console.log("Creating client with data:", clientData);
-    const response = await apiClient.post("/api/clientes", clientData); // Note: endpoint is /clientes (plural + es)
-    const data = unwrap(response);
-
-    return data?.data ?? data ?? null;
+    const response = await apiClient.put(`/api/clients/${id}`, customerData); // Fixed: use /clients
+    return unwrap(response);
   } catch (error) {
-    console.error("Error creating client:", error);
+    console.error("Error updating customer:", error);
     throw error;
   }
 };
