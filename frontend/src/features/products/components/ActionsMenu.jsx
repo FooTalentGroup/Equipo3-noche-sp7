@@ -3,7 +3,8 @@ import { Edit } from "lucide-react";
 import { Fragment, useState } from "react";
 import { ProductAdjustmentDialog } from "./ProductAdjustmentDialog.jsx";
 
-export default function ActionsMenu({ product }) {
+export default function ActionsMenu({ product, handleEdit = () => { },
+    handleDelete = () => { }, }) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     return (
@@ -38,13 +39,13 @@ export default function ActionsMenu({ product }) {
                             <Menu.Item>
                                 {({ active }) => (
                                     <button
-                                        onClick={() => setIsDialogOpen(true)}
+                                        onClick={handleEdit}
                                         className={`
                                         ${active ? "bg-gray-200" : ""}
-                                        w-full text-left px-4 py-2
-                                        text-[14px] leading-[21px] tracking-[0.07px]
-                                        font-normal 
-                                        text-[#0A0A0A]
+                                            w-full text-left px-4 py-2
+                                            text-[14px] leading-[21px] tracking-[0.07px]
+                                    font-normal
+                                    text-[#0A0A0A]
                                     `}
                                     >
                                         Editar
@@ -89,23 +90,25 @@ export default function ActionsMenu({ product }) {
                             <Menu.Item>
                                 {({ active }) => (
                                     <button
+                                        onClick={handleDelete}
                                         className={`
                                         ${active ? "bg-gray-200" : ""}
-                                        w-full text-left px-4 py-2
-                                        text-[14px] leading-[21px] tracking-[0.07px]
-                                        font-normal 
-                                        text-red-600
-                                        font-[]
+                    w-full text-left px-4 py-2
+                    text-[14px] leading-[21px] tracking-[0.07px]
+            font-normal
+            text-red-600
+            font-[]
                                     `}
                                     >
                                         Borrar
                                     </button>
-                                )}
-                            </Menu.Item>
-                        </div>
-                    </Menu.Items>
-                </Transition>
-            </Menu>
+                                )
+                                }
+                            </Menu.Item >
+                        </div >
+                    </Menu.Items >
+                </Transition >
+            </Menu >
 
             <ProductAdjustmentDialog
                 open={isDialogOpen}

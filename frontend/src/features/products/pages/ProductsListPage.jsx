@@ -14,7 +14,9 @@ export default function ProductsListPage() {
     const location = useLocation();
     const navigate = useNavigate();
     const isCreateModalOpen = location.pathname === '/products/create';
-
+    const isEditModalOpen = location.pathname.startsWith('/products/edit/');
+    const isModalOpen = isCreateModalOpen || isEditModalOpen;
+    
     const {
         searchQuery,
         setSearchQuery,
@@ -29,14 +31,14 @@ export default function ProductsListPage() {
         clearFilters,
     } = useProductsFilter();
 
-    const handleCreateModalChange = (open) => {
+    const handleModalChange = (open) => {
         if (!open) {
             navigate("/products");
         }
     };
 
     return (
-        <div className="products-page">
+        <div className="w-full max-w-5xl">
             <ProductsFiltersBar
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
@@ -64,9 +66,16 @@ export default function ProductsListPage() {
                 }}
             />
 
-            <Dialog open={isCreateModalOpen} onOpenChange={handleCreateModalChange}>
-                <DialogTitle className="sr-only">Registrar Producto</DialogTitle>
-                <Description className="sr-only">Formulario para registrar un nuevo producto</Description>
+            <Dialog open={isModalOpen} onOpenChange={handleModalChange}>
+                <DialogTitle className="sr-only">
+                    {isEditModalOpen ? "Editar Producto" : "Registrar Producto"}
+                </DialogTitle>
+                <Description className="sr-only">
+                    {isEditModalOpen 
+                        ? "Formulario para editar producto existente" 
+                        : "Formulario para registrar un nuevo producto"
+                    }
+                </Description>
                 <DialogContent className="max-h-[90vh] overflow-y-auto p-0 gap-0 max-w-3xl">
                     <div className="overflow-y-auto">
                         <CreateProductComponent />

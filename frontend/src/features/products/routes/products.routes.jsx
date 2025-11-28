@@ -5,11 +5,7 @@ import { ProtectedLayout } from '@/shared/components/layout/ProtectedLayout.jsx'
 export const productsRoutes = [
   {
     path: '/products',
-    element: (
-      <ProtectedRoute>
-        <ProtectedLayout />
-      </ProtectedRoute>
-    ),
+    element: <ProductsListPage />,
     children: [
       {
         index: true,
@@ -18,6 +14,10 @@ export const productsRoutes = [
       {
         path: 'create',
         element: <ProductsListPage />,
+      },
+      {
+        path: 'edit/:id',
+        element: <ProductsListPage />
       }
     ],
   },

@@ -56,16 +56,16 @@ const NavLinkItem = ({ to, icon: Icon, arrowIcon: Arrow, label }) => (
         <NavLink
             to={to}
             className={({ isActive, isPending }) =>
-                `flex items-center justify-between h-16 px-6 py-2 transition-all border-b-2 w-full ${isPending
+                `flex items-center justify-between p-6  text-base transition-all w-full border-b-2 ${isPending
                     ? 'opacity-50'
                     : isActive
-                        ? 'bg-slate-300 text-neutral-700'
-                        : 'hover:bg-gray-100'
+                        ? 'bg-slate-300'
+                        : 'hover:bg-gray-100 text-stokia-neutral-600'
                 }`
             }
         >
-            <div className="flex items-center gap-4">
-                <Icon className='h-5 w-5' />
+            <div className="flex items-center gap-4 h-4">
+                <Icon className='h-[18px] w-[18px]' />
                 <span>{label}</span>
             </div>
         </NavLink>
@@ -74,22 +74,19 @@ const NavLinkItem = ({ to, icon: Icon, arrowIcon: Arrow, label }) => (
 
 const SideMenu = () => {
     return (
-        <aside className='hidden md:flex md:flex-col border-r bg-gray-100 min-w-[16rem] justify-between max-h-256'>
+        <aside className='hidden md:flex md:flex-col border-r bg-sidebar min-w-[16rem] justify-between h-full'>
             <div className="flex-1 overflow-y-auto">
                 <div className="w-63 h-20 p-6 flex justify-center">
-                    <img src={stokialogo} alt="Stokia Logo" className="w-51 h-[2.58rem]" />
+                    <img src={stokialogo} alt="Stokia Logo" className="h-[2.58rem]" />
                 </div>
 
-                <nav className='flex flex-col gap-1'>
+                <nav className='flex flex-col'>
                     {navLinks.map(link => (
                         <NavLinkItem key={link.to} {...link} />
                     ))}
                 </nav>
             </div>
-
-            <div className="">
-                <UserMenu />
-            </div>
+            <UserMenu />
         </aside>
     );
 };

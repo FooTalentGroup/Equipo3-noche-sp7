@@ -10,6 +10,7 @@ import SalesPage from '@/features/sales/pages/SalesPage';
 import DiscountsPage from '@/features/discounts/pages/DiscountPage.jsx';
 import PredictionsPage from '@/features/predictions/pages/PredictionsPage.jsx';
 import ReportsPage from '@/features/repor/pages/ReportsPage.jsx';
+import { productsRoutes } from '@/features/products/routes/products.routes';
 import { authRoutes } from '@/features/auth/routes/auth.routes.jsx';
 import { ProtectedRoute } from '@/infrastructure/router/ProtectedRoute.jsx';
 
@@ -24,8 +25,7 @@ const router = createBrowserRouter([
         ),
         children: [
             { index: true, element: <HomePage /> },
-            { path: 'home', element: <HomePage /> },
-            { path: 'products', element: <ProductsPage /> },
+            ...productsRoutes,
             { path: 'customers', element: <CustomersPage /> },
             { path: 'suppliers', element: <SuppliersPage /> },
             { path: 'sales', element: <SalesPage /> },
