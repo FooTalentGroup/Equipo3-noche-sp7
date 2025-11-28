@@ -2,14 +2,62 @@ import apiClient from "@/shared/services/apiClient.js";
 
 const unwrap = (response) => response?.data ?? response;
 
-export const getClients = async () => {
-  const { data } = await apiClient.get("/api/clients");
+export const getClients = async (params = {}) => {
+  const {
+    page = 0,
+    size = 20,
+    sort,
+    name,
+    email,
+    phone,
+    isFrequent,
+  } = params;
+
+  const queryParams = new URLSearchParams({
+    page: page.toString(),
+    size: size.toString(),
+  });
+
+  if (sort) {
+    queryParams.append('sort', sort);
+  }
+
+  if (name) {
+    queryParams.append('name', name);
+  }
+
+  if (email) {
+    queryParams.append('email', email);
+  }
+
+  if (phone) {
+    queryParams.append('phone', phone);
+  }
+
+  if (isFrequent !== undefined && isFrequent !== null) {
+    queryParams.append('isFrequent', isFrequent.toString());
+  }
+
+  const { data } = await apiClient.get(`/api/clients?${queryParams.toString()}`);
   const payload = unwrap(data);
-  return Array.isArray(payload?.data)
-    ? payload.data
-    : Array.isArray(payload)
-    ? payload
-    : [];
+  
+  // Return the full paginated response
+  if (payload?.content) {
+    return payload;
+  }
+  
+  // Fallback for non-paginated responses
+  return {
+    content: Array.isArray(payload?.data)
+      ? payload.data
+      : Array.isArray(payload)
+        ? payload
+        : [],
+    totalElements: Array.isArray(payload?.data) ? payload.data.length : Array.isArray(payload) ? payload.length : 0,
+    totalPages: 1,
+    number: 0,
+    size: size,
+  };
 };
 
 export const getClientById = async (id) => {

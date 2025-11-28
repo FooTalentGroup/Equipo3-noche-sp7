@@ -1,30 +1,12 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Trash2, ChevronLeft, ChevronRight, LoaderCircle } from 'lucide-react';
 import Badge from "@/features/products/components/Badge.jsx";
 import { useProducts } from '../context/ProductsContext';
 import ActionsMenu from './ActionsMenu';
 
-// Utility: price parser
-const parsePrice = (val) => {
-    if (val == null) return 0;
-    if (typeof val === 'number') return val;
-    const num = String(val).replace(/[^0-9.-]+/g, '');
-    const parsed = Number(num);
-    return Number.isFinite(parsed) ? parsed : 0;
-};
-
-// Utility: normalize string
-const normalize = (s) =>
-    String(s || '')
-        .normalize?.('NFD')
-        .replace(/\p{Diacritic}/gu, '')
-        .toLowerCase();
-
 export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc' }) => {
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 10;
-
-    const { products, deleteProduct } = useProducts();
+    const [currentPage, setCurrentPage] = useState(0);
+    const { products, isLoading, pagination, fetchProducts, deleteProduct } = useProducts();
 
     const handleDelete = (id) => deleteProduct(id);
 
@@ -34,68 +16,42 @@ export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc
         return <Badge variant="success">Alto stock</Badge>;
     };
 
-    // -------------------------
-    // FILTER + SORT
-    // -------------------------
-    const filteredProducts = useMemo(() => {
-        let result = [...(products || [])];
-
-        // Search filter
-        if (searchQuery) {
-            const term = searchQuery.toLowerCase();
-            result = result.filter((p) =>
-                p.name.toLowerCase().includes(term) ||
-                p.category.toLowerCase().includes(term)
-            );
-        }
-
-        // Category filter
-        if (filters.category && filters.category !== 'all') {
-            const catNorm = normalize(filters.category);
-            result = result.filter((p) => normalize(p.category) === catNorm);
-        }
-
-        // Stock filter
-        if (filters.stockStatus === 'in')
-            result = result.filter((p) => p.stock_actual > 0);
-        if (filters.stockStatus === 'out')
-            result = result.filter((p) => p.stock_actual === 0);
-
-        // Sort
-        switch (sort) {
+    // Convert frontend sort to backend sort format
+    const getBackendSort = (sortValue) => {
+        switch (sortValue) {
             case 'name_asc':
-                result.sort((a, b) => a.name.localeCompare(b.name));
-                break;
+                return 'name,asc';
             case 'name_desc':
-                result.sort((a, b) => b.name.localeCompare(a.name));
-                break;
+                return 'name,desc';
             case 'price_asc':
-                result.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
-                break;
+                return 'price,asc';
             case 'price_desc':
-                result.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
-                break;
+                return 'price,desc';
+            default:
+                return 'name,asc';
         }
+    };
 
-        return result;
-    }, [products, searchQuery, filters, sort]);
-
-    // Reset to page 1 when filters/search/sort change
-    useEffect(() => setCurrentPage(1), [searchQuery, filters, sort]);
-
-    // Pagination calculations
-    const totalPages = Math.max(1, Math.ceil(filteredProducts.length / itemsPerPage));
-
+    // Fetch products when filters/search/sort/page change
     useEffect(() => {
-        if (currentPage > totalPages) setCurrentPage(1);
-    }, [totalPages, currentPage]);
+        const params = {
+            page: currentPage,
+            size: 10,
+            sort: getBackendSort(sort),
+            q: searchQuery || undefined,
+            lowStock: filters.stockStatus === 'low' ? true : undefined,
+            categoryId: filters.category && filters.category !== 'all' ? filters.category : undefined,
+        };
+        fetchProducts(params);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentPage, searchQuery, filters, sort]);
 
-    const paginated = filteredProducts.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-    );
+    // Reset to page 0 when filters/search/sort change
+    useEffect(() => {
+        setCurrentPage(0);
+    }, [searchQuery, filters, sort]);
 
-    const isLoading = !products || products.length === 0;
+    const totalPages = pagination.totalPages || 1;
 
     // -------------------------
     // LOADING STATE
@@ -132,7 +88,7 @@ export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc
                     </thead>
 
                     <tbody className="divide-y divide-gray-200">
-                        {paginated.map((product) => (
+                        {products.map((product) => (
                             <tr key={product.id} className="hover:bg-gray-50 transition-colors">
                                 <td className="px-6 py-4">
                                     <div className="w-28">
@@ -162,7 +118,7 @@ export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc
                             </tr>
                         ))}
 
-                        {paginated.length === 0 && (
+                        {!isLoading && products.length === 0 && (
                             <tr>
                                 <td colSpan={6} className="px-6 py-6 text-center text-gray-500 text-sm">
                                     No hay productos para mostrar.
@@ -174,40 +130,42 @@ export const ProductsTable = ({ searchQuery = '', filters = {}, sort = 'name_asc
             </div>
 
             {/* Pagination FIXED at bottom (not clipped) */}
-            <div className="flex items-center justify-center px-6 py-3 bg-gray-50 border-t">
-                <div className="flex items-center gap-2">
-                    <button
-                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                        disabled={currentPage === 1}
-                        className="border-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 rounded-md disabled:opacity-50 flex items-center gap-1"
-                    >
-                        <ChevronLeft className="w-4 h-4" /> Previous
-                    </button>
+            {totalPages > 1 && (
+                <div className="flex items-center justify-center px-6 py-3 bg-gray-50 border-t">
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
+                            disabled={currentPage === 0}
+                            className="border-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 rounded-md disabled:opacity-50 flex items-center gap-1"
+                        >
+                            <ChevronLeft className="w-4 h-4" /> Previous
+                        </button>
 
-                    <div className="flex gap-1 justify-center">
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                            <button
-                                key={page}
-                                onClick={() => setCurrentPage(page)}
-                                className={`px-3 py-1.5 text-sm rounded-md ${currentPage === page
-                                        ? "bg-slate-600 text-white"
-                                        : "text-gray-700 hover:bg-gray-200"
-                                    }`}
-                            >
-                                {page}
-                            </button>
-                        ))}
+                        <div className="flex gap-1 justify-center">
+                            {Array.from({ length: totalPages }, (_, i) => i).map((page) => (
+                                <button
+                                    key={page}
+                                    onClick={() => setCurrentPage(page)}
+                                    className={`px-3 py-1.5 text-sm rounded-md ${currentPage === page
+                                            ? "bg-slate-600 text-white"
+                                            : "text-gray-700 hover:bg-gray-200"
+                                        }`}
+                                >
+                                    {page + 1}
+                                </button>
+                            ))}
+                        </div>
+
+                        <button
+                            onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))}
+                            disabled={currentPage >= totalPages - 1 || totalPages === 0}
+                            className="border-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 rounded-md disabled:opacity-50 flex items-center gap-1"
+                        >
+                            Next <ChevronRight className="w-4 h-4" />
+                        </button>
                     </div>
-
-                    <button
-                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                        disabled={currentPage === totalPages || totalPages === 0}
-                        className="border-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 rounded-md disabled:opacity-50 flex items-center gap-1"
-                    >
-                        Next <ChevronRight className="w-4 h-4" />
-                    </button>
                 </div>
-            </div>
+            )}
 
         </div>
     );

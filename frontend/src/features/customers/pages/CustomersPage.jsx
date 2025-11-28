@@ -13,14 +13,26 @@ export default function CustomersPage() {
     const [customers, setCustomers] = useState([]);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [pagination, setPagination] = useState({
+        totalPages: 0,
+        totalElements: 0,
+        pageSize: 10,
+    });
 
-    const fetchClients = useCallback(async () => {
+    const fetchClients = useCallback(async (page = 0, search = '') => {
         const token = getAuthToken();
         if (!token) return;
         setIsLoading(true);
         try {
-            const data = await getClients();
-            setCustomers((data || []).map(c => ({
+            const response = await getClients({
+                page,
+                size: 10,
+                name: search || undefined,
+            });
+            
+            const content = response?.content || [];
+            setCustomers(content.map(c => ({
                 id: c.id,
                 nombre: c.name,
                 email: c.email,
@@ -28,6 +40,12 @@ export default function CustomersPage() {
                 ultimaCompra: randomDate(),
                 joined: c.isFrequentClient ?? c.isFrequent ?? false,
             })));
+            
+            setPagination({
+                totalPages: response?.totalPages ?? 0,
+                totalElements: response?.totalElements ?? content.length,
+                pageSize: response?.size ?? 10,
+            });
         } catch (e) {
             console.error('Error fetching customers:', e);
             setCustomers([]);
@@ -36,9 +54,14 @@ export default function CustomersPage() {
         }
     }, []);
 
+    // Reset to page 0 when search changes
     useEffect(() => {
-        fetchClients();
-    }, [fetchClients]);
+        setCurrentPage(0);
+    }, [searchQuery]);
+
+    useEffect(() => {
+        fetchClients(currentPage, searchQuery);
+    }, [fetchClients, currentPage, searchQuery]);
 
     function randomDate() {
         const start = new Date(2024, 0, 1);
@@ -72,7 +95,7 @@ export default function CustomersPage() {
                     isFrequentClient: false,
                 };
                 await createClient(body);
-                await fetchClients();
+                await fetchClients(currentPage, searchQuery);
                 setShowSuccessModal(true);
             } else {
                 setCustomers(prev => prev.map(c => c.id === payload.id ? { ...c, ...payload } : c));
@@ -113,6 +136,10 @@ export default function CustomersPage() {
                 searchQuery={searchQuery}
                 onEdit={openEdit}
                 onDelete={handleDelete}
+                isLoading={isLoading}
+                currentPage={currentPage}
+                totalPages={pagination.totalPages}
+                onPageChange={setCurrentPage}
             />
             <RegisterCustomerPopup
                 open={isRegisterOpen}

@@ -1,5 +1,5 @@
 import initialCategories from '@/features/categories/mockedCategories';
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { getProducts } from '../services/productService';
 
 // =============== HELPERS ===============
@@ -44,37 +44,80 @@ const ProductsContext = createContext(undefined);
 
 export function ProductsProvider({ children }) {
     const [products, setProducts] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [pagination, setPagination] = useState({
+        currentPage: 0,
+        totalPages: 0,
+        totalElements: 0,
+        pageSize: 10,
+    });
 
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                const response = await getProducts();
-                const list = Array.isArray(response?.data)
+    const fetchProducts = useCallback(async (params = {}) => {
+        setIsLoading(true);
+        try {
+            const response = await getProducts({
+                page: params.page ?? 0,
+                size: params.size ?? 10,
+                sort: params.sort,
+                q: params.q || params.searchQuery,
+                categoryId: params.categoryId,
+                lowStock: params.lowStock,
+                includeInactive: params.includeInactive,
+                deleted: params.deleted,
+            });
+
+            const list = Array.isArray(response?.content)
+                ? response.content
+                : Array.isArray(response?.data)
                     ? response.data
-                    : Array.isArray(response?.content)
-                        ? response.content
-                        : Array.isArray(response)
-                            ? response
-                            : [];
+                    : Array.isArray(response)
+                        ? response
+                        : [];
 
-                setProducts(list.map(product => ({
+            const mappedProducts = list.map(product => {
+                const currentStock = Number(product?.currentStock ?? product?.stock_actual ?? 0);
+                const minStock = Number(product?.minStock ?? product?.min_stock ?? 0);
+                const discount = Number(product?.discount ?? product?.descuento ?? 0);
+                const categoryName = product?.category?.name ?? product?.category ?? '';
+                const supplierName = product?.supplier?.name ?? product?.proveedor ?? '';
+
+                return {
                     id: product.id,
                     name: product.name,
                     price: product.price,
-                    descuento: product.discount || 0,
-                    stock_actual: product.currentStock,
-                    min_stock: product.minStock,
-                    category: product.category?.name || '',
-                    proveedor: product.supplier?.name || '',
+                    descuento: discount,
+                    discount,
+                    stock_actual: currentStock,
+                    currentStock,
+                    min_stock: minStock,
+                    minStock,
+                    category: categoryName,
+                    categoryName,
+                    proveedor: supplierName,
+                    supplierName,
                     photoUrl: product.photoUrl || '',
                     isAvailable: product.isAvailable,
-                })));
-            } catch (e) {
-                console.error('Error fetching products:', e);
-            }
+                };
+            });
+
+            setProducts(mappedProducts);
+            setPagination({
+                currentPage: response?.number ?? params.page ?? 0,
+                totalPages: response?.totalPages ?? 0,
+                totalElements: response?.totalElements ?? mappedProducts.length,
+                pageSize: response?.size ?? params.size ?? 10,
+            });
+        } catch (e) {
+            console.error('Error fetching products:', e);
+            setProducts([]);
+        } finally {
+            setIsLoading(false);
         }
-        fetchData();
     }, []);
+
+    useEffect(() => {
+        fetchProducts({ page: 0, size: 10 });
+    }, [fetchProducts]);
 
     const addProduct = (product) => {
         setProducts(prev => [...prev, { ...product, id: prev.length + 1, category: initialCategories.find(c => c.id == product.category).name }]);
@@ -90,6 +133,9 @@ export function ProductsProvider({ children }) {
 
     const value = {
         products,
+        isLoading,
+        pagination,
+        fetchProducts,
         addProduct,
         updateProduct,
         deleteProduct,
