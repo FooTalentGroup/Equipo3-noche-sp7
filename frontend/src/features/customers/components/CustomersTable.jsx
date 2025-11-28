@@ -3,7 +3,7 @@ import { Edit, Trash2, ChevronLeft, ChevronRight, LoaderCircle } from 'lucide-re
 import { Button } from '@/shared/components/ui/button';
 import Skeleton from '@/shared/components/ui/Skeleton';
 
-export function CustomersTable({ customers = [], searchQuery = '', onEdit, onDelete }) {
+export function CustomersTable({ customers = [], searchQuery = '', onEdit, onDelete, isLoading = false }) {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
@@ -30,8 +30,6 @@ export function CustomersTable({ customers = [], searchQuery = '', onEdit, onDel
     }, [totalPages, currentPage]);
 
     const paginated = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
-    const isLoading = !customers || customers.length === 0;
 
     if (isLoading) {
         return (

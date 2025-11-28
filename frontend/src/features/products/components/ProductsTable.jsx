@@ -9,6 +9,7 @@ import { useDeleteProduct } from "../hooks/useDeleteProduct";
 import { Trash } from "lucide-react";
 import ActionsMenu from './ActionsMenu';
 
+// Utility: price parser
 const parsePrice = (val) => {
   if (val == null) return 0;
   if (typeof val === "number") return val;
@@ -46,36 +47,43 @@ export const ProductsTable = ({
 
   // eslint-disable-next-line no-unused-vars
   const getStockBadge = (actual, minimo) => {
-    if (actual === 0) {
+    const stock = actual ?? 0;
+    if (stock === 0) {
       return <Badge variant="destructive">Sin stock</Badge>;
     }
-    if (actual <= 10) {
+    if (stock <= 10) {
       return <Badge variant="warning">Bajo stock</Badge>;
     }
     return <Badge variant="success">Alto stock</Badge>;
   };
 
-    const filteredProducts = useMemo(() => {
-        let result = [...(products || [])];
+  // -------------------------
+  // FILTER + SORT
+  // -------------------------
+  const filteredProducts = useMemo(() => {
+    let result = [...(products || [])];
 
     if (searchQuery) {
       const term = searchQuery.toLowerCase();
       result = result.filter(
         (p) =>
           p.name.toLowerCase().includes(term) ||
-          p.category.toLowerCase().includes(term)
+          (typeof p.category === 'string' ? p.category : (p.categoryObj?.name || '')).toLowerCase().includes(term)
       );
     }
 
     if (filters.category && filters.category !== "all") {
       const catNorm = normalize(filters.category);
-      result = result.filter((p) => normalize(p.category) === catNorm);
+      result = result.filter((p) => {
+        const categoryName = typeof p.category === 'string' ? p.category : (p.categoryObj?.name || '');
+        return normalize(categoryName) === catNorm;
+      });
     }
 
     if (filters.stockStatus === "in")
-      result = result.filter((p) => p.stock_actual > 0);
+      result = result.filter((p) => (p.stock_actual ?? p.currentStock ?? 0) > 0);
     if (filters.stockStatus === "out")
-      result = result.filter((p) => p.stock_actual === 0);
+      result = result.filter((p) => (p.stock_actual ?? p.currentStock ?? 0) === 0);
 
     switch (sort) {
       case "name_asc":
@@ -108,67 +116,85 @@ export const ProductsTable = ({
     }
   }, [totalPages, currentPage]);
 
-    const paginated = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const paginated = filteredProducts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
-    const isLoading = !products || products.length === 0;
+  const isLoading = !products || products.length === 0;
 
-    if (isLoading) {
-        return (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1086px] max-h-[673px] flex items-center justify-center">
-                <div className="flex flex-col items-center justify-center gap-3 my-4">
-                    <LoaderCircle className="h-8 w-8 text-slate-600 animate-spin" />
-                    <span className="text-sm text-gray-600">Cargando productos...</span>
-                </div>
-            </div>
-        );
-    }
-
+  // -------------------------
+  // LOADING STATE
+  // -------------------------
+  if (isLoading) {
     return (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 max-w-[1086px] max-h-[673px]">
-            <div className="overflow-x-auto">
-                <table className="w-full text-sm text-left">
-                    <thead className="text-[14px] bg-slate-200 text-[#404040] font-normal h-[46px]">
-                        <tr>
-                            <th className="px-6 py-3 text-[#404040]">Estado</th>
-                            <th className="px-6 py-3 text-[#404040]">Producto</th>
-                            <th className="px-6 py-3 text-[#404040]">Categoría</th>
-                            <th className="px-6 py-3 text-[#404040]">Precio</th>
-                            <th className="px-6 py-3 text-[#404040]">Descuento</th>
-                            <th className="px-6 py-3 text-[#404040] text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                        {paginated.map(product => (
-                            <tr key={product.id} className="hover:bg-gray-50 transition-colors">
-                                <td className="px-6 py-4">
-                                    <div className="w-28">
-                                        {getStockBadge(product.stock_actual, product.min_stock)}
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4 font-normal text-[#171717] text-[14px]">{product.name}</td>
-                                <td className="px-6 py-4 text-[#525252] font-normal text-[14px]">{product.category}</td>
-                                <td className="px-6 py-4 font-normal text-[14px] text-[#171717]">${product.price}</td>
-                                <td className="px-6 py-4">
-                                    {product.descuento > 0 ? (
-                                        <span className="font-normal text-[14px] text-[#525252]">{product.descuento}%</span>
-                                    ) : (
-                                        <span className="font-normal text-[14px] text-[#525252]">0%</span>
-                                    )}
-                                </td>
-                                <td className="px-6 py-4">
-                                    <div className="flex items-center justify-center gap-4">
-                                        <ActionsMenu handleEdit={() => navigate(`/products/edit/${product.id}`)} handleDelete={() => handleOpenDelete(product.id)} />
-                                        <button onClick={() => handleOpenDelete(product.id)} className="text-destructive cursor-pointer transition">
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1086px] min-h-[300px] flex items-center justify-center">
+        <div className="flex flex-col items-center justify-center gap-3 my-4">
+          <LoaderCircle className="h-8 w-8 text-slate-600 animate-spin" />
+          <span className="text-sm text-gray-600">Cargando productos...</span>
+        </div>
+      </div>
+    );
+  }
 
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+  // -------------------------
+  // MAIN UI
+  // -------------------------
+  return (
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 max-w-[1086px] flex flex-col max-h-[673px]">
+      <div className="overflow-x-auto overflow-y-auto flex-1">
+        <table className="w-full text-sm text-left">
+          <thead className="text-[14px] bg-slate-200 text-[#404040] font-normal h-[46px] sticky top-0 z-10">
+            <tr>
+              <th className="px-6 py-3">Estado</th>
+              <th className="px-6 py-3">Producto</th>
+              <th className="px-6 py-3">Categoría</th>
+              <th className="px-6 py-3">Precio</th>
+              <th className="px-6 py-3">Descuento</th>
+              <th className="px-6 py-3 text-center">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody className="divide-y divide-gray-200">
+            {paginated.map((product) => (
+              <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+                <td className="px-6 py-4">
+                  <div className="w-28">
+                    {getStockBadge(product.currentStock ?? product.stock_actual, product.minStock ?? product.min_stock)}
+                  </div>
+                </td>
+
+                <td className="px-6 py-4 text-[#171717] text-[14px]">{product.name}</td>
+                <td className="px-6 py-4 text-[#525252] text-[14px]">
+                  {typeof product.category === 'string' ? product.category : (product.categoryObj?.name || product.category || 'Sin categoría')}
+                </td>
+                <td className="px-6 py-4 text-[#171717] text-[14px]">${product.price}</td>
+
+                <td className="px-6 py-4 text-[#525252] text-[14px]">
+                  {product.descuento > 0 ? `${product.descuento}%` : "0%"}
+                </td>
+
+                <td className="px-6 py-4">
+                  <div className="flex items-center justify-center gap-4">
+                    <ActionsMenu product={product} handleEdit={() => navigate(`/products/edit/${product.id}`)} handleDelete={() => handleOpenDelete(product.id)} />
+                    <button onClick={() => handleOpenDelete(product.id)} className="text-destructive cursor-pointer transition">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+
+            {paginated.length === 0 && (
+              <tr>
+                <td colSpan={6} className="px-6 py-6 text-center text-gray-500 text-sm">
+                  No hay productos para mostrar.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
       <div className="flex items-center justify-center px-6 py-3 bg-gray-50 border-t">
         <div className="flex items-center gap-2">
@@ -185,11 +211,10 @@ export const ProductsTable = ({
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`px-3 py-1.5 text-sm rounded-md ${
-                  currentPage === page
-                    ? "bg-slate-600 text-white"
-                    : "text-gray-700 hover:bg-gray-200"
-                }`}
+                className={`px-3 py-1.5 text-sm rounded-md ${currentPage === page
+                  ? "bg-slate-600 text-white"
+                  : "text-gray-700 hover:bg-gray-200"
+                  }`}
               >
                 {page}
               </button>
