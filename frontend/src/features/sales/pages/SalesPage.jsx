@@ -12,6 +12,8 @@ import { Input } from "@/shared/components/ui/input";
 import { ProductCard } from "../components/CardResult";
 import { SalesSummary } from "../components/SalesSummary";
 
+
+
 const SalesPage = () => {
   const products = [
     {
@@ -48,11 +50,7 @@ const SalesPage = () => {
 
   return (
     <div className="min-h-screen bg-white p-8 w-full flex flex-col">
-      <header className="flex justify-between items-center mb-8">
-      </header>
-
-      <div className="flex-grow grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 flex flex-col">
+   
           <section className="mb-6">
             <h2 className="text-base font-medium text-gray-700 mb-3">
               Cliente
@@ -63,14 +61,14 @@ const SalesPage = () => {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   placeholder="Buscar clientes"
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm w-full sm:w-[300px]"
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm w-[432px] h-[36px]"
                 />
               </div>
 
               <div className="flex space-x-6">
                 <Button
                   onClick={() => console.log("Consumidor Final")}
-                  className="bg-[#436086] hover:bg-[#384d6b] text-white py-2 px-4 rounded-md flex items-center space-x-2 shadow-sm text-sm"
+                  className="bg-[#436086] hover:bg-[#384d6b] text-white py-2 px-4 rounded-md flex items-center space-x-2 shadow-sm text-sm w-[204px] h-[40px]"
                 >
                   <User className="h-4 w-4" />
                   <span>Consumidor final</span>
@@ -78,7 +76,7 @@ const SalesPage = () => {
 
                 <Button
                   onClick={() => console.log("Agregar Nuevo Cliente")}
-                  className="bg-[#436086] hover:bg-[#384d6b] text-white py-2 px-4 rounded-md flex items-center space-x-2 shadow-sm text-sm"
+                  className="bg-[#436086] hover:bg-[#384d6b] text-white py-2 px-4 rounded-md flex items-center space-x-2 shadow-sm text-sm w-[204px] h-[40px]"
                 >
                   <UserPlus className="h-4 w-4" />
                   <span>Nuevo cliente</span>
@@ -96,15 +94,17 @@ const SalesPage = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 placeholder="Buscar producto"
-                className="pl-10 border border-gray-300 rounded-md shadow-sm text-sm w-full sm:w-[300px]"
+                className="pl-10 border border-gray-300 rounded-md shadow-sm text-sm w-[432px] h-[36px] "
               />
             </div>
           </section>
+          <div className="flex-grow grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8 items-start">
 
           <section className="flex-grow flex flex-col">
             <h2 className="text-base font-medium text-gray-700 mb-4">
               Resultados
             </h2>
+            
 
             <div className="overflow-y-auto max-h-[450px] bg-gray-50 border border-gray-200 rounded-lg p-4 custom-scroll">
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -120,31 +120,32 @@ const SalesPage = () => {
               </div>
             </div>
           </section>
+          <div className="sticky top-8 flex flex-col space-y-4">
+            <h2 className="text-base font-medium text-gray-700 mb-4">
+                Resumen de compra 
+            </h2>
+              <SalesSummary />
+            <div className="flex space-x-4">
+              <Button
+                  onClick={() => console.log("Agregar Nuevo Cliente")}
+                  className="bg-[#FAFAFA]  text-[#171717] py-2 px-4 rounded-[8px] flex items-center space-x-2 shadow-sm text-sm w-[131px] h-[40px]"
+                >
+                  <span>Agregar nota</span>
+              </Button>
+              <Button
+                  onClick={() => console.log("Agregar Nuevo Cliente")}
+                  className="bg-[#FAFAFA]  text-[#171717] py-2 px-4 rounded-[8px] flex items-center space-x-2 shadow-sm text-sm w-[149px] h-[40px]"
+                >
+                  <span>Finalizar pedido</span>
+              </Button>
 
-          <footer className="flex justify-end items-center mt-6 space-x-3">
-            <Button
-              onClick={() => console.log("Anterior")}
-              className="flex items-center space-x-1 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm px-4 py-2 text-sm hover:bg-gray-50"
-            >
-              <ChevronLeft className="h-4 w-4" />
-              <span>Anterior</span>
-            </Button>
-
-            <Button
-              onClick={() => console.log("Siguiente")}
-              className="flex items-center space-x-1 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm px-4 py-2 text-sm hover:bg-gray-50"
-            >
-              <span>Siguiente</span>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </footer>
-        </div>
-
-        <div className="lg:col-span-1">
-          <SalesSummary />
-        </div>
+            </div>
+               
+          </div>
+         
+        </div>    
+        
       </div>
-    </div>
   );
 };
 
