@@ -2,7 +2,6 @@ package com.stockia.stockia.mappers;
 
 import com.stockia.stockia.dtos.inventoryMovements.InventoryMovementRequestDto;
 import com.stockia.stockia.dtos.inventoryMovements.InventoryMovementResponseDto;
-import com.stockia.stockia.enums.Role;
 import com.stockia.stockia.models.InventoryMovement;
 import com.stockia.stockia.models.Product;
 import com.stockia.stockia.models.User;
@@ -21,7 +20,8 @@ public interface InventoryMovementMapper {
     @Mapping(target = "newStock", source = "newStock")
     @Mapping(target = "purchaseCost", source = "requestDto.purchaseCost")
     @Mapping(target = "createdAt", ignore = true)
-    InventoryMovement toEntity(InventoryMovementRequestDto requestDto, Product product, User loggedInUser, int newStock);
+    InventoryMovement toEntity(InventoryMovementRequestDto requestDto, Product product, User loggedInUser,
+            int newStock);
 
     @Mapping(target = "id", source = "id")
     @Mapping(target = "productId", source = "product.id")
