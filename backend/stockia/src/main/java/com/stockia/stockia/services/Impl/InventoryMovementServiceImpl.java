@@ -24,6 +24,8 @@ import com.stockia.stockia.security.CustomUserDetails;
 import com.stockia.stockia.exceptions.UserNotFoundException;
 import com.stockia.stockia.exceptions.product.ProductNotFoundException;
 import com.stockia.stockia.exceptions.product.InsufficientStockException;
+import com.stockia.stockia.events.LowStockEvent;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.UUID;
 
@@ -33,12 +35,12 @@ public class InventoryMovementServiceImpl implements InventoryMovementService {
     private final InventoryMovementRepository inventoryMovementRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
-
     private final InventoryMovementMapper inventoryMovementMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public Page<InventoryMovementResponseDto> searchInventoryMovements(MovementSearchRequestDto params,
-                                                                    Pageable pageable) {
+            Pageable pageable) {
         Page<InventoryMovement> inventoryMovements = inventoryMovementRepository.searchInventoryMovements(
                 params.productId(),
                 params.movementType(),
@@ -50,41 +52,33 @@ public class InventoryMovementServiceImpl implements InventoryMovementService {
     @Override
     public InventoryMovementResponseDto findById(UUID id) {
         InventoryMovement inventoryMovement = inventoryMovementRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Movimiento de inventario no encontrado con ID: " + id));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Movimiento de inventario no encontrado con ID: " + id));
         return inventoryMovementMapper.toResponseDto(inventoryMovement);
     }
 
     @Transactional
     @Override
-    public InventoryMovementResponseDto registerInventoryMovement(InventoryMovementRequestDto requestDto, CustomUserDetails userDetails) {
+    public InventoryMovementResponseDto registerInventoryMovement(InventoryMovementRequestDto requestDto,
+            CustomUserDetails userDetails) {
         Product product = productRepository.findById(requestDto.productId())
-                .orElseThrow(() -> new ProductNotFoundException("Producto no encontrado con ID: " + requestDto.productId()));
+                .orElseThrow(
+                        () -> new ProductNotFoundException("Producto no encontrado con ID: " + requestDto.productId()));
 
         User loggedInUser = userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado con ID: " + userDetails.getId()));
 
         if (requestDto.movementType() == MovementType.IN && requestDto.purchaseCost() == null) {
-            throw new IllegalArgumentException("El purchaseCost es obligatorio para movimientos IN");
+            throw new IllegalArgumentException("El costo de compra es obligatorio para movimientos de entrada");
         }
         if (requestDto.movementType() != MovementType.IN && requestDto.purchaseCost() != null) {
-            throw new IllegalArgumentException("El purchaseCost solo debe enviarse movimientos de tipo IN");
+            throw new IllegalArgumentException("El costo de compra solo debe enviarse movimientos de entrada");
         }
-        /*int newStock = product.getCurrentStock();
-        // Calcular el nuevo stock según el tipo de movimiento
-        if (requestDto.movementType() == MovementType.IN) {
-            newStock += requestDto.quantity();
-        } else if (requestDto.movementType() == MovementType.OUT) {
-            newStock -= requestDto.quantity();
-        } else if (requestDto.movementType() == MovementType.ADJUSTMENT) {
-            newStock = requestDto.quantity();// Para ajustes, quantity es el nuevo valor absoluto
-        }*/
         int newStock = switch (requestDto.movementType()) {
             case IN -> product.getCurrentStock() + requestDto.quantity();
             case OUT -> product.getCurrentStock() - requestDto.quantity();
             case ADJUSTMENT -> requestDto.quantity();
         };
-
-
 
         if (newStock < 0) {
             throw new InsufficientStockException(product.getCurrentStock(), Math.abs(requestDto.quantity()));
@@ -94,7 +88,17 @@ public class InventoryMovementServiceImpl implements InventoryMovementService {
         product.setCurrentStock(newStock);
         productRepository.save(product);
 
-        InventoryMovement inventoryMovement = inventoryMovementMapper.toEntity(requestDto, product, loggedInUser, newStock);
+        // Verificar si el stock llegó a un nivel bajo o se agotó
+        if (product.getCurrentStock() <= product.getMinStock()) {
+            eventPublisher.publishEvent(new LowStockEvent(
+                    product.getId(),
+                    product.getName(),
+                    product.getCurrentStock(),
+                    product.getMinStock()));
+        }
+
+        InventoryMovement inventoryMovement = inventoryMovementMapper.toEntity(requestDto, product, loggedInUser,
+                newStock);
 
         return inventoryMovementMapper.toResponseDto(inventoryMovementRepository.save(inventoryMovement));
     }

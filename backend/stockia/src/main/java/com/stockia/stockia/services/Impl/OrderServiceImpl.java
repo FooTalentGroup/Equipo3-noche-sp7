@@ -17,6 +17,7 @@ import com.stockia.stockia.mappers.OrderMapper;
 import com.stockia.stockia.models.*;
 import com.stockia.stockia.repositories.*;
 import com.stockia.stockia.services.OrderService;
+import com.stockia.stockia.services.InventoryMovementService;
 import com.stockia.stockia.services.OrderPdfService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,8 +58,10 @@ public class OrderServiceImpl implements OrderService {
     private final ClientRepository clientRepository;
     private final UserRepository userRepository;
     private final InventoryMovementRepository inventoryMovementRepository;
+    private final InventoryMovementService inventoryMovementService;
     private final OrderMapper orderMapper;
     private final OrderPdfService orderPdfService;
+    private final org.springframework.context.ApplicationEventPublisher eventPublisher;
 
     /**
      * Crea una nueva orden de venta.
@@ -162,6 +165,17 @@ public class OrderServiceImpl implements OrderService {
         int newStock = product.getCurrentStock() - itemDto.getQuantity();
         product.setCurrentStock(newStock);
         productRepository.save(product);
+
+        // Disparar evento de stock bajo si aplica
+        if (newStock <= product.getMinStock()) {
+            eventPublisher.publishEvent(new com.stockia.stockia.events.LowStockEvent(
+                    product.getId(),
+                    product.getName(),
+                    newStock,
+                    product.getMinStock()));
+            log.info("Low stock event published for product: {} (current: {}, min: {})",
+                    product.getName(), newStock, product.getMinStock());
+        }
 
         // Crear movimiento de inventario
         InventoryMovement movement = InventoryMovement.builder()
