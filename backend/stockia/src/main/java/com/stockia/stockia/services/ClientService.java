@@ -25,12 +25,23 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import com.stockia.stockia.repositories.OrderRepository;
+import com.stockia.stockia.mappers.OrderMapper;
+import com.stockia.stockia.dtos.order.OrderResponseDto;
+import com.stockia.stockia.models.Order;
 
 @Service
 public class ClientService {
 
     @Autowired
     private ClientRepository clientRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired 
+    private OrderMapper orderMapper;
 
     /*
      * GETTER: Obtiene todos los Clients registrados.
@@ -179,5 +190,26 @@ public class ClientService {
         existingClient.setIsFrequent(updatedData.getIsFrequent());
 
         return clientRepository.save(existingClient);
+    }
+
+    /**
+     * Obtiene el historial de compras de un cliente específico.
+     * 
+     * @param clientId ID del cliente
+     * @return Lista de órdenes del cliente ordenadas por fecha descendente
+     * @throws com.stockia.stockia.exceptions.client.ClientNotFoundException si el cliente no existe
+     */
+    public List<OrderResponseDto> getClientPurchaseHistory(UUID clientId) {
+        // Verifica que el cliente existe
+        Client client = clientRepository.findById(clientId)
+            .orElseThrow(() -> new com.stockia.stockia.exceptions.client.ClientNotFoundException(clientId));
+        
+        // Obtiene órdenes del cliente
+        List<Order> orders = orderRepository.findByCustomerIdOrderByOrderDateDesc(clientId);
+        
+        // Mapea a DTOs usando el OrderMapper existente
+        return orders.stream()
+            .map(orderMapper::toResponseDto)
+            .collect(Collectors.toList());
     }
 }

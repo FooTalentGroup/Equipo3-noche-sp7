@@ -2,6 +2,7 @@ package com.stockia.stockia.controllers;
 
 import com.stockia.stockia.documentation.client.GetAllClientsWithFiltersDoc;
 import com.stockia.stockia.documentation.client.GetClientByIdEndpointDoc;
+import com.stockia.stockia.documentation.client.GetClientPurchaseHistoryDoc;
 import com.stockia.stockia.documentation.client.RegisterClientEndpointDoc;
 import com.stockia.stockia.documentation.client.UpdateClientEndpointDoc;
 import com.stockia.stockia.dtos.client.ClientRequestDto;
@@ -10,6 +11,7 @@ import com.stockia.stockia.exceptions.client.ClientNotFoundException;
 import com.stockia.stockia.models.Client;
 import com.stockia.stockia.services.ClientService;
 import com.stockia.stockia.utils.ApiResult;
+import com.stockia.stockia.dtos.order.OrderResponseDto;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -21,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 import static com.stockia.stockia.security.constants.SecurityConstants.Roles.ADMIN_OR_MANAGER;
@@ -106,5 +109,30 @@ public class ClientController {
         Client client = clientService.getClientById(id)
                 .orElseThrow(() -> new ClientNotFoundException(id));
         return ResponseEntity.ok(ApiResult.success(client, "Cliente encontrado"));
+    }
+
+    /**
+     * Consulta el historial de compras de un cliente específico.
+     * 
+     * @param clientId ID del cliente
+     * @return Lista de órdenes/compras del cliente ordenadas por fecha descendente
+     */
+    @GetMapping("/{id}/purchase-history")
+    @GetClientPurchaseHistoryDoc
+    @PreAuthorize(ADMIN_OR_MANAGER)
+    public ResponseEntity<ApiResult<?>> getClientPurchaseHistory(@PathVariable("id") UUID clientId) {
+        List<OrderResponseDto> purchaseHistory = clientService.getClientPurchaseHistory(clientId);
+        
+        if (purchaseHistory.isEmpty()) {
+            return ResponseEntity.ok(ApiResult.success(
+                purchaseHistory,
+                "El cliente no registra compras"
+            ));
+        }
+        
+        return ResponseEntity.ok(ApiResult.success(
+            purchaseHistory,
+            String.format("Se encontraron %d compra(s) para el cliente", purchaseHistory.size())
+        ));
     }
 }
