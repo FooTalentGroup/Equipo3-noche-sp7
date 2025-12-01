@@ -31,30 +31,30 @@ export function ProductsFiltersBar({ searchQuery, onSearchChange, onToggleFilter
 
                 <Button
                     onClick={onToggleFilters}
-                    className='bg-white text-neutral-950 hover:bg-gray-400 cursor-pointer shadow-sm'
+                    variant={'outline'}
                 >
                     <Funnel className='h-4 w-4 mr-1' />
                     Filtrar
                 </Button>
                 <Button
-                    className='bg-white text-neutral-950 hover:bg-gray-400 cursor-pointer shadow-sm'
+                    variant={'outline'}
                 >
                     <FileUp className='h-4 w-4 mr-1' />
                     Exportar
                 </Button>
                 <Button
-                    className='bg-white text-neutral-950 hover:bg-gray-400 cursor-pointer shadow-sm'
+                    variant={'outline'}
                     onClick={() => navigate('/inventory-movements')}
                 >
                     <ArrowDownUp className='h-4 w-4 mr-1' />
                     Historial de movimientos
                 </Button>
                 <Button
-                    className='bg-[#436086] text-white cursor-pointer'
+                    variant={'stokia'}
                     onClick={() => navigate('/products/create')}
                 >
                     <Plus className='h-4 w-4 mr-1' />
-                    Registrar producto
+                    Registrar
                 </Button>
             </div>
         </>
