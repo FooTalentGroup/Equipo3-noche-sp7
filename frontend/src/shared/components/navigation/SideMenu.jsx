@@ -74,7 +74,7 @@ const NavLinkItem = ({ to, icon: Icon, arrowIcon: Arrow, label }) => (
 
 const SideMenu = () => {
     return (
-        <aside className='hidden md:flex md:flex-col border-r bg-sidebar min-w-[16rem] justify-between h-full'>
+        <aside className='hidden md:flex md:flex-col border-r bg-sidebar min-w-[16rem] justify-between max-h-[1024px]'>
             <div className="flex-1 overflow-y-auto">
                 <div className="w-63 h-20 p-6 flex justify-center">
                     <img src={stokialogo} alt="Stokia Logo" className="h-[2.58rem]" />
