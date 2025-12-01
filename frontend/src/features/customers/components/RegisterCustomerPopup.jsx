@@ -72,6 +72,20 @@ export default function RegisterCustomerPopup({ open, onClose, onSave, initialDa
         } catch (error) {
             console.error('Error saving customer:', error);
             setIsSubmitting(false);
+
+            // Check if it's a 500 error (customer already exists)
+            if (error.response?.status === 500) {
+                setErrors(prev => ({
+                    ...prev,
+                    email: "Cliente ya existente"
+                }));
+            } else {
+                // Handle other errors
+                setErrors(prev => ({
+                    ...prev,
+                    email: error.response?.data?.message || "Cliente ya existente"
+                }));
+            }
         }
     }
 
