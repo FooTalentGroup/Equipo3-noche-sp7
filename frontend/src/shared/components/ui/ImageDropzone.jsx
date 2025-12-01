@@ -36,12 +36,12 @@ export function ImageDropzone({ value, onChange }) {
   return (
     <div
       {...getRootProps()}
-      className="flex flex-col items-center justify-center gap-3 border border-dashed rounded-xl bg-card p-10 cursor-pointer transition hover:bg-accent/10 text-center min-h-40"
+      className="flex flex-col items-center justify-center gap-3 border border-dashed border-stokia-neutral-400 rounded-xl bg-card p-6 cursor-pointer transition hover:bg-accent/10 text-center min-h-40"
     >
       <input {...getInputProps()} />
 
       {isDragActive ? (
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-stokia-neutral-400">
           Suelta la imagen aquí...
         </p>
       ) : previewUrl ? (
@@ -65,11 +65,11 @@ export function ImageDropzone({ value, onChange }) {
         </div>
       ) : (
         <div className="flex flex-col items-center gap-1">
-          <span className="flex items-center justify-center bg-gray-100 rounded-full p-2">
-            <ImageIcon className="h-5 w-5 text-muted-foreground" />
+          <span className="flex items-center justify-center bg-stokia-neutral-50 rounded-full p-2">
+            <ImageIcon className="h-5 w-5 text-stokia-neutral-500" />
           </span>
-          <p className="font-medium">Adjunta una imagen</p>
-          <p className="text-xs text-muted-foreground">
+          <p className="font-medium text-stokia-neutral-950">Adjunta una imagen</p>
+          <p className="text-xs text-stokia-neutral-400">
             Arrastre aquí la imagen o cárguela desde su ordenador
           </p>
         </div>

@@ -10,14 +10,14 @@ export function LoadingModal({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center gap-4 p-8",
+        "flex flex-col items-center justify-center gap-12 p-8",
         className
       )}
     >
-      <Loader2 className="h-32 w-32 animate-spin text-btn-primary" />
-      <div className="flex flex-col items-center gap-2 text-center">
-        <h3 className="text-lg font-semibold">{title}</h3>
-        <p className="text-sm text-muted-foreground">{description}</p>
+      <Loader2 className="h-32 w-32 animate-spin text-stokia-primary-600" strokeWidth={1.5} />
+      <div className="flex flex-col items-center gap-6 text-center">
+        <h3 className="text-3xl font-semibold">{title}</h3>
+        <p className="text-sm text-stokia-neutral-400">{description}</p>
       </div>
     </div>
   );

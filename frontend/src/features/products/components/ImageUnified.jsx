@@ -38,7 +38,7 @@ export function UnifiedImageField({ form }) {
           <span className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-stokia-neutral-50 px-2 text-muted-foreground">
+          <span className="bg-stokia-neutral-50 px-2 text-stokia-neutral-500">
             O sube un archivo
           </span>
         </div>
@@ -49,8 +49,8 @@ export function UnifiedImageField({ form }) {
         name="imageFile"
         render={({ field }) => (
           <FormItem className="flex flex-col w-full">
-            <FormLabel className="w-full md:w-28 self-start">
-              <b>Multimedia</b>
+            <FormLabel className="w-full md:w-28 self-start text-stokia-neutral-950">
+              Multimedia
             </FormLabel>
             <div className="w-full" style={{ flex: 1 }}>
               <FormControl>

@@ -76,7 +76,7 @@ export default function ProductsListPage() {
                         : "Formulario para registrar un nuevo producto"
                     }
                 </Description>
-                <DialogContent className="max-h-[90vh] overflow-y-auto p-0 gap-0 max-w-3xl">
+                <DialogContent className="max-h-[90vh] overflow-y-auto p-0 gap-0 max-w-2xl bg-stokia-neutral-50 border-0">
                     <div className="overflow-y-auto">
                         <CreateProductComponent />
                     </div>

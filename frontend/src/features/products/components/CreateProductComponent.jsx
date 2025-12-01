@@ -13,7 +13,6 @@ import { UnifiedImageField } from "./ImageUnified";
 import { BackErrorAlert } from "./BackErrorAlert";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { useState } from "react";
-import { Trash2 } from "lucide-react";
 
 export function CreateProductComponent() {
     const navigate = useNavigate();
@@ -56,13 +55,13 @@ export function CreateProductComponent() {
     };
 
     return (
-        <div className="w-full flex flex-col md:max-w-5xl p-12 bg-stokia-neutral-50 border rounded-sm relative h-min">
+        <div className="w-full flex flex-col md:max-w-5xl p-12 relative h-min text-stokia-neutral-950">
             <Form {...form}>
                 <section id="header" className="flex flex-col gap-2">
-                    <h1 className="text-3xl font-bold">
+                    <h1 className="text-3xl font-semibold">
                         {isEditing ? "Editar producto" : "Registrar un nuevo producto"}
                     </h1>
-                    <h5 className="text-xs text-muted-foreground font-weight-light">
+                    <h5 className="text-xs text-stokia-neutral-500">
                         {isEditing
                             ? "Edita la ficha técnica del producto para actualizar el inventario"
                             : "Completa la ficha técnica del producto para agregarlo al inventario"}
@@ -131,7 +130,7 @@ export function CreateProductComponent() {
                             </Button>
                         ) : (
                             <Button
-                                className={"bg-btn-primary"}
+                                className={"bg-btn-primary text-sm"}
                                 type="button"
                                 onClick={() => setIsConfirmOpen(true)}
                             >
@@ -142,7 +141,7 @@ export function CreateProductComponent() {
                 </form>
             </Form>
             {isPending && (
-                <LoadingModal className="absolute top-0 left-0 w-full h-full bg-card" />
+                <LoadingModal className="absolute top-0 left-0 w-full h-full bg-stokia-neutral-50" />
             )}
             {isSuccess && (
                 <SuccessModal
@@ -150,7 +149,7 @@ export function CreateProductComponent() {
                     title={
                         isEditing
                             ? "¡Producto actualizado exitosamente!"
-                            : "¡Producto registrado exitosamente!"
+                            : "¡Inventario actualizado exitosamente!"
                     }
                     description={
                         isEditing

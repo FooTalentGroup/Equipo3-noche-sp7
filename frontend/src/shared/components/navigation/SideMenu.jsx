@@ -56,11 +56,11 @@ const NavLinkItem = ({ to, icon: Icon, arrowIcon: Arrow, label }) => (
         <NavLink
             to={to}
             className={({ isActive, isPending }) =>
-                `flex items-center justify-between p-6  text-base transition-all w-full border-b-2 ${isPending
+                `flex items-center justify-between p-6  text-base transition-all w-full border-b-2 border-stokia-neutral-100 ${isPending
                     ? 'opacity-50'
                     : isActive
-                        ? 'bg-slate-300'
-                        : 'hover:bg-gray-100 text-stokia-neutral-600'
+                        ? 'bg-stokia-neutral-300'
+                        : 'text-stokia-neutral-600 hover:bg-stokia-neutral-100'
                 }`
             }
         >
@@ -74,7 +74,7 @@ const NavLinkItem = ({ to, icon: Icon, arrowIcon: Arrow, label }) => (
 
 const SideMenu = () => {
     return (
-        <aside className='hidden md:flex md:flex-col border-r bg-sidebar min-w-[16rem] justify-between max-h-[1024px]'>
+        <aside className='hidden md:flex md:flex-col border-r bg-sidebar min-w-[16rem] justify-between h-full'>
             <div className="flex-1 overflow-y-auto">
                 <div className="w-63 h-20 p-6 flex justify-center">
                     <img src={stokialogo} alt="Stokia Logo" className="h-[2.58rem]" />

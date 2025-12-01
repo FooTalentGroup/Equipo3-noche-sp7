@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Edit, Trash2, ChevronLeft, ChevronRight, Loader, LoaderCircle } from "lucide-react";
-import { Button } from "@/shared/components/ui/button.jsx";
+import { Trash2, ChevronLeft, ChevronRight, LoaderCircle } from "lucide-react";
 import Badge from "@/features/products/components/Badge.jsx";
 import { useProducts } from "../context/ProductsContext";
 import { useNavigate } from "react-router";

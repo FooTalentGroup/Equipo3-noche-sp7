@@ -32,7 +32,7 @@ const createProductSchema = z
       .url({ message: "Debe ser una URL válida" })
       .optional()
       .or(z.literal("")),
-    categoryId: z.uuidv4({ message: 'Debe ser un UUID v4' }),
+    categoryId: z.uuidv4({ message: 'Debe seleccionar una categoría' }),
     price: z.coerce
       .number()
       .min(0.01, { message: "El precio debe ser mayor a 0." })
@@ -41,7 +41,7 @@ const createProductSchema = z
       .number()
       .int({ message: "El stock debe ser un número entero." })
       .min(1, { message: "El stock mínimo debe ser al menos 1." })
-      .max(999, { message: "El stock mínimo no puede superar los 999." }),
+      .max(9999, { message: "El stock mínimo no puede superar los 9999." }),
   })
   .strict();
 

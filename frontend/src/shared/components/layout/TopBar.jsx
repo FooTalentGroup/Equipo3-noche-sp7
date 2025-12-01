@@ -23,7 +23,7 @@ export function TopBar() {
   const hasParent = currentPage?.parent;
 
   return (
-    <div className="top-0 z-40 flex items-center border py-2.5 px-8 h-20 rounded-sm max-w-[1140px]">
+    <div className="top-0 z-40 flex items-center border py-2.5 px-8 h-20 rounded-sm">
       {hasParent ? (
         <div className="min-h-9 pl-4 pr-1.5 py-2 opacity-60 rounded-lg inline-flex justify-start items-center gap-2">
           <div className="text-center justify-center text-[#404040] text-[14px] font-normal  leading-5 tracking-tight">

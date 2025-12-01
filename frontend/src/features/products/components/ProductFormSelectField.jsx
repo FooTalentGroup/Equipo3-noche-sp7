@@ -26,7 +26,7 @@ export function FormSelectField({
       render={({ field, fieldState }) => (
         <FormItem className="flex flex-col w-full">
           <FormLabel className="w-full md:w-28">
-            <b>{label}</b>{" "}
+            <p className="text-stokia-neutral-950">{label}</p>{" "}
             {required && <span className="text-destructive">*</span>}
           </FormLabel>
 
@@ -59,7 +59,7 @@ export function FormSelectField({
                 </NativeSelect>
                 {isLoading && (
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                    <Loader2 className="h-4 w-4 animate-spin text-stokia-neutral-400" />
                   </div>
                 )}
               </div>
