@@ -128,7 +128,7 @@ export const ProductsTable = ({
   // -------------------------
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1086px] min-h-[300px] flex items-center justify-center">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1086px] max-h-[673px] flex items-center justify-center">
         <div className="flex flex-col items-center justify-center gap-3 my-4">
           <LoaderCircle className="h-8 w-8 text-slate-600 animate-spin" />
           <span className="text-sm text-gray-600">Cargando productos...</span>
@@ -141,7 +141,7 @@ export const ProductsTable = ({
   // MAIN UI
   // -------------------------
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 max-w-[1086px] flex flex-col max-h-[673px]">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 max-w-[1086px] max-h-[673px] flex flex-col">
       <div className="overflow-x-auto overflow-y-auto flex-1">
         <table className="w-full text-sm text-left">
           <thead className="text-[14px] bg-slate-200 text-[#404040] font-normal h-[46px] sticky top-0 z-10">
@@ -196,14 +196,14 @@ export const ProductsTable = ({
         </table>
       </div>
 
-      <div className="flex items-center justify-center px-6 py-3 bg-gray-50 border-t">
+      {totalPages > 1 && (<div className="flex items-center justify-center px-6 py-3 bg-gray-50 border-t">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
             className="border-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 rounded-md disabled:opacity-50 flex items-center gap-1"
           >
-            <ChevronLeft className="w-4 h-4" /> Previous
+            <ChevronLeft className="w-4 h-4" /> Anterior
           </button>
 
           <div className="flex gap-1 justify-center">
@@ -226,10 +226,10 @@ export const ProductsTable = ({
             disabled={currentPage === totalPages || totalPages === 0}
             className="border-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 rounded-md disabled:opacity-50 flex items-center gap-1"
           >
-            Next <ChevronRight className="w-4 h-4" />
+            Siguiente <ChevronRight className="w-4 h-4" />
           </button>
         </div>
-      </div>
+      </div>)}
       <ConfirmDialog
         isOpen={isOpenDelete}
         handleOpenChange={setIsOpenDelete}

@@ -9,6 +9,8 @@ export const handleApiError = (error) => {
 
   const { status, data } = error.response
 
+  console.log(data, status)
+
   let message = 'Ocurrió un error inesperado'
 
   if (data?.message) {
@@ -24,8 +26,12 @@ export const handleApiError = (error) => {
   } else if (status === 404) {
     message = 'Recurso no encontrado'
   } else if (status === 500) {
-    message = 'Error del servidor. Intenta más tarde.'
-  } else if (status >= 500) {
+    if (data?.message?.includes('already exists') || data?.message?.includes('ya existe')) {
+        message = 'Cliente ya existente';
+    } else {
+        message = 'Error del servidor. Intente más tarde.';
+    }
+} else if (status >= 500) {
     message = 'Error del servidor'
   }
 

@@ -1,36 +1,53 @@
+// src/features/customers/pages/CustomersPage.jsx
 import { useCallback, useEffect, useState } from 'react';
 import { CustomersFiltersBar } from '@/features/customers/components/CustomersFiltersBar.jsx';
 import { CustomersTable } from '@/features/customers/components/CustomersTable.jsx';
-import { RegisterCustomerPopup } from '@/features/customers/components/RegisterCustomerPopup.jsx';
+import RegisterCustomerPopup from '../components/RegisterCustomerPopup.jsx';
 import { SuccessModal } from '@/shared/components/ui/SuccessModal.jsx';
-import { getClients, createClient } from '../services/customerService.js';
+import { getCustomers, createCustomer, updateCustomer } from '../services/customerService.js';
 import { getAuthToken } from '@/features/auth/utils/authStorage.js';
+import { useCustomersFilter } from '../hooks/useCustomersFilter';
+
+const PAGE_SIZE = 10;
+
+const mapCustomer = (c) => ({
+    id: c.id,
+    nombre: c.name,
+    email: c.email,
+    telefono: c.phone,
+    ultimaCompra: c.lastPurchaseDate ?? 'No existe compra',
+    joined: c.isFrequent ?? false
+});
 
 export default function CustomersPage() {
-    const [searchQuery, setSearchQuery] = useState('');
+    const { searchQuery, debouncedSearch, setSearchQuery } = useCustomersFilter(500);
     const [isRegisterOpen, setIsRegisterOpen] = useState(false);
     const [editingCustomer, setEditingCustomer] = useState(null);
     const [customers, setCustomers] = useState([]);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [pagination, setPagination] = useState({ totalPages: 0, totalElements: 0, pageSize: PAGE_SIZE });
 
-    const fetchClients = useCallback(async () => {
-        console.log('fetchClients called');
+    const fetchCustomers = useCallback(async (page = 0, name = '') => {
+        const token = getAuthToken();
+        if (!token) return;
         setIsLoading(true);
         try {
-            console.log('Calling getClients...');
-            const data = await getClients();
-            console.log('getClients returned:', data);
-            setCustomers((data.clients || []).map(c => ({
-                id: c.id,
-                nombre: c.name,
-                email: c.email,
-                telefono: c.phone,
-                ultimaCompra: randomDate(),
-                joined: c.isFrequentClient ?? c.isFrequent ?? false,
-            })));
-        } catch (e) {
-            console.error('Error fetching customers:', e);
+            const data = await getCustomers({ page, size: PAGE_SIZE, name });
+            console.log("Data from customer page:\n", data);
+
+            const mapped = (data.customers.content || []).map(mapCustomer);
+
+            console.log("Mapped:\n", customers);
+
+            setCustomers(mapped);
+            setPagination({
+                totalPages: data.totalPages,
+                totalElements: data.totalElements,
+                pageSize: data.pageSize
+            });
+        } catch {
             setCustomers([]);
         } finally {
             setIsLoading(false);
@@ -38,55 +55,80 @@ export default function CustomersPage() {
     }, []);
 
     useEffect(() => {
-        fetchClients();
-    }, [fetchClients]);
+        setCurrentPage(0);
+    }, [debouncedSearch]);
 
-    function randomDate() {
-        const start = new Date(2024, 0, 1);
-        const end = new Date();
-        const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-        return date.toISOString().slice(0, 10);
-    }
+    useEffect(() => {
+        fetchCustomers(currentPage, debouncedSearch);
+    }, [fetchCustomers, currentPage, debouncedSearch]);
 
     const openRegister = () => {
         setEditingCustomer(null);
         setIsRegisterOpen(true);
     };
 
-    const openEdit = (customer) => {
-        setEditingCustomer(customer);
+    const openEdit = (c) => {
+        setEditingCustomer({
+            id: c.id,
+            nombre: c.nombre,
+            email: c.email,
+            telefono: c.telefono,
+            joined: c.joined
+        });
         setIsRegisterOpen(true);
     };
 
     const closePopup = () => {
-        setEditingCustomer(null);
         setIsRegisterOpen(false);
+        setTimeout(() => setEditingCustomer(null), 200);
     };
 
     const handleSave = async (payload) => {
         try {
-            if (!payload.id) {
-                const body = {
+            if (payload.id) {
+                await updateCustomer(payload.id, {
                     name: payload.nombre.trim(),
                     email: payload.email.trim(),
                     phone: payload.telefono.trim(),
-                    isFrequentClient: false,
-                };
-                await createClient(body);
-                await fetchClients();
-                setShowSuccessModal(true);
+                    isFrequent: payload.joined
+                });
             } else {
-                setCustomers(prev => prev.map(c => c.id === payload.id ? { ...c, ...payload } : c));
+                await createCustomer({
+                    name: payload.nombre.trim(),
+                    email: payload.email.trim(),
+                    phone: payload.telefono.trim(),
+                    isFrequent: payload.joined
+                });
+                setShowSuccessModal(true);
             }
             closePopup();
+            await fetchCustomers(0, debouncedSearch);
         } catch (error) {
-            console.error('Error creating customer:', error);
+            console.error('Error saving customer:', error);
+            throw error;
         }
     };
+
     const handleDelete = (id) => {
         setCustomers(prev => prev.filter(c => c.id !== id));
     };
 
+    const handleExport = () => {
+        const rows = [
+            ['Nombre', 'Email', 'Telefono', 'Ultima compra'],
+            ...customers.map(c => [c.nombre, c.email, c.telefono, c.ultimaCompra || ''])
+        ];
+        const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `clientes-${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
+    console.log("Mapped:\n", customers);
     return (
         <div className="p-6 w-full">
             <CustomersFiltersBar
@@ -94,27 +136,17 @@ export default function CustomersPage() {
                 onSearchChange={setSearchQuery}
                 onRegister={openRegister}
                 onPrint={() => window.print()}
-                onExport={() => {
-                    const rows = [
-                        ['Nombre', 'Email', 'Telefono', 'Ultima compra'],
-                        ...customers.map(c => [c.nombre, c.email, c.telefono, c.ultimaCompra ?? '']),
-                    ];
-                    const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
-                    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `customers-${new Date().toISOString().slice(0, 10)}.csv`;
-                    a.click();
-                    URL.revokeObjectURL(url);
-                }}
+                onExport={handleExport}
             />
             <CustomersTable
                 customers={customers}
-                searchQuery={searchQuery}
                 onEdit={openEdit}
                 onDelete={handleDelete}
                 isLoading={isLoading}
+                currentPage={currentPage}
+                totalPages={pagination.totalPages}
+                onPageChange={setCurrentPage}
+                searchQuery={searchQuery}
             />
             <RegisterCustomerPopup
                 open={isRegisterOpen}
@@ -122,23 +154,6 @@ export default function CustomersPage() {
                 onSave={handleSave}
                 initialData={editingCustomer}
             />
-            {showSuccessModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-                    <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
-                        <SuccessModal
-                            title="Cliente registrado"
-                            description="El cliente fue registrado correctamente."
-                            primaryButtonText="Registrar otro"
-                            secondaryButtonText="Cerrar"
-                            onPrimaryClick={() => {
-                                setShowSuccessModal(false);
-                                setIsRegisterOpen(true);
-                            }}
-                            onSecondaryClick={() => setShowSuccessModal(false)}
-                        />
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

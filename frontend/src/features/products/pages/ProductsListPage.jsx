@@ -16,7 +16,7 @@ export default function ProductsListPage() {
     const isCreateModalOpen = location.pathname === '/products/create';
     const isEditModalOpen = location.pathname.startsWith('/products/edit/');
     const isModalOpen = isCreateModalOpen || isEditModalOpen;
-    
+
     const {
         searchQuery,
         setSearchQuery,
@@ -38,7 +38,7 @@ export default function ProductsListPage() {
     };
 
     return (
-        <div className="w-full max-w-5xl">
+        <div className="w-full p-6">
             <ProductsFiltersBar
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
@@ -71,8 +71,8 @@ export default function ProductsListPage() {
                     {isEditModalOpen ? "Editar Producto" : "Registrar Producto"}
                 </DialogTitle>
                 <Description className="sr-only">
-                    {isEditModalOpen 
-                        ? "Formulario para editar producto existente" 
+                    {isEditModalOpen
+                        ? "Formulario para editar producto existente"
                         : "Formulario para registrar un nuevo producto"
                     }
                 </Description>

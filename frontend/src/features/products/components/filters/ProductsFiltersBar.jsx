@@ -1,4 +1,4 @@
-import { FileUp, Filter, Funnel, Plus, Printer, Search } from 'lucide-react';
+import { FileUp, Filter, Funnel, Plus, ArrowDownUp, Search, X } from 'lucide-react';
 import React from 'react';
 import { Button } from "@/shared/components/ui/button.jsx";
 import { useNavigate } from 'react-router';
@@ -16,8 +16,17 @@ export function ProductsFiltersBar({ searchQuery, onSearchChange, onToggleFilter
                         value={searchQuery}
                         onChange={(e) => onSearchChange(e.target.value)}
                         placeholder="¿Qué producto estás buscando hoy?"
-                        className="wnput w-full border border-gray-300 rounded-lg pl-11 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
+                        className="wnput w-full border border-gray-300 rounded-lg pl-11 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
                     />
+                    {searchQuery && (
+                        <button
+                            onClick={() => onSearchChange('')}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+                            aria-label="Limpiar búsqueda"
+                        >
+                            <X className="h-4 w-4" />
+                        </button>
+                    )}
                 </div>
 
                 <Button
@@ -35,16 +44,17 @@ export function ProductsFiltersBar({ searchQuery, onSearchChange, onToggleFilter
                 </Button>
                 <Button
                     className='bg-white text-neutral-950 hover:bg-gray-400 cursor-pointer shadow-sm'
+                    onClick={() => navigate('/inventory-movements')}
                 >
-                    <Printer className='h-4 w-4 mr-1' />
-                    Imprimir
+                    <ArrowDownUp className='h-4 w-4 mr-1' />
+                    Historial de movimientos
                 </Button>
                 <Button
                     className='bg-[#436086] text-white cursor-pointer'
                     onClick={() => navigate('/products/create')}
                 >
                     <Plus className='h-4 w-4 mr-1' />
-                    Registrar
+                    Registrar producto
                 </Button>
             </div>
         </>

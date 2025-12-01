@@ -127,6 +127,8 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Roboto Flex', system-ui, sans-serif;
+    overflow-y: scroll;
+    scrollbar-gutter: stable both-edges;
   }
 }
 

@@ -5,6 +5,11 @@ export const getProducts = async (params = {}) => {
     page = 0,
     size = 20,
     sort,
+    q,
+    categoryId,
+    lowStock,
+    includeInactive,
+    deleted,
     name,
     category,
     minPrice,
@@ -22,6 +27,27 @@ export const getProducts = async (params = {}) => {
     queryParams.append('sort', sort);
   }
 
+  if (q) {
+    queryParams.append('q', q);
+  }
+
+  if (categoryId) {
+    queryParams.append('categoryId', categoryId);
+  }
+
+  if (lowStock !== undefined && lowStock !== null) {
+    queryParams.append('lowStock', lowStock.toString());
+  }
+
+  if (includeInactive !== undefined && includeInactive !== null) {
+    queryParams.append('includeInactive', includeInactive.toString());
+  }
+
+  if (deleted !== undefined && deleted !== null) {
+    queryParams.append('deleted', deleted.toString());
+  }
+
+  // Legacy params (for backward compatibility)
   if (name) {
     queryParams.append('name', name);
   }
