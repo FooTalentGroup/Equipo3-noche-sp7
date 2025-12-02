@@ -33,6 +33,36 @@ import static com.stockia.stockia.security.constants.SecurityConstants.Roles.ADM
  * Expone endpoints para el registro, búsqueda, consulta y actualización de
  * clientes.
  */
+
+
+/**
+ * Consulta el historial de compras completo de un cliente específico.
+ * 
+ * Este endpoint permite obtener todas las órdenes/compras realizadas por un cliente,
+ * ordenadas cronológicamente de más reciente a más antigua. Requiere permisos
+ * administrativos (ADMIN o MANAGER).
+ * 
+ * Casos de uso:
+ * - Consulta de historial para atención al cliente
+ * - Análisis de comportamiento de compra del cliente
+ * - Reportes de ventas por cliente
+ * - Validación de compras previas
+ * 
+ * @param clientId ID único del cliente (UUID)
+ * @return ResponseEntity con ApiResult conteniendo:
+ *         - Lista de OrderResponseDto si hay compras
+ *         - Lista vacía si el cliente no tiene compras
+ * @throws ClientNotFoundException si el cliente no existe en el sistema
+ * @throws AccessDeniedException si el usuario no tiene permisos ADMIN/MANAGER
+ * 
+ * @apiNote Endpoint: GET /api/clients/{id}/purchase-history
+ * @apiNote Requiere autenticación y rol ADMIN o MANAGER
+ * @apiNote Respuesta 200: Historial obtenido exitosamente
+ * @apiNote Respuesta 404: Cliente no encontrado
+ * @apiNote Respuesta 401: Usuario no autenticado
+ * @apiNote Respuesta 403: Sin permisos suficientes
+ * 
+ */
 @RestController
 @RequestMapping("/api/clients")
 @RequiredArgsConstructor

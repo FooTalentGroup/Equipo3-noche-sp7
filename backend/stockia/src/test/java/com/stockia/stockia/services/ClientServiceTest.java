@@ -131,7 +131,7 @@ class ClientServiceTest {
         OrderResponseDto dto2 = createOrderDto("ORD-002", BigDecimal.valueOf(320.00));
         
         when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
-        when(orderRepository.findByCustomerIdOrderByOrderDateDesc(clientId)).thenReturn(orders);
+        when(orderRepository.findByCustomer_IdOrderByOrderDateDesc(clientId)).thenReturn(orders);
         when(orderMapper.toResponseDto(order1)).thenReturn(dto1);
         when(orderMapper.toResponseDto(order2)).thenReturn(dto2);
 
@@ -144,7 +144,7 @@ class ClientServiceTest {
         assertThat(result.get(1).getOrderNumber()).isEqualTo("ORD-002");
         
         verify(clientRepository).findById(clientId);
-        verify(orderRepository).findByCustomerIdOrderByOrderDateDesc(clientId);
+        verify(orderRepository).findByCustomer_IdOrderByOrderDateDesc(clientId);
         verify(orderMapper, times(2)).toResponseDto(any(Order.class));
     }
 
@@ -156,7 +156,7 @@ class ClientServiceTest {
         Client client = createClient(clientId, "María López", "maria@test.com");
         
         when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
-        when(orderRepository.findByCustomerIdOrderByOrderDateDesc(clientId)).thenReturn(Collections.emptyList());
+        when(orderRepository.findByCustomer_IdOrderByOrderDateDesc(clientId)).thenReturn(Collections.emptyList());
 
         // When
         List<OrderResponseDto> result = clientService.getClientPurchaseHistory(clientId);
@@ -178,39 +178,53 @@ class ClientServiceTest {
                 .isInstanceOf(ClientNotFoundException.class)
                 .hasMessageContaining(clientId.toString());
         
-        verify(orderRepository, never()).findByCustomerIdOrderByOrderDateDesc(any());
+        verify(orderRepository, never()).findByCustomer_IdOrderByOrderDateDesc(any());
     }
 
     // ========== MÉTODOS AUXILIARES ==========
 
+    /**
+     * Crea un cliente para testing
+     */
     private Client createClient(UUID id, String name, String email) {
         Client client = new Client();
         client.setId(id);
         client.setName(name);
         client.setEmail(email);
         client.setPhone("+1234567890");
-        client.setIsFrequent(false);
+        client.setIsFrequent(true);
         return client;
     }
 
-    private Order createOrder(String orderNumber, Client customer, BigDecimal total) {
-        return Order.builder()
-                .id(UUID.randomUUID())
-                .orderNumber(orderNumber)
-                .customer(customer) // ← CORREGIDO: usar .customer() en lugar de .customerId()
-                .status(OrderStatus.DELIVERED)
-                .totalAmount(total)
-                .paymentMethod(PaymentMethod.CASH)
-                .paymentStatus(PaymentStatus.PAID)
-                .orderDate(LocalDateTime.now())
-                .build();
+    /**
+     * Crea una orden para testing
+     */
+    private Order createOrder(String orderNumber, Client customer, BigDecimal totalAmount) {
+        Order order = new Order();
+        order.setId(UUID.randomUUID());
+        order.setOrderNumber(orderNumber);
+        order.setCustomer(customer);
+        order.setTotalAmount(totalAmount);
+        order.setStatus(OrderStatus.DELIVERED);
+        order.setPaymentMethod(PaymentMethod.CARD);
+        order.setPaymentStatus(PaymentStatus.PAID);
+        order.setOrderDate(LocalDateTime.now());
+        order.setCreatedAt(LocalDateTime.now());
+        order.setUpdatedAt(LocalDateTime.now());
+        return order;
     }
 
-    private OrderResponseDto createOrderDto(String orderNumber, BigDecimal total) {
+    /**
+     * Crea un OrderResponseDto para testing
+     */
+    private OrderResponseDto createOrderDto(String orderNumber, BigDecimal totalAmount) {
         OrderResponseDto dto = new OrderResponseDto();
         dto.setOrderNumber(orderNumber);
-        dto.setTotalAmount(total);
-        dto.setCustomerName("Test Client");
+        dto.setTotalAmount(totalAmount);
+        dto.setStatus(OrderStatus.DELIVERED);
+        dto.setPaymentMethod(PaymentMethod.CARD);
+        dto.setPaymentStatus(PaymentStatus.PAID);
+        dto.setOrderDate(LocalDateTime.now());
         return dto;
     }
 }

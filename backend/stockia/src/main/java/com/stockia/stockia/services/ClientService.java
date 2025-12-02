@@ -199,13 +199,55 @@ public class ClientService {
      * @return Lista de órdenes del cliente ordenadas por fecha descendente
      * @throws com.stockia.stockia.exceptions.client.ClientNotFoundException si el cliente no existe
      */
+
+    /**
+ * Obtiene el historial completo de compras de un cliente específico.
+ * 
+ * Este método recupera todas las órdenes asociadas a un cliente y las convierte
+ * a DTOs de respuesta para su presentación. Las órdenes se ordenan por fecha
+ * de creación descendente (más recientes primero).
+ * 
+ * Flujo de operación:
+ * 1. Verifica que el cliente existe en el sistema
+ * 2. Busca todas las órdenes del cliente
+ * 3. Convierte las entidades Order a OrderResponseDto
+ * 4. Retorna la lista ordenada cronológicamente
+ * 
+ * Casos de uso:
+ * - Consulta de historial para soporte al cliente
+ * - Análisis de patrones de compra del cliente
+ * - Generación de reportes de ventas por cliente
+ * - Validación de compras previas del cliente
+ * 
+ * @param clientId ID único del cliente (UUID) - no puede ser null
+ * @return Lista de OrderResponseDto con las órdenes del cliente:
+ *         - Lista con órdenes si el cliente tiene compras
+ *         - Lista vacía si el cliente existe pero no tiene compras
+ * 
+ * @throws ClientNotFoundException si el clientId no corresponde a ningún cliente registrado
+ * @throws IllegalArgumentException si clientId es null
+ * @throws RuntimeException si hay error en la consulta a la base de datos
+ * 
+ * @implNote Utiliza OrderMapper para conversión de entidades a DTOs
+ * @implNote La consulta se optimiza con ordenamiento en base de datos
+ * @implNote No aplica filtros de estado - retorna todas las órdenes del cliente
+ * 
+ * @see OrderResponseDto
+ * @see OrderMapper#toResponseDto(Order)
+ * @see OrderRepository#findByCustomerIdOrderByOrderDateDesc(UUID)
+ * 
+ */
     public List<OrderResponseDto> getClientPurchaseHistory(UUID clientId) {
+    // Validación de entrada
+    if (clientId == null) {
+        throw new IllegalArgumentException("El ID del cliente no puede ser null");
+    }
         // Verifica que el cliente existe
         Client client = clientRepository.findById(clientId)
             .orElseThrow(() -> new com.stockia.stockia.exceptions.client.ClientNotFoundException(clientId));
         
         // Obtiene órdenes del cliente
-        List<Order> orders = orderRepository.findByCustomerIdOrderByOrderDateDesc(clientId);
+        List<Order> orders = orderRepository.findByCustomer_IdOrderByOrderDateDesc(clientId);
         
         // Mapea a DTOs usando el OrderMapper existente
         return orders.stream()

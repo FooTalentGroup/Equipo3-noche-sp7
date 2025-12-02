@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.stockia.stockia.exceptions.client.ClientNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -151,6 +152,18 @@ public class GlobalExceptionHandler {
             HttpStatus.NOT_FOUND.value(),
             "USER_NOT_FOUND",
             "Usuario no encontrado",
+            Collections.singletonList(ex.getMessage()),
+            request.getRequestURI()
+    );
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+   }
+  
+    @ExceptionHandler(ClientNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleClientNotFoundException(ClientNotFoundException ex, HttpServletRequest request) {
+    ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.NOT_FOUND.value(),
+            "CLIENT_NOT_FOUND",
+            "Cliente no encontrado",
             Collections.singletonList(ex.getMessage()),
             request.getRequestURI()
     );
