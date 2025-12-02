@@ -5,8 +5,6 @@ import com.stockia.stockia.exceptions.client.ClientNotFoundException;
 import com.stockia.stockia.services.ClientService;
 import com.stockia.stockia.utils.ApiResult;
 import com.stockia.stockia.enums.OrderStatus;
-import com.stockia.stockia.security.service.JwtService;
-import com.stockia.stockia.security.service.TokenBlacklistService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,13 +37,6 @@ class ClientControllerPurchaseHistoryTest {
 
     @MockBean
     private ClientService clientService;
-
-    // AGREGAR ESTOS MOCKS PARA LA SEGURIDAD
-    @MockBean
-    private JwtService jwtService;
-
-    @MockBean
-    private TokenBlacklistService tokenBlacklistService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -93,7 +84,7 @@ class ClientControllerPurchaseHistoryTest {
         // When & Then: Verificar respuesta vacía pero exitosa
         mockMvc.perform(get(ENDPOINT, clientId))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON)) // ← CORREGIDO: .andExpect()
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("El cliente no registra compras"))
                 .andExpect(jsonPath("$.data").isArray())
@@ -111,7 +102,10 @@ class ClientControllerPurchaseHistoryTest {
 
         // When & Then: Verificar error 404
         mockMvc.perform(get(ENDPOINT, clientId))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON)) // ← CORREGIDO: .andExpect()
+                .andExpect(jsonPath("$.success").value(false)) // ← CORREGIDO: .andExpect()
+                .andExpect(jsonPath("$.message").value("Cliente no encontrado")); // ← CORREGIDO: .andExpect()
     }
 
     @Test
@@ -137,6 +131,18 @@ class ClientControllerPurchaseHistoryTest {
                 .andExpect(status().isUnauthorized());
     }
 
+    @Test
+    @DisplayName("GET /api/clients/{id}/purchase-history - Debería retornar 400 cuando ID inválido")
+    @WithMockUser(roles = "ADMIN")
+    void getClientPurchaseHistory_ShouldReturn400WhenInvalidUUID() throws Exception {
+        // Given: ID inválido
+        String invalidId = "invalid-uuid";
+
+        // When & Then: Verificar formato inválido
+        mockMvc.perform(get("/api/clients/{clientId}/purchase-history", invalidId))
+                .andExpect(status().isBadRequest());
+    }
+
     /**
      * Método auxiliar para crear OrderResponseDto de prueba
      */
@@ -147,7 +153,7 @@ class ClientControllerPurchaseHistoryTest {
         dto.setCustomerName(customerName);
         dto.setTotalAmount(totalAmount);
         dto.setOrderDate(LocalDateTime.now());
-        dto.setStatus(OrderStatus.DELIVERED);
+        dto.setStatus(OrderStatus.DELIVERED); // ← CORREGIDO: usar enum en lugar de String
         return dto;
     }
 }
