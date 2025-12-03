@@ -1,161 +1,140 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useProducts } from '../../context/ProductsContext';
+import { useCategories } from '@/features/categories/context/CategoriesContext';
+import { NativeSelect } from '@/shared/components/ui/native-select';
+import { Label } from '@/shared/components/ui/label';
+import { Loader2 } from 'lucide-react';
+import { Button } from '@/shared/components/ui/button';
+import { Dialog, DialogContent, DialogTitle } from '@/shared/components/ui/dialog';
+import { Description } from '@radix-ui/react-dialog';
 
-export function ProductsFiltersPopup({
-                                         open,
-                                         onClose,
-                                         filters,
-                                         onChange,
-                                         sort,
-                                         onSortChange,
-                                         onApply,
-                                         onClear,
-                                     }) {
-    const initialLocal = {
-        category: filters?.category ?? 'all',
-        minPrice: filters?.minPrice ?? '',
-        maxPrice: filters?.maxPrice ?? '',
-        stockLevel: filters?.stockLevel ?? 'all',
-    };
+const STOCK_OPTIONS = [
+    { value: 'all', label: 'Todos los estados' },
+    { value: 'low', label: 'Bajo stock' },
+    { value: 'normal', label: 'Stock normal' },
+];
 
-    const [local, setLocal] = useState(initialLocal);
+const SORT_OPTIONS = [
+    { value: 'name,asc', label: 'Nombre (A → Z)' },
+    { value: 'name,desc', label: 'Nombre (Z → A)' },
+    { value: 'price,asc', label: 'Precio (Menor → Mayor)' },
+    { value: 'price,desc', label: 'Precio (Mayor → Menor)' },
+    { value: 'currentStock,asc', label: 'Stock (Menor → Mayor)' },
+    { value: 'currentStock,desc', label: 'Stock (Mayor → Menor)' },
+];
 
-    useEffect(() => {
-        setLocal({
-            category: filters?.category ?? 'all',
-            minPrice: filters?.minPrice ?? '',
-            maxPrice: filters?.maxPrice ?? '',
-            stockLevel: filters?.stockLevel ?? 'all',
-        });
-    }, [filters, open]);
+const DELETED_OPTIONS = [
+    { value: 'all', label: 'Todos' },
+    { value: 'true', label: 'Eliminados' },
+    { value: 'false', label: 'Activos' },
+];
+
+export function ProductsFiltersPopup({ open, onClose }) {
+    const { filters, updateFilters, clearFilters, setStockFilter, stockFilterValue, setDeleted } = useProducts();
+    const { categories, isFetching } = useCategories();
 
     if (!open) return null;
 
     function update(field, value) {
-        setLocal(prev => ({ ...prev, [field]: value }));
-    }
-
-    function applyAll() {
-        onChange(local);
-        if (onApply) onApply();
+        updateFilters({ [field]: value || undefined }); 
     }
 
     function clearAll() {
-        const cleared = {
-            category: 'all',
-            minPrice: '',
-            maxPrice: '',
-            stockLevel: 'all',
-        };
-        setLocal(cleared);
-        onClear && onClear();
-        onChange && onChange(cleared);
+        clearFilters();
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-            <div className="relative bg-white rounded-lg shadow-xl w-96 p-6 z-10">
-                <h3 className="text-lg font-semibold mb-4">Filtros y orden</h3>
+        <Dialog open={open} onOpenChange={onClose}>
+            <DialogTitle className="sr-only">
+                Filtros y opciones de orden para la lista de productos
+            </DialogTitle>
+            <Description className="sr-only">
+                Filtros y opciones de orden para la lista de productos
+            </Description>
+            <DialogContent className="overflow-y-auto p-12 gap-6 max-w-lg bg-stokia-neutral-50">
+                <h3 className="text-lg font-semibold">Filtros y orden</h3>
 
-                <div className="space-y-4">
-                    {/* Categoría */}
-                    <label className="block">
-                        <span className="text-sm font-medium text-gray-700">Categoría</span>
-                        <select
-                            value={local.category}
-                            onChange={(e) => update('category', e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm h-10 px-3"
+                <div className="space-y-4 [&_span]:text-stokia-neutral-950">
+                    <Label className="block relative">
+                        <span className="text-sm font-medium">Categoría</span>
+                        <NativeSelect
+                            onChange={(e) => update('categoryId', e.target.value)}
+                            value={filters.categoryId || ''}
+                            disabled={isFetching}
+                            className="bg-card"
                         >
-                            <option value="all">Todas</option>
-                            <option value="Bebidas">Bebidas</option>
-                            <option value="Lácteos">Lácteos</option>
-                            <option value="Panadería">Panadería</option>
-                            <option value="Frutas y Verduras">Frutas y Verduras</option>
-                            <option value="Desayuno">Desayuno</option>
-                            <option value="Almacén">Almacén</option>
-                            <option value="Limpieza">Limpieza</option>
-                            <option value="Cuidado Personal">Cuidado Personal</option>
-                        </select>
-                    </label>
+                            <option value="">
+                                {isFetching ? "Cargando..." : "Todas las categorías"}
+                            </option>
+                            {!isFetching && categories.map((opt) => (
+                                <option key={opt.id} value={String(opt.id)}>
+                                    {opt.name}
+                                </option>
+                            ))}
+                        </NativeSelect>
+                        {isFetching && (
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                <Loader2 className="h-4 w-4 animate-spin text-stokia-neutral-400" />
+                            </div>
+                        )}
+                    </Label>
 
-                    {/* Precio mínimo */}
-                    <label className="block">
-                        <span className="text-sm font-medium text-gray-700">Precio mínimo</span>
-                        <input
-                            type="number"
-                            value={local.minPrice}
-                            onChange={(e) => update('minPrice', e.target.value)}
-                            placeholder="Ej: 1000"
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary h-10 px-3"
-                            min="0"
-                        />
-                    </label>
-
-                    {/* Precio máximo */}
-                    <label className="block">
-                        <span className="text-sm font-medium text-gray-700">Precio máximo</span>
-                        <input
-                            type="number"
-                            value={local.maxPrice}
-                            onChange={(e) => update('maxPrice', e.target.value)}
-                            placeholder="Ej: 10000"
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary h-10 px-3"
-                            min="0"
-                        />
-                    </label>
-
-                    {/* NUEVO: Estado de stock (Alto / Medio / Bajo) */}
-                    <label className="block">
-                        <span className="text-sm font-medium text-gray-700">Estado de stock</span>
-                        <select
-                            value={local.stockLevel}
-                            onChange={(e) => update('stockLevel', e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm h-10 px-3"
+                    <Label className="block">
+                        <span className="text-sm">Estado de stock</span>
+                        <NativeSelect
+                            onChange={(e) => setStockFilter(e.target.value)}
+                            value={stockFilterValue}
+                            className="bg-card"
                         >
-                            <option value="all">Todos los estados</option>
-                            <option value="high">Alto stock (más de 10 und)</option>
-                            <option value="medium">Medio stock (1 a 10 und)</option>
-                            <option value="low">Bajo stock (0 und)</option>
-                        </select>
-                    </label>
+                            {STOCK_OPTIONS.map((opt) => (
+                                <option key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                </option>
+                            ))}
+                        </NativeSelect>
+                    </Label>
 
-                    {/* Ordenar por */}
-                    <label className="block">
-                        <span className="text-sm font-medium text-gray-700">Ordenar por</span>
-                        <select
-                            value={sort}
-                            onChange={(e) => onSortChange(e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm h-10 px-3"
+                     <Label className="block">
+                        <span className="text-sm">Estado</span>
+                        <NativeSelect
+                            value={filters.deleted || 'all'}
+                            onChange={(e) => setDeleted(e.target.value)}
+                            className="bg-card"
                         >
-                            <option value="name_asc">Nombre (A → Z)</option>
-                            <option value="name_desc">Nombre (Z → A)</option>
-                            <option value="price_asc">Precio (Menor → Mayor)</option>
-                            <option value="price_desc">Precio (Mayor → Menor)</option>
-                        </select>
-                    </label>
+                            {DELETED_OPTIONS.map((opt) => (
+                                <option key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                </option>
+                            ))}
+                        </NativeSelect>
+                    </Label>
+
+                    <Label className="block">
+                        <span className="text-sm">Ordenar por</span>
+                        <NativeSelect
+                            value={filters.sort || 'name,asc'}
+                            onChange={(e) => update('sort', e.target.value)}
+                            className="bg-card"
+                        >
+                            {SORT_OPTIONS.map((opt) => (
+                                <option key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                </option>
+                            ))}
+                        </NativeSelect>
+                    </Label>
                 </div>
 
-                <div className="mt-6 flex gap-3 justify-end">
-                    <button
-                        onClick={clearAll}
-                        className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                    >
+                <div className="flex gap-3 justify-end">
+                    <Button variant="outline" onClick={clearAll}>
                         Limpiar
-                    </button>
-                    <button
-                        onClick={onClose}
-                        className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                    >
+                    </Button>
+
+                    <Button onClick={onClose} variant="outline">
                         Cancelar
-                    </button>
-                    <button
-                        onClick={applyAll}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                    >
-                        Aplicar filtros
-                    </button>
+                    </Button>
                 </div>
-            </div>
-        </div>
+            </DialogContent>
+        </Dialog>
     );
 }
