@@ -27,6 +27,7 @@ import com.stockia.stockia.exceptions.product.InsufficientStockException;
 import com.stockia.stockia.events.LowStockEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -41,10 +42,21 @@ public class InventoryMovementServiceImpl implements InventoryMovementService {
     @Override
     public Page<InventoryMovementResponseDto> searchInventoryMovements(MovementSearchRequestDto params,
             Pageable pageable) {
+        // Convertir fechas de LocalDate a LocalDateTime
+        LocalDateTime startDateTime = params.startDate() != null
+                ? params.startDate().atStartOfDay()
+                : null;
+
+        LocalDateTime endDateTime = params.endDate() != null
+                ? params.endDate().atTime(23, 59, 59)
+                : null;
         Page<InventoryMovement> inventoryMovements = inventoryMovementRepository.searchInventoryMovements(
                 params.productId(),
+                params.productName(),
                 params.movementType(),
                 params.userId(),
+                startDateTime,
+                endDateTime,
                 pageable);
         return inventoryMovementMapper.toResponseDto(inventoryMovements);
     }
