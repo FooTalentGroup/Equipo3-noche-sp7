@@ -10,10 +10,6 @@ export const getProducts = async (params = {}) => {
     lowStock,
     includeInactive,
     deleted,
-    name,
-    category,
-    minPrice,
-    maxPrice,
   } = params;
   
   const queryParams = new URLSearchParams({
@@ -47,25 +43,6 @@ export const getProducts = async (params = {}) => {
     queryParams.append('deleted', deleted.toString());
   }
 
-  // Legacy params (for backward compatibility)
-  if (name) {
-    queryParams.append('name', name);
-  }
-
-  if (category && Array.isArray(category) && category.length > 0) {
-    category.forEach((c) => queryParams.append('category', c));
-  } else if (category) {
-    queryParams.append('category', category);
-  }
-
-  if (minPrice !== undefined && minPrice !== null) {
-    queryParams.append('minPrice', minPrice.toString());
-  }
-
-  if (maxPrice !== undefined && maxPrice !== null) {
-    queryParams.append('maxPrice', maxPrice.toString());
-  }
-
   const { data } = await apiClient.get(`/api/products?${queryParams.toString()}`);
   return data;
 };
@@ -86,7 +63,7 @@ export const updateProduct = async (id, productData) => {
 };
 
 export const deleteProduct = async (id) => {
-  const { data } = await apiClient.delete(`/api/products/${id}/permanent`);
+  const { data } = await apiClient.delete(`/api/products/${id}`);
   return data;
 };
 

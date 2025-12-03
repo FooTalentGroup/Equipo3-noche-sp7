@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from 'react-router';
+import { useProducts } from '@/features/products/context/ProductsContext';
 import { useProductsFilter } from '@/features/products/hooks/useProductsFilter';
 import { ProductsFiltersBar } from '@/features/products/components/filters/ProductsFiltersBar.jsx';
 import { ProductsFiltersPopup } from '../components/filters/ProductFiltersPopup';
@@ -17,6 +18,8 @@ export default function ProductsListPage() {
     const isEditModalOpen = location.pathname.startsWith('/products/edit/');
     const isModalOpen = isCreateModalOpen || isEditModalOpen;
 
+    const { setSearch, updateFilters, clearFilters: clearContextFilters } = useProducts();
+
     const {
         searchQuery,
         setSearchQuery,
@@ -31,6 +34,28 @@ export default function ProductsListPage() {
         clearFilters,
     } = useProductsFilter();
 
+    const handleSearchChange = (value) => {
+        setSearchQuery(value);
+        setSearch(value);
+    };
+
+    const handleApplyFilters = () => {
+        const backendFilters = {
+            sort,
+            categoryId: filters.category !== 'all' ? filters.category : undefined,
+            lowStock: filters.stockStatus === 'low' ? true : undefined,
+        };
+        
+        updateFilters(backendFilters);
+        applyFilters();
+        closeFilters();
+    };
+
+    const handleClearFilters = () => {
+        clearFilters();
+        clearContextFilters();
+    };
+
     const handleModalChange = (open) => {
         if (!open) {
             navigate("/products");
@@ -38,17 +63,13 @@ export default function ProductsListPage() {
     };
 
     return (
-        <div className="w-full p-6">
+        <div className="w-full h-full">
             <ProductsFiltersBar
                 searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
+                onSearchChange={handleSearchChange}
                 onToggleFilters={openFilters}
             />
-            <ProductsTable
-                searchQuery={searchQuery}
-                filters={filters}
-                sort={sort}
-            />
+            <ProductsTable />
 
             <ProductsFiltersPopup
                 open={isFiltersOpen}
@@ -57,13 +78,8 @@ export default function ProductsListPage() {
                 onChange={setFilters}
                 sort={sort}
                 onSortChange={setSort}
-                onApply={() => {
-                    applyFilters();
-                    closeFilters();
-                }}
-                onClear={() => {
-                    clearFilters();
-                }}
+                onApply={handleApplyFilters}
+                onClear={handleClearFilters}
             />
 
             <Dialog open={isModalOpen} onOpenChange={handleModalChange}>

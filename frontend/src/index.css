@@ -48,6 +48,7 @@
   --color-stokia-neutral-500: var(--stokia-neutral-500);
   --color-stokia-neutral-600: var(--stokia-neutral-600);
   --color-stokia-neutral-950: var(--stokia-neutral-950);
+  --color-stokia-primary-100: var(--stokia-primary-100);
   --color-stokia-primary-800: var(--stokia-primary-800);
   --color-stokia-primary-500: var(--stokia-primary-500);
   --color-stokia-primary-600: var(--stokia-primary-600);
@@ -94,6 +95,7 @@
   --stokia-neutral-500: oklch(0.5363 0.021 232.83);
   --stokia-neutral-600: oklch(0.4785 0.0177 235.72);
   --stokia-neutral-950: oklch(0.2543 0.0072 248.11);
+  --stokia-primary-100: oklch(0.9478 0.0091 258.34);
   --stokia-primary-500: oklch(0.5684 0.0732 251.13);
   --stokia-primary-600: oklch(0.483 0.0707 255.51);
   --stockia-primary-800: oklch(0.3781 0.0495 255.54);
@@ -144,7 +146,6 @@
     @apply bg-background text-foreground;
     font-family: 'Roboto Flex', system-ui, sans-serif;
     overflow-y: scroll;
-    scrollbar-gutter: stable both-edges;
   }
 }
 
@@ -156,13 +157,14 @@
 }
 
 aside {
-  overflow-y: auto;
+  overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
 }
 
 html,
 body,
 #root {
-  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
   width: 100%
 }
