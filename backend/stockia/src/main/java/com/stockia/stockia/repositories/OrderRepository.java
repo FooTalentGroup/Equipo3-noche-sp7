@@ -60,7 +60,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
          * @param customerId ID del cliente
          * @return Lista de órdenes del cliente
          */
-        List<Order> findByCustomerIdOrderByOrderDateDesc(UUID customerId);
+        List<Order> findByCustomer_IdOrderByOrderDateDesc(UUID customerId);
 
         /**
          * Busca todas las órdenes creadas por un usuario específico.
@@ -78,7 +78,42 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
          * @param start Fecha de inicio (inclusive)
          * @param end   Fecha de fin (inclusive)
          * @return Lista de órdenes en el rango de fechas
+         
          */
+
+         /**
+ * Busca todas las órdenes de un cliente específico ordenadas por fecha descendente.
+ * 
+ * Este método de consulta recupera el historial completo de compras de un cliente,
+ * ordenado cronológicamente de la orden más reciente a la más antigua. Es utilizado
+ * principalmente para generar historiales de compra y análisis de comportamiento.
+ * 
+ * Características de la consulta:
+ * - Busca por customer.id (relación JPA)
+ * - Ordena por orderDate DESC (más recientes primero)
+ * - Retorna todas las órdenes sin filtros de estado
+ * - Utiliza índices de base de datos para optimización
+ * 
+ * Casos de uso:
+ * - Generación de historial de compras para clientes
+ * - Análisis de frecuencia de compra
+ * - Reportes de ventas por cliente
+ * - Soporte al cliente y consultas de órdenes
+ * 
+ * @param customerId ID del cliente (UUID) - debe existir en la tabla clients
+ * @return Lista ordenada de órdenes del cliente:
+ *         - Lista con órdenes si el cliente tiene compras
+ *         - Lista vacía si el cliente no tiene órdenes
+ * 
+ * @implNote Genera SQL: SELECT * FROM orders WHERE customer_id = ? ORDER BY order_date DESC
+ * @implNote Utiliza índice compuesto en (customer_id, order_date) para optimización
+ * @implNote No valida existencia del cliente - esa responsabilidad es del servicio
+ * 
+ * @see Order#getCustomer()
+ * @see Order#getOrderDate()
+ * 
+ */
+
         List<Order> findByOrderDateBetweenOrderByOrderDateDesc(LocalDateTime start, LocalDateTime end);
 
         /**

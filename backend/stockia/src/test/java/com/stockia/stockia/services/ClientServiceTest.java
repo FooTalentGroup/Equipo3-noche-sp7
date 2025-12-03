@@ -3,193 +3,228 @@ package com.stockia.stockia.services;
 import com.stockia.stockia.models.Client;
 import com.stockia.stockia.repositories.ClientRepository;
 import com.stockia.stockia.exceptions.client.ClientDuplicatedException;
+import com.stockia.stockia.exceptions.client.ClientNotFoundException;
+import com.stockia.stockia.dtos.order.OrderResponseDto;
+import com.stockia.stockia.repositories.OrderRepository;
+import com.stockia.stockia.mappers.OrderMapper;
+import com.stockia.stockia.models.Order;
+import com.stockia.stockia.enums.OrderStatus;
+import com.stockia.stockia.enums.PaymentMethod;
+import com.stockia.stockia.enums.PaymentStatus;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.*;
 
 /**
- * Pruebas unitarias para la capa de servicio clientService.
+ * Pruebas unitarias para la capa de servicio ClientService.
  * 
  * Esta clase contiene tests que verifican la lógica de negocio
- * del registro de clients, incluyendo validaciones de duplicados
- * y el correcto flujo de datos entre el servicio y el repositorio.
- * 
- * Se utiliza @ExtendWith(MockitoExtension.class) para inyección de mocks
- * y @InjectMocks/@Mock para simular las dependencias del repositorio.
- * 
- * RESULTADOS DE EJECUCIÓN:
- * Tests ejecutados: 3/3
- * Tests exitosos: 3/3
- * Errores: 0
- * Tiempo: 1.590s
- *
- * Comandos para test
- *
- * # TODOS los tests del service
- * mvn test -Dtest=clientServiceTest
- *
- * # Test 1: Registro nuevo exitoso
- * mvn test -Dtest=clientServiceTest#debeRegistrarclientNuevoExitosamente
- *
- * #Test 2: Teléfono duplicado
- * mvn test
- * -Dtest=clientServiceTest#debeLanzarExcepcionCuandoclientDuplicadoPorTelefono
- *
- * # Test 3: Email duplicado
- * mvn test
- * -Dtest=clientServiceTest#debeLanzarExcepcionCuandoclientDuplicadoPorCorreo
- *
- *
- **/
-
+ * del registro de clientes y consulta de historial de compras.
+ */
 @ExtendWith(MockitoExtension.class)
-class clientServiceTest {
+class ClientServiceTest {
 
-        @Mock
-        private ClientRepository clientRepository;
+    @Mock
+    private ClientRepository clientRepository;
 
-        @InjectMocks
-        private ClientService clientService;
+    @Mock
+    private OrderRepository orderRepository;
 
-        /**
-         * Test que verifica el registro exitoso de un client nuevo.
-         * 
-         * Prueba:
-         * - Se registra un client con datos únicos (no existe duplicado)
-         * - El repositorio confirma que no hay conflictos
-         * - Se guarda el client exitosamente
-         * 
-         * Resultado esperado:
-         * - client guardado con ID asignado
-         * - Método save() del repositorio invocado
-         * - Todos los datos persistidos correctamente
-         * 
-         * RESULTADO DE EJECUCIÓN: Exitoso
-         * - Mock del repositorio respondiendo correctamente
-         * - Lógica de validación de duplicados funcionando
-         * - Asignación de ID simulada correctamente
-         * - Verificaciones de Mockito pasando
-         * 
-         * 
-         */
+    @Mock
+    private OrderMapper orderMapper;
 
-        @Test
-        void shouldRegisterNewClientSuccessfully() {
-                Client newClient = new Client();
-                newClient.setName("Carlos López");
-                newClient.setEmail("carlos@test.com");
-                newClient.setPhone("+5491123456789");
-                newClient.setIsFrequent(true);
+    @InjectMocks
+    private ClientService clientService;
 
-                when(clientRepository.findByEmailOrPhone(anyString(), anyString()))
-                                .thenReturn(Optional.empty());
-                when(clientRepository.save(any(Client.class)))
-                                .thenAnswer(invocation -> {
-                                        Client client = invocation.getArgument(0);
-                                        client.setId(UUID.randomUUID());
-                                        return client;
-                                });
+    // ========== TESTS EXISTENTES DE REGISTRO ==========
 
-                Client result = clientService.registerClient(newClient);
+    @Test
+    void shouldRegisterNewClientSuccessfully() {
+        Client newClient = new Client();
+        newClient.setName("Carlos López");
+        newClient.setEmail("carlos@test.com");
+        newClient.setPhone("+5491123456789");
+        newClient.setIsFrequent(true);
 
-                assertThat(result.getPhone()).isEqualTo("+5491123456789");
-                verify(clientRepository).save(any(Client.class));
-        }
+        when(clientRepository.findByEmailOrPhone(anyString(), anyString()))
+                .thenReturn(Optional.empty());
+        when(clientRepository.save(any(Client.class)))
+                .thenAnswer(invocation -> {
+                    Client client = invocation.getArgument(0);
+                    client.setId(UUID.randomUUID());
+                    return client;
+                });
 
-        /**
-         * Test que verifica la excepción por teléfono duplicado.
-         * 
-         * Prueba:
-         * - Se intenta registrar un client con teléfono ya existente
-         * - El repositorio encuentra un client con ese teléfono
-         * - Se lanza clientDuplicadoException
-         * 
-         * Resultado esperado:
-         * - Excepción clientDuplicadoException lanzada
-         * - No se llama al método save()
-         * - Validación de duplicados funcionando
-         * 
-         * RESULTADO DE EJECUCIÓN: Exitoso
-         * - Excepción lanzada correctamente
-         * - Mock findByCorreoElectronicoOrTelefono funcionando
-         * - Validación de duplicados por teléfono operativa
-         * - AssertJ verificando la excepción adecuadamente
-         * 
-         * 
-         */
+        Client result = clientService.registerClient(newClient);
 
-        @Test
-        void shouldThrowExceptionWhenClientDuplicatedByPhone() {
-                Client newClient = new Client();
-                newClient.setName("Pedro Martínez");
-                newClient.setEmail("pedro@nuevo.com");
-                newClient.setPhone("+573123456789");
-                newClient.setIsFrequent(true);
+        assertThat(result.getPhone()).isEqualTo("+5491123456789");
+        verify(clientRepository).save(any(Client.class));
+    }
 
-                Client existingClient = new Client();
-                existingClient.setId(UUID.randomUUID());
-                existingClient.setPhone("+573123456789");
+    @Test
+    void shouldThrowExceptionWhenClientDuplicatedByPhone() {
+        Client newClient = new Client();
+        newClient.setName("Pedro Martínez");
+        newClient.setEmail("pedro@nuevo.com");
+        newClient.setPhone("+573123456789");
+        newClient.setIsFrequent(true);
 
-                when(clientRepository.findByEmailOrPhone(anyString(), anyString()))
-                                .thenReturn(Optional.of(existingClient));
+        Client existingClient = new Client();
+        existingClient.setId(UUID.randomUUID());
+        existingClient.setPhone("+573123456789");
 
-                assertThatThrownBy(() -> clientService.registerClient(newClient))
-                                .isInstanceOf(ClientDuplicatedException.class);
-        }
+        when(clientRepository.findByEmailOrPhone(anyString(), anyString()))
+                .thenReturn(Optional.of(existingClient));
 
-        /**
-         * Test que verifica la excepción por email duplicado.
-         * 
-         * Prueba:
-         * - Se intenta registrar un client con email ya existente
-         * - El repositorio encuentra un client con ese email
-         * - Se lanza clientDuplicadoException
-         * 
-         * Resultado esperado:
-         * - Excepción clientDuplicadoException lanzada
-         * - Método save() nunca invocado
-         * - Validación de duplicados por email funcionando
-         * 
-         * RESULTADO DE EJECUCIÓN: Exitoso
-         * - Excepción lanzada correctamente por email duplicado
-         * - Verificación verify(never()) funcionando
-         * - Lógica de negocio de duplicados operativa
-         * - Mock repository simulando búsqueda exitosamente
-         * 
-         * 
-         */
+        assertThatThrownBy(() -> clientService.registerClient(newClient))
+                .isInstanceOf(ClientDuplicatedException.class);
+    }
 
-        @Test
-        void shouldThrowExceptionWhenClientDuplicatedByEmail() {
-                Client newClient = new Client();
-                newClient.setName("Ana García");
-                newClient.setEmail("ana@duplicado.com");
-                newClient.setPhone("+34612345678");
-                newClient.setIsFrequent(false);
+    @Test
+    void shouldThrowExceptionWhenClientDuplicatedByEmail() {
+        Client newClient = new Client();
+        newClient.setName("Ana García");
+        newClient.setEmail("ana@duplicado.com");
+        newClient.setPhone("+34612345678");
+        newClient.setIsFrequent(false);
 
-                Client existingClient = new Client();
-                existingClient.setId(UUID.randomUUID());
-                existingClient.setEmail("ana@duplicado.com");
+        Client existingClient = new Client();
+        existingClient.setId(UUID.randomUUID());
+        existingClient.setEmail("ana@duplicado.com");
 
-                when(clientRepository.findByEmailOrPhone(anyString(), anyString()))
-                                .thenReturn(Optional.of(existingClient));
+        when(clientRepository.findByEmailOrPhone(anyString(), anyString()))
+                .thenReturn(Optional.of(existingClient));
 
-                assertThatThrownBy(() -> clientService.registerClient(newClient))
-                                .isInstanceOf(ClientDuplicatedException.class);
+        assertThatThrownBy(() -> clientService.registerClient(newClient))
+                .isInstanceOf(ClientDuplicatedException.class);
 
-                verify(clientRepository, never()).save(any(Client.class));
-        }
+        verify(clientRepository, never()).save(any(Client.class));
+    }
+
+    // ========== NUEVOS TESTS DE HISTORIAL DE COMPRAS ==========
+
+    @Test
+    @DisplayName("Debería retornar historial cuando cliente existe con órdenes")
+    void getClientPurchaseHistory_ShouldReturnOrdersWhenClientExists() {
+        // Given: Cliente válido con 2 órdenes
+        UUID clientId = UUID.randomUUID();
+        Client client = createClient(clientId, "Juan Pérez", "juan@test.com");
+        
+        Order order1 = createOrder("ORD-001", client, BigDecimal.valueOf(450.00));
+        Order order2 = createOrder("ORD-002", client, BigDecimal.valueOf(320.00));
+        List<Order> orders = Arrays.asList(order1, order2);
+        
+        OrderResponseDto dto1 = createOrderDto("ORD-001", BigDecimal.valueOf(450.00));
+        OrderResponseDto dto2 = createOrderDto("ORD-002", BigDecimal.valueOf(320.00));
+        
+        when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
+        when(orderRepository.findByCustomer_IdOrderByOrderDateDesc(clientId)).thenReturn(orders);
+        when(orderMapper.toResponseDto(order1)).thenReturn(dto1);
+        when(orderMapper.toResponseDto(order2)).thenReturn(dto2);
+
+        // When: Llamar al servicio
+        List<OrderResponseDto> result = clientService.getClientPurchaseHistory(clientId);
+
+        // Then: Verificar resultado
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getOrderNumber()).isEqualTo("ORD-001");
+        assertThat(result.get(1).getOrderNumber()).isEqualTo("ORD-002");
+        
+        verify(clientRepository).findById(clientId);
+        verify(orderRepository).findByCustomer_IdOrderByOrderDateDesc(clientId);
+        verify(orderMapper, times(2)).toResponseDto(any(Order.class));
+    }
+
+    @Test
+    @DisplayName("Debería retornar lista vacía cuando cliente no tiene órdenes")
+    void getClientPurchaseHistory_ShouldReturnEmptyListWhenNoOrders() {
+        // Given: Cliente válido sin órdenes
+        UUID clientId = UUID.randomUUID();
+        Client client = createClient(clientId, "María López", "maria@test.com");
+        
+        when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
+        when(orderRepository.findByCustomer_IdOrderByOrderDateDesc(clientId)).thenReturn(Collections.emptyList());
+
+        // When
+        List<OrderResponseDto> result = clientService.getClientPurchaseHistory(clientId);
+
+        // Then: Lista vacía, sin llamar mapper
+        assertThat(result).isEmpty();
+        verify(orderMapper, never()).toResponseDto(any());
+    }
+
+    @Test
+    @DisplayName("Debería lanzar excepción cuando cliente no existe")
+    void getClientPurchaseHistory_ShouldThrowExceptionWhenClientNotFound() {
+        // Given: Cliente no existe
+        UUID clientId = UUID.randomUUID();
+        when(clientRepository.findById(clientId)).thenReturn(Optional.empty());
+
+        // When & Then: Excepción lanzada
+        assertThatThrownBy(() -> clientService.getClientPurchaseHistory(clientId))
+                .isInstanceOf(ClientNotFoundException.class)
+                .hasMessageContaining(clientId.toString());
+        
+        verify(orderRepository, never()).findByCustomer_IdOrderByOrderDateDesc(any());
+    }
+
+    // ========== MÉTODOS AUXILIARES ==========
+
+    /**
+     * Crea un cliente para testing
+     */
+    private Client createClient(UUID id, String name, String email) {
+        Client client = new Client();
+        client.setId(id);
+        client.setName(name);
+        client.setEmail(email);
+        client.setPhone("+1234567890");
+        client.setIsFrequent(true);
+        return client;
+    }
+
+    /**
+     * Crea una orden para testing
+     */
+    private Order createOrder(String orderNumber, Client customer, BigDecimal totalAmount) {
+        Order order = new Order();
+        order.setId(UUID.randomUUID());
+        order.setOrderNumber(orderNumber);
+        order.setCustomer(customer);
+        order.setTotalAmount(totalAmount);
+        order.setStatus(OrderStatus.DELIVERED);
+        order.setPaymentMethod(PaymentMethod.CARD);
+        order.setPaymentStatus(PaymentStatus.PAID);
+        order.setOrderDate(LocalDateTime.now());
+        order.setCreatedAt(LocalDateTime.now());
+        order.setUpdatedAt(LocalDateTime.now());
+        return order;
+    }
+
+    /**
+     * Crea un OrderResponseDto para testing
+     */
+    private OrderResponseDto createOrderDto(String orderNumber, BigDecimal totalAmount) {
+        OrderResponseDto dto = new OrderResponseDto();
+        dto.setOrderNumber(orderNumber);
+        dto.setTotalAmount(totalAmount);
+        dto.setStatus(OrderStatus.DELIVERED);
+        dto.setPaymentMethod(PaymentMethod.CARD);
+        dto.setPaymentStatus(PaymentStatus.PAID);
+        dto.setOrderDate(LocalDateTime.now());
+        return dto;
+    }
 }
