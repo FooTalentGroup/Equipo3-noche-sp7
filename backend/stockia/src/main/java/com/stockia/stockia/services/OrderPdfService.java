@@ -5,10 +5,6 @@ import com.stockia.stockia.models.Order;
 /**
  * Servicio para la generación de PDFs de comprobantes de venta.
  * Genera documentos PDF con los detalles completos de las órdenes.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-24
  */
 public interface OrderPdfService {
 

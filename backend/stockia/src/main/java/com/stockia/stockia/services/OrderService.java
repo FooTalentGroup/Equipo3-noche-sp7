@@ -14,10 +14,6 @@ import java.util.UUID;
 /**
  * Servicio para la gestión de órdenes de venta.
  * Define las operaciones disponibles para el módulo de ventas.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-24
  */
 public interface OrderService {
 
