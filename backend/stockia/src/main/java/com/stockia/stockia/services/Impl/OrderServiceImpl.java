@@ -43,10 +43,6 @@ import java.util.UUID;
  * - Creación de movimientos de inventario
  * - Gestión de estados de orden
  * - Cálculo de totales y descuentos
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-24
  */
 @Service
 @RequiredArgsConstructor

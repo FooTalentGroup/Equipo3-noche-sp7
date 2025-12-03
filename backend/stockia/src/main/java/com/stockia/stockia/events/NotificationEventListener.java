@@ -76,7 +76,8 @@ public class NotificationEventListener {
             return String.format("¡Stock agotado! El producto '%s' no tiene unidades disponibles.",
                     event.getProductName());
         } else {
-            return String.format("Stock bajo: El producto '%s' tiene %d unidades (mínimo: %d).",
+            return String.format(
+                    "¡Alerta de stock! Stock bajo: El producto '%s' tiene %d unidades (mínimo: %d). Contáctate con tu proveedor para evitar faltas.",
                     event.getProductName(),
                     event.getCurrentStock(),
                     event.getMinStock());
