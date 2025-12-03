@@ -23,61 +23,65 @@ import java.lang.annotation.*;
         security = @SecurityRequirement(name = "bearer-key")
 )
 @ApiResponses(value = {
-        @ApiResponse(
-                responseCode = "200",
-                description = "Lista paginada de movimientos de inventario obtenido exitosamente",
-                content = @Content(
-                        mediaType = "application/json",
-                        schema = @Schema(example = """
+    @ApiResponse(
+        responseCode = "200",
+        description = "Lista paginada de movimientos de inventario obtenido exitosamente",
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(example = """
                 {
-                  "content": [
-                    {
-                      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-                      "productId": "123e4567-e89b-12d3-a456-426614174000",
-                      "productName": "Manzana",
-                      "movementType": "ADJUSTMENT",
-                      "quantity": "80",
-                      "reason": "...",
-                      "userId": "3fa85f64-5717-4562-b3fc-2c963f66af01",
-                      ...
-                    },
-                    {
-                      "id": "3fa85f64-5717-4562-b3fc-2c963f66af01",
-                      "productId": "3fa32420-5717-5717-b3fc-b3fc3f66b3fc",
-                      "productName": "Sandwich",
-                      "movementType": "IN",
-                      "quantity": "4",
-                      "reason": "...",
-                      "userId": "3fa85f64-5717-4562-b3fc-2c963f66af01",
-                      ...
-                    }
-                  ],
-                  "pageable": {
-                    "pageNumber": 0,
-                    "pageSize": 10,
-                    "sort": {
-                      "sorted": true,
-                      "unsorted": false,
+                  "success": true,
+                  "message": "6 movimiento(s) de inventario encontrado(s)",
+                  "data": {
+                      "content": [
+                        {
+                          "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                          "productId": "123e4567-e89b-12d3-a456-426614174000",
+                          "productName": "Manzana",
+                          "movementType": "ADJUSTMENT",
+                          "quantity": "80",
+                          "reason": "...",
+                          "userId": "3fa85f64-5717-4562-b3fc-2c963f66af01",
+                          ...
+                        },
+                        {
+                          "id": "3fa85f64-5717-4562-b3fc-2c963f66af01",
+                          "productId": "3fa32420-5717-5717-b3fc-b3fc3f66b3fc",
+                          "productName": "Sandwich",
+                          "movementType": "IN",
+                          "quantity": "4",
+                          "reason": "...",
+                          "userId": "3fa85f64-5717-4562-b3fc-2c963f66af01",
+                          ...
+                        }
+                      ],
+                      "pageable": {
+                        "pageNumber": 0,
+                        "pageSize": 10,
+                        "sort": {
+                          "sorted": true,
+                          "unsorted": false,
+                          "empty": false
+                        }
+                      },
+                      "last": true,
+                      "totalElements": 6,
+                      "totalPages": 1,
+                      "first": true,
+                      "size": 20,
+                      "number": 0,
+                      "sort": {
+                        "empty": true,
+                        "unsorted": true,
+                        "sorted": false
+                      },
+                      "numberOfElements": 6,
                       "empty": false
                     }
-                  },
-                  "totalPages": 5,
-                  "totalElements": 50,
-                  "last": false,
-                  "size": 10,
-                  "number": 0,
-                  "sort": {
-                    "sorted": true,
-                    "unsorted": false,
-                    "empty": false
-                  },
-                  "first": true,
-                  "numberOfElements": 10,
-                  "empty": false
-                }
-                """)
-                )
-        ),
+                  }
+            """)
+        )
+    ),
     @ApiResponse(responseCode = "403",
         description = "Acceso denegado por falta de permisos. Usuario con rol no autorizado.",
         content = @Content(

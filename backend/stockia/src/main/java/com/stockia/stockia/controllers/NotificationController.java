@@ -38,7 +38,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
-@Tag(name = "07 - Notificaciones", description = "Endpoints para gestionar notificaciones en tiempo real")
+@Tag(name = "08 - Notificaciones", description = "Endpoints para gestionar notificaciones en tiempo real")
 public class NotificationController {
 
     private final NotificationService notificationService;

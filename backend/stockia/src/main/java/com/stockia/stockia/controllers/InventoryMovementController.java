@@ -6,6 +6,7 @@ import com.stockia.stockia.dtos.inventoryMovements.InventoryMovementResponseDto;
 import com.stockia.stockia.dtos.inventoryMovements.MovementSearchRequestDto;
 import com.stockia.stockia.security.CustomUserDetails;
 import com.stockia.stockia.services.InventoryMovementService;
+import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +34,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/inventory-movements")
 @RequiredArgsConstructor
-@Tag(name = "02 - Movimientos", description = "Endpoints para la gestión de movimientos de inventario")
+@Tag(name = "07 - Movimientos", description = "Endpoints para la gestión de movimientos de inventario")
 public class InventoryMovementController {
     private final InventoryMovementService inventoryMovementService;
 
@@ -43,8 +44,10 @@ public class InventoryMovementController {
     public ResponseEntity<?> getAllWithSearch(@ParameterObject @Valid MovementSearchRequestDto params,
                                               @ParameterObject Pageable pageable) {
         Page<InventoryMovementResponseDto> response = inventoryMovementService.searchInventoryMovements(params, pageable);
-        return ResponseEntity.ok()
-                .body(ApiResult.success(response, "Operación exitosa"));
+        String message = response.isEmpty()
+                ? "No se encontraron movimientos de inventario"
+                : String.format("%d movimiento(s) de inventario encontrado(s)", response.getTotalElements());
+        return ResponseEntity.ok(ApiResult.success(message, response));
     }
 
     @GetMovementByIdEndpointDoc
