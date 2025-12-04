@@ -78,6 +78,18 @@ export function ProductsProvider({ children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    searchTimeoutRef.current = setTimeout(() => {
+      fetchProducts(0, pagination.pageSize, filters);
+    }, 250);
+
+    return () => clearTimeout(searchTimeoutRef.current);
+  }, [filters.q]);
+
   const goToPage = (page) => {
     if (page >= 0 && page < pagination.totalPages) {
       fetchProducts(page, pagination.pageSize, filters);
@@ -112,12 +124,7 @@ export function ProductsProvider({ children }) {
   };
 
   const setSearch = (searchTerm) => {
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-    searchTimeoutRef.current = setTimeout(() => {
-      updateFilters({ q: searchTerm });
-    }, 250);
+    setFilters(prev => ({ ...prev, q: searchTerm }));
   };
 
   const setCategory = (categoryId) => {

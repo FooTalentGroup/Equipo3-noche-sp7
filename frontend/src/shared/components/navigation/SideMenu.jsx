@@ -59,7 +59,7 @@ const NavLinkItem = ({ to, icon: Icon, arrowIcon: Arrow, label }) => (
                 `flex items-center justify-between p-6  text-base transition-all w-full border-b-2 border-stokia-neutral-100 ${isPending
                     ? 'opacity-50'
                     : isActive
-                        ? 'bg-stokia-neutral-300'
+                        ? 'bg-stokia-primary-600 text-stokia-neutral-50'
                         : 'text-stokia-neutral-600 hover:bg-stokia-neutral-100'
                 }`
             }
