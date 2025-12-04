@@ -5,10 +5,11 @@ export const getProducts = async (params = {}) => {
     page = 0,
     size = 20,
     sort,
-    name,
-    category,
-    minPrice,
-    maxPrice,
+    q,
+    categoryId,
+    lowStock,
+    includeInactive,
+    deleted,
   } = params;
   
   const queryParams = new URLSearchParams({
@@ -22,22 +23,24 @@ export const getProducts = async (params = {}) => {
     queryParams.append('sort', sort);
   }
 
-  if (name) {
-    queryParams.append('name', name);
+  if (q) {
+    queryParams.append('q', q);
   }
 
-  if (category && Array.isArray(category) && category.length > 0) {
-    category.forEach((c) => queryParams.append('category', c));
-  } else if (category) {
-    queryParams.append('category', category);
+  if (categoryId) {
+    queryParams.append('categoryId', categoryId);
   }
 
-  if (minPrice !== undefined && minPrice !== null) {
-    queryParams.append('minPrice', minPrice.toString());
+  if (lowStock !== undefined && lowStock !== null) {
+    queryParams.append('lowStock', lowStock.toString());
   }
 
-  if (maxPrice !== undefined && maxPrice !== null) {
-    queryParams.append('maxPrice', maxPrice.toString());
+  if (includeInactive !== undefined && includeInactive !== null) {
+    queryParams.append('includeInactive', includeInactive.toString());
+  }
+
+  if (deleted !== undefined && deleted !== null) {
+    queryParams.append('deleted', deleted.toString());
   }
 
   const { data } = await apiClient.get(`/api/products?${queryParams.toString()}`);
@@ -60,7 +63,7 @@ export const updateProduct = async (id, productData) => {
 };
 
 export const deleteProduct = async (id) => {
-  const { data } = await apiClient.delete(`/api/products/${id}/permanent`);
+  const { data } = await apiClient.delete(`/api/products/${id}`);
   return data;
 };
 

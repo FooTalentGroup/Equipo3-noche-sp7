@@ -1,46 +1,55 @@
-import { FileUp, Filter, Funnel, Plus, Printer, Search } from 'lucide-react';
+import { FileUp, Funnel, Plus, ArrowDownUp, X, SearchIcon } from 'lucide-react';
 import React from 'react';
 import { Button } from "@/shared/components/ui/button.jsx";
 import { useNavigate } from 'react-router';
+import { useProducts } from '../../context/ProductsContext';
+import { Input } from '@/shared/components/ui/input';
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/shared/components/ui/input-group';
 
-export function ProductsFiltersBar({ searchQuery, onSearchChange, onToggleFilters }) {
+export function ProductsFiltersBar({ onToggleFilters }) {
     const navigate = useNavigate();
+    const { activeFiltersCount, filters, setSearch } = useProducts();
     return (
         <>
             <div className="flex gap-3 items-center mb-4 max-w-[1066px] h-10">
                 <div className="relative flex-1 max-w-2xl">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                    <input
-                        type="text"
-                        aria-label="Buscar productos"
-                        value={searchQuery}
-                        onChange={(e) => onSearchChange(e.target.value)}
-                        placeholder="¿Qué producto estás buscando hoy?"
-                        className="wnput w-full border border-gray-300 rounded-lg pl-11 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
-                    />
+                    <InputGroup>
+                        <InputGroupInput placeholder="¿Qué producto estás buscando hoy?" value={filters.q}
+                            onChange={(e) => setSearch(e.target.value)} />
+                        <InputGroupAddon>
+                            <SearchIcon />
+                        </InputGroupAddon>
+                       {filters.q && <InputGroupButton
+                            onClick={() => setSearch("")}
+                            size="icon-xs"
+                        >
+                            <X></X>
+                        </InputGroupButton>}
+                    </InputGroup>
                 </div>
 
                 <Button
                     onClick={onToggleFilters}
-                    className='bg-white text-neutral-950 hover:bg-gray-400 cursor-pointer shadow-sm'
+                    variant={'secondary'}
                 >
-                    <Funnel className='h-4 w-4 mr-1' />
+                    <Funnel className='h-4 w-4 mr-1' fill={activeFiltersCount > 0 ? "currentColor" : "none"} />
                     Filtrar
                 </Button>
                 <Button
-                    className='bg-white text-neutral-950 hover:bg-gray-400 cursor-pointer shadow-sm'
+                    variant={'secondary'}
                 >
                     <FileUp className='h-4 w-4 mr-1' />
                     Exportar
                 </Button>
                 <Button
-                    className='bg-white text-neutral-950 hover:bg-gray-400 cursor-pointer shadow-sm'
+                    variant={'secondary'}
+                    onClick={() => navigate('/inventory-movements')}
                 >
-                    <Printer className='h-4 w-4 mr-1' />
-                    Imprimir
+                    <ArrowDownUp className='h-4 w-4 mr-1' />
+                    Historial de movimientos
                 </Button>
                 <Button
-                    className='bg-[#436086] text-white cursor-pointer'
+                    variant={'stokia'}
                     onClick={() => navigate('/products/create')}
                 >
                     <Plus className='h-4 w-4 mr-1' />

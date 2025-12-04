@@ -1,147 +1,95 @@
-import React from "react";
-import {
-  Search,
-  UserPlus,
-  User,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-
+import React, { useState } from "react";
+import { OrderTabs } from "../components/OrderTabs";
 import { Button } from "@/shared/components/ui/button";
-import { Input } from "@/shared/components/ui/input";
+import { CustomerSection } from "../components/CustomerSection";
+import { ProductsSection } from "../components/ProductsSection";
 import { ProductCard } from "../components/CardResult";
 import { SalesSummary } from "../components/SalesSummary";
+import { useSalesProductSearch } from "../hooks/useSalesProductSearch";
 
 const SalesPage = () => {
-  const products = [
-    {
-      name: "Bowl de quinoa, pollo y vegetales",
-      stock: 45,
-      price: "12.50",
-      imageUrl: "https://bing.com/th?id=OSK.180ec435a730a8119c04240ef2264415",
-    },
-    {
-      name: "Ensalada César con pollo",
-      stock: 120,
-      price: "11.80",
-      imageUrl: "https://bing.com/th?id=OSK.175d97d4382be4a9b5838df803d3cfff",
-    },
-    {
-      name: "Salmón grillado con vegetales",
-      stock: 3,
-      price: "7.800",
-      imageUrl: "https://bing.com/th?id=OSK.2b915c82d48447ccabe05de758f41869",
-    },
-    {
-      name: "Otro producto 1",
-      stock: 50,
-      price: "10.00",
-      imageUrl: "https://bing.com/th?id=OSK.180ec435a730a8119c04240ef2264415",
-    },
-    {
-      name: "Otro producto 2",
-      stock: 50,
-      price: "10.00",
-      imageUrl: "https://bing.com/th?id=OSK.175d97d4382be4a9b5838df803d3cfff",
-    },
-  ];
+  const [activeTab, setActiveTab] = useState("register");
+
+  const {
+    searchQuery: productQuery,
+    setSearchQuery: setProductQuery,
+    products,
+    loading: loadingProducts,
+  } = useSalesProductSearch();
+
+  const handleClearSearch = () => {
+    setProductQuery("");
+  };
 
   return (
-    <div className="min-h-screen bg-white p-8 w-full flex flex-col">
-      <header className="flex justify-between items-center mb-8">
-      </header>
+    <div className="min-h-screen w-full flex flex-col">
+      <OrderTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-      <div className="flex-grow grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 flex flex-col">
-          <section className="mb-6">
-            <h2 className="text-base font-medium text-gray-700 mb-3">
-              Cliente
-            </h2>
+      <div className="bg-background rounded-2xl shadow-sm p-8 border border-border max-w-[1200px] mx-auto w-full">
+        <CustomerSection />
 
-            <div className="flex flex-wrap flex-col gap-4">
-              <div className="relative max-w-sm w-full sm:w-auto">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Buscar clientes"
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm w-full sm:w-[300px]"
-                />
-              </div>
+        <ProductsSection
+          productQuery={productQuery}
+          setProductQuery={setProductQuery}
+          handleClearSearch={handleClearSearch}
+        />
 
-              <div className="flex space-x-6">
-                <Button
-                  onClick={() => console.log("Consumidor Final")}
-                  className="bg-[#436086] hover:bg-[#384d6b] text-white py-2 px-4 rounded-md flex items-center space-x-2 shadow-sm text-sm"
-                >
-                  <User className="h-4 w-4" />
-                  <span>Consumidor final</span>
-                </Button>
-
-                <Button
-                  onClick={() => console.log("Agregar Nuevo Cliente")}
-                  className="bg-[#436086] hover:bg-[#384d6b] text-white py-2 px-4 rounded-md flex items-center space-x-2 shadow-sm text-sm"
-                >
-                  <UserPlus className="h-4 w-4" />
-                  <span>Nuevo cliente</span>
-                </Button>
-              </div>
-            </div>
-          </section>
-
-          <section className="mb-6">
-            <h2 className="text-base font-medium text-gray-700 mb-3">
-              Buscar producto
-            </h2>
-
-            <div className="relative max-w-sm w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Buscar producto"
-                className="pl-10 border border-gray-300 rounded-md shadow-sm text-sm w-full sm:w-[300px]"
-              />
-            </div>
-          </section>
-
+        <div className="flex-grow grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8 items-start">
           <section className="flex-grow flex flex-col">
-            <h2 className="text-base font-medium text-gray-700 mb-4">
+            <h2 className="text-base font-medium text-foreground mb-4">
               Resultados
             </h2>
 
-            <div className="overflow-y-auto max-h-[450px] bg-gray-50 border border-gray-200 rounded-lg p-4 custom-scroll">
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                {products.map((product, index) => (
-                  <ProductCard
-                    key={index}
-                    name={product.name}
-                    stock={product.stock}
-                    price={product.price}
-                    imageUrl={product.imageUrl}
-                  />
-                ))}
-              </div>
+            <div className="overflow-y-auto max-h-[450px] bg-secondary border border-border rounded-lg p-4 custom-scroll">
+              {loadingProducts && (
+                <div className="text-center p-8 text-muted-foreground">
+                  Cargando productos...
+                </div>
+              )}
+
+              {!loadingProducts && productQuery && products.length === 0 && (
+                <div className="text-center p-8 text-muted-foreground">
+                  No se encontraron productos para "{productQuery}"
+                </div>
+              )}
+
+              {products.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 min-w-[773px]">
+                  {products.map((product) => (
+                    <ProductCard
+                      key={product.id || product.name}
+                      name={product.name}
+                      stock={product.currentStock}
+                      price={product.price}
+                      imageUrl={product.photoUrl}
+                      onSelect={() => handleSelectProduct(product)}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </section>
 
-          <footer className="flex justify-end items-center mt-6 space-x-3">
-            <Button
-              onClick={() => console.log("Anterior")}
-              className="flex items-center space-x-1 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm px-4 py-2 text-sm hover:bg-gray-50"
-            >
-              <ChevronLeft className="h-4 w-4" />
-              <span>Anterior</span>
-            </Button>
-
-            <Button
-              onClick={() => console.log("Siguiente")}
-              className="flex items-center space-x-1 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm px-4 py-2 text-sm hover:bg-gray-50"
-            >
-              <span>Siguiente</span>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </footer>
-        </div>
-
-        <div className="lg:col-span-1">
-          <SalesSummary />
+          <div className="sticky top-8 flex flex-col space-y-4">
+            <h2 className="text-base font-medium text-foreground mb-4">
+              Resumen de compra
+            </h2>
+            <SalesSummary />
+            <div className="flex space-x-4">
+              <Button
+                onClick={() => console.log("Agregar nota")}
+                className="bg-stokia-neutral-50 text-foreground py-2 px-4 rounded-lg flex items-center space-x-2 shadow-sm text-sm min-w-[131px] h-[40px]"
+              >
+                <span>Agregar nota</span>
+              </Button>
+              <Button
+                onClick={() => console.log("Finalizar pedido")}
+                className="bg-stokia-neutral-50 text-foreground py-2 px-4 rounded-lg flex items-center space-x-2 shadow-sm text-sm min-w-[149px] h-[40px]"
+              >
+                <span>Finalizar pedido</span>
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

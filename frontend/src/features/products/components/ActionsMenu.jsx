@@ -1,10 +1,12 @@
 import { Menu, Transition } from "@headlessui/react";
 import { Edit } from "lucide-react";
 import { Fragment, useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { ProductAdjustmentDialog } from "./ProductAdjustmentDialog.jsx";
 
 export default function ActionsMenu({ product, handleEdit = () => { },
     handleDelete = () => { }, }) {
+    const navigate = useNavigate();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [menuPosition, setMenuPosition] = useState('bottom');
     const menuButtonRef = useRef(null);
@@ -75,9 +77,28 @@ export default function ActionsMenu({ product, handleEdit = () => { },
                                             text-[14px] leading-[21px] tracking-[0.07px]
                                     font-normal
                                     text-[#0A0A0A]
+                                    border-b border-[#E5E5E5]
                                     `}
                                     >
                                         Editar
+                                    </button>
+                                )}
+                            </Menu.Item>
+
+                            <Menu.Item>
+                                {({ active }) => (
+                                    <button
+                                        onClick={() => navigate(`/inventory-movements/${product.id}`)}
+                                        className={`
+                                        ${active ? "bg-gray-200" : ""}
+                                        w-full text-left px-4 py-2
+                                        text-[14px] leading-[21px] tracking-[0.07px]
+                                        font-normal 
+                                        text-[#0A0A0A]
+                                        border-b border-[#E5E5E5]
+                                    `}
+                                    >
+                                        Ver historial del producto
                                     </button>
                                 )}
                             </Menu.Item>
@@ -92,22 +113,7 @@ export default function ActionsMenu({ product, handleEdit = () => { },
                                         text-[14px] leading-[21px] tracking-[0.07px]
                                         font-normal 
                                         text-[#0A0A0A]
-                                    `}
-                                    >
-                                        Ver historial del producto
-                                    </button>
-                                )}
-                            </Menu.Item>
-
-                            <Menu.Item>
-                                {({ active }) => (
-                                    <button
-                                        className={`
-                                        ${active ? "bg-gray-200" : ""}
-                                        w-full text-left px-4 py-2
-                                        text-[14px] leading-[21px] tracking-[0.07px]
-                                        font-normal 
-                                        text-[#0A0A0A]
+                                        border-b border-[#E5E5E5]
                                         font-[]
                                     `}
                                     >
@@ -115,25 +121,6 @@ export default function ActionsMenu({ product, handleEdit = () => { },
                                     </button>
                                 )}
                             </Menu.Item>
-
-                            <Menu.Item>
-                                {({ active }) => (
-                                    <button
-                                        onClick={handleDelete}
-                                        className={`
-                                        ${active ? "bg-gray-200" : ""}
-                    w-full text-left px-4 py-2
-                    text-[14px] leading-[21px] tracking-[0.07px]
-            font-normal
-            text-red-600
-            font-[]
-                                    `}
-                                    >
-                                        Borrar
-                                    </button>
-                                )
-                                }
-                            </Menu.Item >
                         </div >
                     </Menu.Items >
                 </Transition >

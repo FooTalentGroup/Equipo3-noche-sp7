@@ -28,7 +28,7 @@ export function FormInputField({
       render={({ field, fieldState }) => (
         <FormItem className="w-full">
           <FormLabel className="w-full flex items-center gap-1">
-            <b>{label}</b>
+            <p className="text-stokia-neutral-950">{label}</p>
             {required && <span className="text-destructive">*</span>}
           </FormLabel>
 

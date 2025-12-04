@@ -56,11 +56,11 @@ const NavLinkItem = ({ to, icon: Icon, arrowIcon: Arrow, label }) => (
         <NavLink
             to={to}
             className={({ isActive, isPending }) =>
-                `flex items-center justify-between p-6  text-base transition-all w-full border-b-2 ${isPending
+                `flex items-center justify-between p-6  text-base transition-all w-full border-b-2 border-stokia-neutral-100 ${isPending
                     ? 'opacity-50'
                     : isActive
-                        ? 'bg-slate-300'
-                        : 'hover:bg-gray-100 text-stokia-neutral-600'
+                        ? 'bg-stokia-primary-600 text-stokia-neutral-50'
+                        : 'text-stokia-neutral-600 hover:bg-stokia-neutral-100'
                 }`
             }
         >

@@ -24,7 +24,7 @@ export const ProductCard = ({ name, stock, price, imageUrl }) => {
             Precio de venta: <span className="font-medium">${price}</span>
           </p>
           <p>
-            Descuento aplicado: <span className="font-medium">%10</span>
+            Descuento aplicado: <span className="font-medium">0%</span>
           </p>
         </div>
 

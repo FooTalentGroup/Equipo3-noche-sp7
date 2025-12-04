@@ -1,13 +1,25 @@
-import { Navigate } from 'react-router-dom';
-import { getAuthToken } from '@/features/auth/utils/authStorage.js';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getAuthToken, removeAuthData } from '@/features/auth/utils/authStorage';
 
-export const AuthRedirect = () => {
+export function AuthRedirect({ children }) {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = getAuthToken();
+
+    if (!token) {
+      removeAuthData();
+      navigate('/login', { replace: true });
+    }
+  }, [navigate]);
+
   const token = getAuthToken();
 
-  if (token) {
-    return <Navigate to="/dashboard" replace />;
+  if (!token) {
+    return null;
   }
 
-  return <Navigate to="/login" replace />;
-};
+  return children;
+}
 

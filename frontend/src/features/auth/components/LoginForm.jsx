@@ -68,9 +68,7 @@ export function LoginForm() {
     <div className="min-h-screen w-full grid grid-cols-1 md:grid-cols-2">
     {/* --- Lado izquierdo --- */}
     <div className="hidden md:block w-full h-full"
-         style={{  
-                  width: "750px",
-                  height: "1024px",
+         style={{ 
                   backgroundImage: `url(${logoImg})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",}}
@@ -82,8 +80,8 @@ export function LoginForm() {
         style={{
             width: "204.5px",
             height: "44px",
-            top: "950px",
-            left: "57px",
+            bottom: "20px",
+            left: "2%",
             opacity: 1,
         }}
       />
@@ -92,7 +90,7 @@ export function LoginForm() {
     
 
     {/* --- Lado derecho ---- */}
-    <div className="flex flex-col items-center justify-center p-8">
+    <div className="flex flex-col items-center justify-center">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}

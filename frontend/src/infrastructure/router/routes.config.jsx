@@ -13,6 +13,8 @@ import ReportsPage from '@/features/repor/pages/ReportsPage.jsx';
 import { productsRoutes } from '@/features/products/routes/products.routes';
 import { authRoutes } from '@/features/auth/routes/auth.routes.jsx';
 import { ProtectedRoute } from '@/infrastructure/router/ProtectedRoute.jsx';
+import { inventoryRoutes } from '@/features/products/routes/inventory.routes.jsx';
+import ProductsReport from '@/features/products/pages/ProductsReport';
 
 const router = createBrowserRouter([
     ...authRoutes,
@@ -26,12 +28,14 @@ const router = createBrowserRouter([
         children: [
             { index: true, element: <HomePage /> },
             ...productsRoutes,
+            ...inventoryRoutes,
             { path: 'customers', element: <CustomersPage /> },
             { path: 'suppliers', element: <SuppliersPage /> },
             { path: 'sales', element: <SalesPage /> },
             { path: 'discounts', element: <DiscountsPage /> },
             { path: 'predictions-IA', element: <PredictionsPage /> },
             { path: 'reports', element: <ReportsPage /> },
+            { path: 'productsrep', element: <ProductsReport /> },
             { path: '*', element: <NotFoundPage /> },
         ],
     },
