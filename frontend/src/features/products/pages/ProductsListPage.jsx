@@ -1,5 +1,4 @@
 import { useLocation, useNavigate } from 'react-router';
-import { useProducts } from '@/features/products/context/ProductsContext';
 import { useProductsFilter } from '@/features/products/hooks/useProductsFilter';
 import { ProductsFiltersBar } from '@/features/products/components/filters/ProductsFiltersBar.jsx';
 import { ProductsFiltersPopup } from '../components/filters/ProductFiltersPopup';
@@ -18,43 +17,12 @@ export default function ProductsListPage() {
     const isEditModalOpen = location.pathname.startsWith('/products/edit/');
     const isModalOpen = isCreateModalOpen || isEditModalOpen;
 
-    const { setSearch, updateFilters, clearFilters: clearContextFilters } = useProducts();
-
     const {
-        searchQuery,
-        setSearchQuery,
-        filters,
-        setFilters,
-        sort,
-        setSort,
         isFiltersOpen,
         openFilters,
         closeFilters,
-        applyFilters,
-        clearFilters,
     } = useProductsFilter();
 
-    const handleSearchChange = (value) => {
-        setSearchQuery(value);
-        setSearch(value);
-    };
-
-    const handleApplyFilters = () => {
-        const backendFilters = {
-            sort,
-            categoryId: filters.category !== 'all' ? filters.category : undefined,
-            lowStock: filters.stockStatus === 'low' ? true : undefined,
-        };
-        
-        updateFilters(backendFilters);
-        applyFilters();
-        closeFilters();
-    };
-
-    const handleClearFilters = () => {
-        clearFilters();
-        clearContextFilters();
-    };
 
     const handleModalChange = (open) => {
         if (!open) {
@@ -63,41 +31,36 @@ export default function ProductsListPage() {
     };
 
     return (
-        <div className="w-full h-full">
-            <ProductsFiltersBar
-                searchQuery={searchQuery}
-                onSearchChange={handleSearchChange}
-                onToggleFilters={openFilters}
-            />
-            <ProductsTable />
+        <section className='flex flex-col gap-6'>
+            <h3 className='text-3xl font-semibold self-start'>Inventario de productos</h3>
+            <div className="w-full h-full">
+                <ProductsFiltersBar
+                    onToggleFilters={openFilters}
+                />
+                <ProductsTable />
 
-            <ProductsFiltersPopup
-                open={isFiltersOpen}
-                onClose={closeFilters}
-                filters={filters}
-                onChange={setFilters}
-                sort={sort}
-                onSortChange={setSort}
-                onApply={handleApplyFilters}
-                onClear={handleClearFilters}
-            />
+                <ProductsFiltersPopup
+                    open={isFiltersOpen}
+                    onClose={closeFilters}
+                />
 
-            <Dialog open={isModalOpen} onOpenChange={handleModalChange}>
-                <DialogTitle className="sr-only">
-                    {isEditModalOpen ? "Editar Producto" : "Registrar Producto"}
-                </DialogTitle>
-                <Description className="sr-only">
-                    {isEditModalOpen
-                        ? "Formulario para editar producto existente"
-                        : "Formulario para registrar un nuevo producto"
-                    }
-                </Description>
-                <DialogContent className="max-h-[90vh] overflow-y-auto p-0 gap-0 max-w-2xl bg-stokia-neutral-50 border-0">
-                    <div className="overflow-y-auto">
-                        <CreateProductComponent />
-                    </div>
-                </DialogContent>
-            </Dialog>
-        </div>
+                <Dialog open={isModalOpen} onOpenChange={handleModalChange}>
+                    <DialogTitle className="sr-only">
+                        {isEditModalOpen ? "Editar Producto" : "Registrar Producto"}
+                    </DialogTitle>
+                    <Description className="sr-only">
+                        {isEditModalOpen
+                            ? "Formulario para editar producto existente"
+                            : "Formulario para registrar un nuevo producto"
+                        }
+                    </Description>
+                    <DialogContent className="max-h-[90vh] overflow-y-auto p-0 gap-0 max-w-2xl bg-stokia-neutral-50 border-0">
+                        <div className="overflow-y-auto">
+                            <CreateProductComponent />
+                        </div>
+                    </DialogContent>
+                </Dialog>
+            </div>
+        </section>
     );
 }

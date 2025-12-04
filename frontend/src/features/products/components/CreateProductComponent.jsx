@@ -125,8 +125,8 @@ export function CreateProductComponent() {
                             Cancelar
                         </Button>
                         {!isEditing ? (
-                            <Button type="submit" variant="stokia">
-                                {isPending ? "Guardando..." : "Aceptar Registro"}
+                            <Button type="submit" variant="stokia" disabled={!form.formState.isValid || isPending}>
+                                {isPending ? "Guardando..." : "Registrar producto"}
                             </Button>
                         ) : (
                             <Button
