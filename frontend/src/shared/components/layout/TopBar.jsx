@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 
 const PAGE_LABELS = [
   { path: "/products", label: "Producto" },
+  { path: "/users", label: "Administrador" },
   { path: "/inventory-movements", label: "Historial de movimientos", parent: "Producto" },
   { path: "/sales", label: "Ventas" },
   { path: "/customers", label: "Clientes" },
@@ -34,7 +35,11 @@ export function TopBar() {
           </div>
         </div>
       ) : (
-        <h2 className="text-lg font-semibold">{pageLabel}</h2>
+        currentPage?.path === '/users' ? (
+          <h2 className="text-[14px] text-[#404040] font-medium">{pageLabel}</h2>
+        ) : (
+          <h2 className="text-lg font-semibold">{pageLabel}</h2>
+        )
       )}
 
       <div className="flex-1" />

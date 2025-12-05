@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router';
-import { Package, ShoppingBag, Percent, UsersRound, Truck, ChartLine, Sparkles, House } from 'lucide-react';
+import { Package, ShoppingBag, Percent, UsersRound, Truck, ChartLine, Sparkles, House,UserRoundIcon } from 'lucide-react';
 import { UserMenu } from './UserMenu';
 import stokialogo from "@/assets/stockia.svg";
 
@@ -46,6 +46,11 @@ const navLinks = [
         to: '/suppliers',
         icon: Truck,
         label: 'Proveedores'
+    },
+    {
+        to: '/users',
+        icon: UserRoundIcon,
+        label: 'Gestión de Usuarios'
     }
 
 
