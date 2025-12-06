@@ -1,5 +1,5 @@
 import React from 'react';
-import {Pencil, Trash} from "lucide-react";
+import { Pencil } from 'lucide-react';
 
 export default function UsersTable({ users = [], onEdit, onDelete, isLoading = false }) {
   if (isLoading) {

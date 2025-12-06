@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AgentMigrationStateService">
+    <option name="pendingSessionIds">
+      <option value="9513e958-bb15-4457-8d52-e95eb68e6c23" />
+    </option>
+    <option name="pendingTurns">
+      <map>
+        <entry key="9513e958-bb15-4457-8d52-e95eb68e6c23">
+          <value>
+            <set>
+              <option value="06606c67-ed18-4f67-b9a9-687f1fb8409e" />
+              <option value="66c8df83-ba5c-4aff-b525-c4f41b5428e4" />
+              <option value="e4847f2a-894d-40c7-a698-5c706c3eab17" />
+              <option value="dc599316-3da2-4c8a-bc34-49a9e42944b0" />
+              <option value="75e2e1f7-3e72-4cea-b10e-7cc192ee8d78" />
+            </set>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <pendingWorkingSetItems>
+      <entry key="9513e958-bb15-4457-8d52-e95eb68e6c23">
+        <set>
+          <option value="file://$PROJECT_DIR$/frontend/src/features/users/services/usersService.js" />
+          <option value="file://$PROJECT_DIR$/frontend/src/features/users/pages/UsersPage.jsx" />
+          <option value="file://$PROJECT_DIR$/frontend/src/features/users/components/UsersTable.jsx" />
+          <option value="file://$PROJECT_DIR$/frontend/src/features/users/components/RegisterUserPopup.jsx" />
+        </set>
+      </entry>
+    </pendingWorkingSetItems>
+  </component>
+</project>
