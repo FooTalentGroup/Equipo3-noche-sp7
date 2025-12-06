@@ -15,6 +15,7 @@ import { authRoutes } from '@/features/auth/routes/auth.routes.jsx';
 import { ProtectedRoute } from '@/infrastructure/router/ProtectedRoute.jsx';
 import { inventoryRoutes } from '@/features/products/routes/inventory.routes.jsx';
 import ProductsReport from '@/features/products/pages/ProductsReport';
+import UsersPage from '@/features/users/pages/UsersPage.jsx';
 
 const router = createBrowserRouter([
     ...authRoutes,
@@ -35,6 +36,7 @@ const router = createBrowserRouter([
             { path: 'discounts', element: <DiscountsPage /> },
             { path: 'predictions-IA', element: <PredictionsPage /> },
             { path: 'reports', element: <ReportsPage /> },
+            { path: 'users', element: <UsersPage /> },
             { path: 'productsrep', element: <ProductsReport /> },
             { path: '*', element: <NotFoundPage /> },
         ],
