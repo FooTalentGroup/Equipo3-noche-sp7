@@ -1,7 +1,10 @@
 package com.stockia.stockia.services;
 
+import com.stockia.stockia.dtos.report.DailyMovementDto;
+import com.stockia.stockia.dtos.report.DailyStockDto;
 import com.stockia.stockia.dtos.report.MonthlyCostDto;
 import com.stockia.stockia.dtos.report.MostSoldProductDto;
+import com.stockia.stockia.enums.MovementType;
 import com.stockia.stockia.repositories.InventoryMovementRepository;
 import com.stockia.stockia.repositories.OrderItemRepository;
 import com.stockia.stockia.services.Impl.ProductReportServiceImpl;
@@ -384,5 +387,215 @@ class ProductReportServiceImplTest {
                         assertThat(result.get(i).month()).isEqualTo(i + 1);
                         assertThat(result.get(i).monthName()).isEqualTo(expectedMonthNames[i]);
                 }
+        }
+
+        // ==================== TESTS PARA REPORTE DE STOCK ====================
+
+        @Test
+        @DisplayName("getStockReport - Should calculate daily stock correctly")
+        void getStockReportShouldCalculateDailyStockCorrectly() {
+                UUID productId = UUID.randomUUID();
+                LocalDate startDate = LocalDate.of(2025, 11, 12);
+                LocalDate endDate = LocalDate.of(2025, 11, 14);
+
+                // Stock inicial: 100 unidades
+                when(inventoryMovementRepository.calculateStockBeforeDate(productId, startDate))
+                                .thenReturn(100);
+
+                // Movimientos:
+                // 12-Nov: OUT 10
+                // 13-Nov: OUT 9
+                // 14-Nov: OUT 12
+                List<DailyMovementDto> movements = List.of(
+                                new DailyMovementDto(LocalDate.of(2025, 11, 12), MovementType.OUT, 10L),
+                                new DailyMovementDto(LocalDate.of(2025, 11, 13), MovementType.OUT, 9L),
+                                new DailyMovementDto(LocalDate.of(2025, 11, 14), MovementType.OUT, 12L));
+
+                when(inventoryMovementRepository.findDailyMovementsByProduct(productId, startDate, endDate))
+                                .thenReturn(movements);
+
+                List<DailyStockDto> result = productReportService.getStockReport(productId, startDate, endDate);
+
+                assertThat(result).hasSize(3);
+
+                // 12-Nov: 100 - 10 = 90
+                DailyStockDto day1 = result.get(0);
+                assertThat(day1.date()).isEqualTo(LocalDate.of(2025, 11, 12));
+                assertThat(day1.initialStock()).isEqualTo(100);
+                assertThat(day1.entries()).isEqualTo(0);
+                assertThat(day1.exits()).isEqualTo(10);
+                assertThat(day1.currentStock()).isEqualTo(90);
+
+                // 13-Nov: 90 - 9 = 81
+                DailyStockDto day2 = result.get(1);
+                assertThat(day2.date()).isEqualTo(LocalDate.of(2025, 11, 13));
+                assertThat(day2.initialStock()).isEqualTo(90);
+                assertThat(day2.exits()).isEqualTo(9);
+                assertThat(day2.currentStock()).isEqualTo(81);
+
+                // 14-Nov: 81 - 12 = 69
+                DailyStockDto day3 = result.get(2);
+                assertThat(day3.date()).isEqualTo(LocalDate.of(2025, 11, 14));
+                assertThat(day3.initialStock()).isEqualTo(81);
+                assertThat(day3.exits()).isEqualTo(12);
+                assertThat(day3.currentStock()).isEqualTo(69);
+        }
+
+        @Test
+        @DisplayName("getStockReport - Should include days without movements")
+        void getStockReportShouldIncludeDaysWithoutMovements() {
+                UUID productId = UUID.randomUUID();
+                LocalDate startDate = LocalDate.of(2025, 11, 12);
+                LocalDate endDate = LocalDate.of(2025, 11, 16);
+
+                when(inventoryMovementRepository.calculateStockBeforeDate(productId, startDate))
+                                .thenReturn(100);
+
+                // Solo movimientos el 12 y 16, días 13-15 sin movimientos
+                List<DailyMovementDto> movements = List.of(
+                                new DailyMovementDto(LocalDate.of(2025, 11, 12), MovementType.OUT, 10L),
+                                new DailyMovementDto(LocalDate.of(2025, 11, 16), MovementType.IN, 20L));
+
+                when(inventoryMovementRepository.findDailyMovementsByProduct(productId, startDate, endDate))
+                                .thenReturn(movements);
+
+                List<DailyStockDto> result = productReportService.getStockReport(productId, startDate, endDate);
+
+                assertThat(result).hasSize(5); // Todos los días del 12 al 16
+
+                // Días 13, 14, 15 sin movimientos
+                for (int day = 13; day <= 15; day++) {
+                        DailyStockDto dayData = result.get(day - 12);
+                        assertThat(dayData.date()).isEqualTo(LocalDate.of(2025, 11, day));
+                        assertThat(dayData.entries()).isZero();
+                        assertThat(dayData.exits()).isZero();
+                        assertThat(dayData.initialStock()).isEqualTo(90); // Stock se mantiene
+                        assertThat(dayData.currentStock()).isEqualTo(90);
+                }
+        }
+
+        @Test
+        @DisplayName("getStockReport - Should calculate variation percentages correctly")
+        void getStockReportShouldCalculateVariationPercentagesCorrectly() {
+                UUID productId = UUID.randomUUID();
+                LocalDate startDate = LocalDate.of(2025, 11, 12);
+                LocalDate endDate = LocalDate.of(2025, 11, 14);
+
+                when(inventoryMovementRepository.calculateStockBeforeDate(productId, startDate))
+                                .thenReturn(100);
+
+                List<DailyMovementDto> movements = List.of(
+                                new DailyMovementDto(LocalDate.of(2025, 11, 12), MovementType.OUT, 10L), // 100->90
+                                new DailyMovementDto(LocalDate.of(2025, 11, 13), MovementType.OUT, 9L), // 90->81
+                                new DailyMovementDto(LocalDate.of(2025, 11, 14), MovementType.IN, 19L)); // 81->100
+
+                when(inventoryMovementRepository.findDailyMovementsByProduct(productId, startDate, endDate))
+                                .thenReturn(movements);
+
+                List<DailyStockDto> result = productReportService.getStockReport(productId, startDate, endDate);
+
+                // Día 1: primer día, variación = 0
+                assertThat(result.get(0).stockVariationPercent()).isEqualByComparingTo("0.0");
+
+                // Día 2: (81 - 90) / 90 * 100 = -10%
+                assertThat(result.get(1).stockVariationPercent()).isEqualByComparingTo("-10.0");
+
+                // Día 3: (100 - 81) / 81 * 100 = +23.5%
+                assertThat(result.get(2).stockVariationPercent()).isEqualByComparingTo("23.5");
+        }
+
+        @Test
+        @DisplayName("getStockReport - Should handle entries and exits on same day")
+        void getStockReportShouldHandleEntriesAndExitsOnSameDay() {
+                UUID productId = UUID.randomUUID();
+                LocalDate startDate = LocalDate.of(2025, 11, 12);
+                LocalDate endDate = LocalDate.of(2025, 11, 12);
+
+                when(inventoryMovementRepository.calculateStockBeforeDate(productId, startDate))
+                                .thenReturn(100);
+
+                // Mismo día: entradas y salidas
+                List<DailyMovementDto> movements = List.of(
+                                new DailyMovementDto(LocalDate.of(2025, 11, 12), MovementType.IN, 50L),
+                                new DailyMovementDto(LocalDate.of(2025, 11, 12), MovementType.OUT, 30L));
+
+                when(inventoryMovementRepository.findDailyMovementsByProduct(productId, startDate, endDate))
+                                .thenReturn(movements);
+
+                List<DailyStockDto> result = productReportService.getStockReport(productId, startDate, endDate);
+
+                assertThat(result).hasSize(1);
+                DailyStockDto day = result.get(0);
+                assertThat(day.initialStock()).isEqualTo(100);
+                assertThat(day.entries()).isEqualTo(50);
+                assertThat(day.exits()).isEqualTo(30);
+                assertThat(day.currentStock()).isEqualTo(120); // 100 + 50 - 30
+        }
+
+        @Test
+        @DisplayName("getStockReport - Should handle period without any movements")
+        void getStockReportShouldHandlePeriodWithoutAnyMovements() {
+                UUID productId = UUID.randomUUID();
+                LocalDate startDate = LocalDate.of(2025, 11, 12);
+                LocalDate endDate = LocalDate.of(2025, 11, 14);
+
+                when(inventoryMovementRepository.calculateStockBeforeDate(productId, startDate))
+                                .thenReturn(50);
+
+                when(inventoryMovementRepository.findDailyMovementsByProduct(productId, startDate, endDate))
+                                .thenReturn(List.of()); // Sin movimientos
+
+                List<DailyStockDto> result = productReportService.getStockReport(productId, startDate, endDate);
+
+                assertThat(result).hasSize(3);
+
+                // Todos los días deben tener stock constante
+                result.forEach(day -> {
+                        assertThat(day.initialStock()).isEqualTo(50);
+                        assertThat(day.entries()).isZero();
+                        assertThat(day.exits()).isZero();
+                        assertThat(day.currentStock()).isEqualTo(50);
+                        assertThat(day.stockVariationPercent()).isEqualByComparingTo("0.0");
+                });
+        }
+
+        @Test
+        @DisplayName("getStockReport - Should calculate initial stock from history")
+        void getStockReportShouldCalculateInitialStockFromHistory() {
+                UUID productId = UUID.randomUUID();
+                LocalDate startDate = LocalDate.of(2025, 11, 12);
+                LocalDate endDate = LocalDate.of(2025, 11, 12);
+
+                // Verificar que se calcula stock antes del período
+                when(inventoryMovementRepository.calculateStockBeforeDate(productId, startDate))
+                                .thenReturn(75);
+
+                when(inventoryMovementRepository.findDailyMovementsByProduct(productId, startDate, endDate))
+                                .thenReturn(List.of());
+
+                List<DailyStockDto> result = productReportService.getStockReport(productId, startDate, endDate);
+
+                verify(inventoryMovementRepository).calculateStockBeforeDate(eq(productId), eq(startDate));
+                assertThat(result.get(0).initialStock()).isEqualTo(75);
+        }
+
+        @Test
+        @DisplayName("getStockReport - Should call repository methods with correct parameters")
+        void getStockReportShouldCallRepositoryMethodsWithCorrectParameters() {
+                UUID productId = UUID.randomUUID();
+                LocalDate startDate = LocalDate.of(2025, 11, 12);
+                LocalDate endDate = LocalDate.of(2025, 11, 14);
+
+                when(inventoryMovementRepository.calculateStockBeforeDate(productId, startDate))
+                                .thenReturn(100);
+                when(inventoryMovementRepository.findDailyMovementsByProduct(productId, startDate, endDate))
+                                .thenReturn(List.of());
+
+                productReportService.getStockReport(productId, startDate, endDate);
+
+                verify(inventoryMovementRepository, times(1))
+                                .calculateStockBeforeDate(eq(productId), eq(startDate));
+                verify(inventoryMovementRepository, times(1))
+                                .findDailyMovementsByProduct(eq(productId), eq(startDate), eq(endDate));
         }
 }

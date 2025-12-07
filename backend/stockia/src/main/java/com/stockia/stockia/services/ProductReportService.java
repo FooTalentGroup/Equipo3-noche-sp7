@@ -1,5 +1,6 @@
 package com.stockia.stockia.services;
 
+import com.stockia.stockia.dtos.report.DailyStockDto;
 import com.stockia.stockia.dtos.report.MonthlyCostDto;
 import com.stockia.stockia.dtos.report.MostSoldProductDto;
 import org.springframework.data.domain.Page;
@@ -40,4 +41,15 @@ public interface ProductReportService {
      * @return Lista de datos mensuales con costos y ventas
      */
     List<MonthlyCostDto> getCostReport(Integer year, UUID categoryId, UUID productId);
+
+    /**
+     * Obtiene el reporte de stock diario de un producto específico.
+     * Retorna evolución del stock día a día en un período determinado.
+     * 
+     * @param productId ID del producto a consultar
+     * @param startDate Fecha de inicio del período
+     * @param endDate   Fecha de fin del período
+     * @return Lista de datos diarios con movimientos de stock
+     */
+    List<DailyStockDto> getStockReport(UUID productId, LocalDate startDate, LocalDate endDate);
 }

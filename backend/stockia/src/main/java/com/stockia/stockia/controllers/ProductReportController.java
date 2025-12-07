@@ -1,6 +1,7 @@
 package com.stockia.stockia.controllers;
 
 import com.stockia.stockia.documentation.report.ProductReportSwaggerDoc.*;
+import com.stockia.stockia.dtos.report.DailyStockDto;
 import com.stockia.stockia.dtos.report.MonthlyCostDto;
 import com.stockia.stockia.dtos.report.MostSoldProductDto;
 import com.stockia.stockia.services.ProductReportService;
@@ -27,9 +28,9 @@ import java.util.UUID;
  * basados en las ventas y el inventario de productos.
  *
  * Endpoints disponibles:
- * - GET [/api/reports/products/most-sold] → Productos más vendidos en un
- * periodo
+ * - GET [/api/reports/products/most-sold] → Productos más vendidos
  * - GET [/api/reports/products/costs] → Reporte de costos mensuales
+ * - GET [/api/reports/products/stock] → Reporte de stock diario
  */
 @ProductReportControllerTag
 @RestController
@@ -40,14 +41,6 @@ public class ProductReportController {
 
         private final ProductReportService productReportService;
 
-        /**
-         * Obtiene un reporte de los productos más vendidos en un periodo específico.
-         *
-         * @param startDate Fecha de inicio del periodo (formato: yyyy-MM-dd)
-         * @param endDate   Fecha de fin del periodo (formato: yyyy-MM-dd)
-         * @param pageable  Configuración de paginación
-         * @return Respuesta con página de productos más vendidos
-         */
         @GetMapping("/most-sold")
         @GetMostSoldProductsDoc
         @PreAuthorize("hasRole('ADMIN')")
@@ -77,14 +70,6 @@ public class ProductReportController {
                                 ApiResult.success("Reporte generado exitosamente", report));
         }
 
-        /**
-         * Obtiene el reporte de costos mensuales de productos.
-         *
-         * @param year       Año a consultar (requerido)
-         * @param categoryId ID de categoría para filtrar (opcional)
-         * @param productId  ID de producto específico para filtrar (opcional)
-         * @return Respuesta con datos mensuales de costos
-         */
         @GetMapping("/costs")
         @GetCostReportDoc
         @PreAuthorize("hasRole('ADMIN')")
@@ -104,5 +89,33 @@ public class ProductReportController {
 
                 return ResponseEntity.ok(
                                 ApiResult.success("Reporte de costos generado exitosamente", report));
+        }
+
+        @GetMapping("/stock")
+        @GetStockReportDoc
+        @PreAuthorize("hasRole('ADMIN')")
+        public ResponseEntity<ApiResult<List<DailyStockDto>>> getStockReport(
+                        @ProductIdParam @RequestParam @NotNull(message = "El producto es obligatorio") UUID productId,
+
+                        @StartDateParam @RequestParam @NotNull(message = "La fecha de inicio es obligatoria") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+
+                        @EndDateParam @RequestParam @NotNull(message = "La fecha de fin es obligatoria") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
+                log.info("GET /api/reports/products/stock - productId: {}, startDate: {}, endDate: {}",
+                                productId, startDate, endDate);
+
+                if (endDate.isBefore(startDate)) {
+                        log.warn("Invalid date range: endDate {} is before startDate {}", endDate, startDate);
+                        return ResponseEntity.badRequest()
+                                        .body(ApiResult.error(
+                                                        "La fecha de fin debe ser mayor o igual a la fecha de inicio"));
+                }
+
+                List<DailyStockDto> report = productReportService.getStockReport(productId, startDate, endDate);
+
+                log.info("Successfully generated stock report with {} days", report.size());
+
+                return ResponseEntity.ok(
+                                ApiResult.success("Reporte de stock generado exitosamente", report));
         }
 }

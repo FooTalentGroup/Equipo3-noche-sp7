@@ -114,4 +114,35 @@ public class ProductReportSwaggerDoc {
         @Parameter(name = "productId", description = "ID de producto para filtrar (opcional)", example = "123e4567-e89b-12d3-a456-426614174000")
         public @interface ProductIdParam {
         }
+
+        @Target({ ElementType.METHOD })
+        @Retention(RetentionPolicy.RUNTIME)
+        @Operation(summary = "Obtener reporte de stock diario", description = """
+                        Genera un reporte de evolución del stock de un producto día a día en un período determinado.
+
+                        **Características:**
+                        - Requiere ID de producto específico
+                        - Filtra por rango de fechas (inicio y fin inclusive)
+                        - Retorna datos para TODOS los días del período
+                        - Calcula stock inicial del período desde histórico de movimientos
+                        - Incluye días sin movimientos
+
+                        **Información retornada por día:**
+                        - Fecha del día
+                        - Stock al inicio del día
+                        - Entradas (movimientos IN) del día
+                        - Salidas (movimientos OUT) del día
+                        - Stock al final del día (calculado)
+                        - Variación porcentual de stock vs día anterior
+
+                        **Requiere autenticación y rol ADMIN.**
+                        """, security = @SecurityRequirement(name = "bearer-key"))
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "Reporte generado exitosamente", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = com.stockia.stockia.utils.ApiResult.class))),
+                        @ApiResponse(responseCode = "400", description = "Fechas inválidas o producto no encontrado", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),
+                        @ApiResponse(responseCode = "401", description = "No autenticado - Token JWT faltante o inválido", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),
+                        @ApiResponse(responseCode = "403", description = "Acceso denegado - Solo rol ADMIN puede acceder", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
+        })
+        public @interface GetStockReportDoc {
+        }
 }
