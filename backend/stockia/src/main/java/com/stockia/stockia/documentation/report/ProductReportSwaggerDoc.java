@@ -64,4 +64,54 @@ public class ProductReportSwaggerDoc {
         @Parameter(name = "endDate", description = "Fecha de fin del periodo (formato: YYYY-MM-DD)", example = "2025-12-07", required = true)
         public @interface EndDateParam {
         }
+
+        @Target({ ElementType.METHOD })
+        @Retention(RetentionPolicy.RUNTIME)
+        @Operation(summary = "Obtener reporte de costos mensuales", description = """
+                        Genera un reporte de costos y ventas agrupado por mes para un año específico.
+
+                        **Características:**
+                        - Filtra por año (requerido)
+                        - Permite filtrar por categoría (opcional)
+                        - Permite filtrar por producto específico (opcional)
+                        - Retorna datos de los 12 meses del año
+                        - Solo incluye órdenes confirmadas o entregadas
+                        - Calcula costos promedio de compra desde movimientos de inventario
+
+                        **Información retornada por mes:**
+                        - Nombre del mes
+                        - Unidades vendidas
+                        - Precio unitario promedio de venta
+                        - Costo unitario promedio de compra
+                        - Costo total promedio (cantidad × costo unitario)
+                        - Variación porcentual de costos respecto al mes anterior
+
+                        **Requiere autenticación y rol ADMIN.**
+                        """, security = @SecurityRequirement(name = "bearer-key"))
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "Reporte generado exitosamente", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = com.stockia.stockia.utils.ApiResult.class))),
+                        @ApiResponse(responseCode = "400", description = "Año inválido o fuera de rango", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),
+                        @ApiResponse(responseCode = "401", description = "No autenticado - Token JWT faltante o inválido", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),
+                        @ApiResponse(responseCode = "403", description = "Acceso denegado - Solo rol ADMIN puede acceder", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
+        })
+        public @interface GetCostReportDoc {
+        }
+
+        @Target({ ElementType.PARAMETER })
+        @Retention(RetentionPolicy.RUNTIME)
+        @Parameter(name = "year", description = "Año para el reporte (formato: YYYY)", example = "2025", required = true)
+        public @interface YearParam {
+        }
+
+        @Target({ ElementType.PARAMETER })
+        @Retention(RetentionPolicy.RUNTIME)
+        @Parameter(name = "categoryId", description = "ID de categoría para filtrar (opcional)", example = "123e4567-e89b-12d3-a456-426614174000")
+        public @interface CategoryIdParam {
+        }
+
+        @Target({ ElementType.PARAMETER })
+        @Retention(RetentionPolicy.RUNTIME)
+        @Parameter(name = "productId", description = "ID de producto para filtrar (opcional)", example = "123e4567-e89b-12d3-a456-426614174000")
+        public @interface ProductIdParam {
+        }
 }

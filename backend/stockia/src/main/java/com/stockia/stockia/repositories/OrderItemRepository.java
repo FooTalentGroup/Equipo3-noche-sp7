@@ -1,5 +1,6 @@
 package com.stockia.stockia.repositories;
 
+import com.stockia.stockia.dtos.report.MonthlyCostDto;
 import com.stockia.stockia.dtos.report.MostSoldProductDto;
 import com.stockia.stockia.models.OrderItem;
 import org.springframework.data.domain.Page;
@@ -82,4 +83,35 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
             Pageable pageable);
+
+    /**
+     * Obtiene datos mensuales de ventas para el reporte de costos.
+     * Retorna unidades vendidas y precio promedio por mes.
+     * 
+     * @param year       Año a consultar
+     * @param categoryId ID de categoría (opcional, puede ser null)
+     * @param productId  ID de producto (opcional, puede ser null)
+     * @return Lista de datos mensuales ordenados por mes
+     */
+    @Query("""
+            SELECT new com.stockia.stockia.dtos.report.MonthlyCostDto(
+                MONTH(o.orderDate),
+                SUM(oi.quantity),
+                AVG(oi.unitPrice)
+            )
+            FROM OrderItem oi
+            JOIN oi.order o
+            JOIN oi.product p
+            WHERE YEAR(o.orderDate) = :year
+                AND (o.status = com.stockia.stockia.enums.OrderStatus.CONFIRMED
+                     OR o.status = com.stockia.stockia.enums.OrderStatus.DELIVERED)
+                AND (:categoryId IS NULL OR p.category.id = :categoryId)
+                AND (:productId IS NULL OR p.id = :productId)
+            GROUP BY MONTH(o.orderDate)
+            ORDER BY MONTH(o.orderDate)
+            """)
+    List<MonthlyCostDto> findMonthlySalesData(
+            @Param("year") Integer year,
+            @Param("categoryId") UUID categoryId,
+            @Param("productId") UUID productId);
 }

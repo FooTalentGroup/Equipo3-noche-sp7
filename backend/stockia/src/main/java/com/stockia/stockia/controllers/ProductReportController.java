@@ -1,6 +1,7 @@
 package com.stockia.stockia.controllers;
 
 import com.stockia.stockia.documentation.report.ProductReportSwaggerDoc.*;
+import com.stockia.stockia.dtos.report.MonthlyCostDto;
 import com.stockia.stockia.dtos.report.MostSoldProductDto;
 import com.stockia.stockia.services.ProductReportService;
 import com.stockia.stockia.utils.ApiResult;
@@ -16,6 +17,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Controlador REST para generación de reportes de productos.
@@ -26,6 +29,7 @@ import java.time.LocalDate;
  * Endpoints disponibles:
  * - GET [/api/reports/products/most-sold] → Productos más vendidos en un
  * periodo
+ * - GET [/api/reports/products/costs] → Reporte de costos mensuales
  */
 @ProductReportControllerTag
 @RestController
@@ -71,5 +75,34 @@ public class ProductReportController {
 
                 return ResponseEntity.ok(
                                 ApiResult.success("Reporte generado exitosamente", report));
+        }
+
+        /**
+         * Obtiene el reporte de costos mensuales de productos.
+         *
+         * @param year       Año a consultar (requerido)
+         * @param categoryId ID de categoría para filtrar (opcional)
+         * @param productId  ID de producto específico para filtrar (opcional)
+         * @return Respuesta con datos mensuales de costos
+         */
+        @GetMapping("/costs")
+        @GetCostReportDoc
+        @PreAuthorize("hasRole('ADMIN')")
+        public ResponseEntity<ApiResult<List<MonthlyCostDto>>> getCostReport(
+                        @YearParam @RequestParam @NotNull(message = "El año es obligatorio") Integer year,
+
+                        @CategoryIdParam @RequestParam(required = false) UUID categoryId,
+
+                        @ProductIdParam @RequestParam(required = false) UUID productId) {
+
+                log.info("GET /api/reports/products/costs - year: {}, categoryId: {}, productId: {}",
+                                year, categoryId, productId);
+
+                List<MonthlyCostDto> report = productReportService.getCostReport(year, categoryId, productId);
+
+                log.info("Successfully generated cost report with 12 months for year {}", year);
+
+                return ResponseEntity.ok(
+                                ApiResult.success("Reporte de costos generado exitosamente", report));
         }
 }
