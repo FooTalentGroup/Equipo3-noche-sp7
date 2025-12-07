@@ -14,6 +14,18 @@
               <option value="e4847f2a-894d-40c7-a698-5c706c3eab17" />
               <option value="dc599316-3da2-4c8a-bc34-49a9e42944b0" />
               <option value="75e2e1f7-3e72-4cea-b10e-7cc192ee8d78" />
+              <option value="4998724e-1879-4046-bcd6-24601c9319cf" />
+              <option value="ff128624-47ef-4b7e-9e97-aa1542604daa" />
+              <option value="8cf8a722-49e0-4fa8-aaa7-bb80735f6d3b" />
+              <option value="08fdd837-1220-4be3-99da-edc33b3677ea" />
+              <option value="3ec6b60a-f766-4a3f-84a0-7352b3b7b3c0" />
+              <option value="3098b377-2e67-468e-b8b5-14d5a53f17af" />
+              <option value="4c6478de-7d30-4919-960a-59952807246e" />
+              <option value="5cd36ad4-7fef-45fe-a24b-ae81628b080f" />
+              <option value="d89e5738-c45b-4e74-800b-932f27f09d30" />
+              <option value="9ee56824-9ad9-42ed-9b11-f279ded1252a" />
+              <option value="82a0fed3-af8b-4824-89b8-72db54ef794b" />
+              <option value="2b40d3ce-3c57-4351-9f9f-3871a25cbfb8" />
             </set>
           </value>
         </entry>
@@ -26,6 +38,15 @@
           <option value="file://$PROJECT_DIR$/frontend/src/features/users/pages/UsersPage.jsx" />
           <option value="file://$PROJECT_DIR$/frontend/src/features/users/components/UsersTable.jsx" />
           <option value="file://$PROJECT_DIR$/frontend/src/features/users/components/RegisterUserPopup.jsx" />
+          <option value="file://$PROJECT_DIR$/frontend/src/features/notifications/services/notificationsService.js" />
+          <option value="file://$PROJECT_DIR$/frontend/src/features/notifications/hooks/useNotifications.js" />
+          <option value="file://$PROJECT_DIR$/frontend/src/features/notifications/components/NotificationsDropdown.jsx" />
+          <option value="file://$PROJECT_DIR$/frontend/src/shared/components/layout/TopBar.jsx" />
+          <option value="file://$PROJECT_DIR$/frontend/vite.config.js" />
+          <option value="file://$PROJECT_DIR$/frontend/src/index.css" />
+          <option value="file://$PROJECT_DIR$/frontend/src/main.jsx" />
+          <option value="file://$PROJECT_DIR$/frontend/src/features/notifications/client/notificationsClient.js" />
+          <option value="file://$PROJECT_DIR$/frontend/src/features/notifications/services/notificationSocket.js" />
         </set>
       </entry>
     </pendingWorkingSetItems>

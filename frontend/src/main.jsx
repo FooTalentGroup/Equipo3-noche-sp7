@@ -1,3 +1,9 @@
+// Ensure `global` exists in browser runtime for libs that expect a Node global (e.g. sockjs-client)
+if (typeof global === 'undefined') {
+  // eslint-disable-next-line no-undef
+  window.global = window;
+}
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';

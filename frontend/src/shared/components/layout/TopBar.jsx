@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Bell } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { useLocation } from "react-router-dom";
+import NotificationsDropdown from '@/features/notifications/components/NotificationsDropdown';
+import { useNotifications } from '@/features/notifications/hooks/useNotifications';
 
 const PAGE_LABELS = [
   { path: "/products", label: "Producto" },
@@ -18,6 +20,27 @@ const PAGE_LABELS = [
 
 export function TopBar() {
   const { pathname } = useLocation();
+  const [showNotif, setShowNotif] = useState(false);
+  const btnRef = useRef(null);
+  const { unreadCount, fetchUnread, fetchList } = useNotifications();
+
+  const toggleNotif = () => {
+    setShowNotif(s => !s);
+    // refresh unread when opening
+    if (!showNotif) fetchUnread();
+  };
+
+  // Refresh notifications on every navigation (pathname change)
+  useEffect(() => {
+    // fetch unread count and list when the route changes
+    try {
+      fetchUnread();
+      // refresh the list too so dropdown is up-to-date after navigation
+      fetchList();
+    } catch (e) {
+      // ignore
+    }
+  }, [pathname, fetchUnread, fetchList]);
 
   const currentPage = PAGE_LABELS.find((p) => pathname.startsWith(p.path));
   const pageLabel = currentPage?.label || pathname.split("/").filter(Boolean)[0] || "Panel";
@@ -44,10 +67,23 @@ export function TopBar() {
 
       <div className="flex-1" />
 
-      <Button variant="outline">
-        <Bell className="h-5 w-5" />
-        <span className="hidden sm:inline">Notificaciones</span>
-      </Button>
+      <div className="relative">
+        <Button variant="outline" onClick={toggleNotif} ref={btnRef}>
+          <div className="relative">
+            <Bell className="h-5 w-5" />
+            {unreadCount > 0 && (
+              <span className="h-5 absolute -top-3 -left-12 inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold leading-none text-white bg-red-600 rounded-tl-sm rounded-tr-sm rounded-bl-sm">{unreadCount}</span>
+            )}
+          </div>
+          <span className="hidden sm:inline">Notificaciones</span>
+        </Button>
+
+        {showNotif && (
+          <div className="absolute right-0 mt-2 z-50">
+            <NotificationsDropdown className="shadow-lg" />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
