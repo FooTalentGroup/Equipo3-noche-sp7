@@ -1,24 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import UsersTable from '../components/UsersTable';
-import RegisterUserPopup from '../components/RegisterUserPopup';
+ import RegisterUserPopup from '../components/RegisterUserPopup';
 import { Plus } from 'lucide-react';
+import { getUsers, deleteUser, createUser, updateUser } from '../services/usersService';
+import { ConfirmDialog } from '@/features/products/components/ConfirmDialog';
 
 const UsersPage = () => {
-  const [users, setUsers] = useState([
-    { id: '1', nombre: 'Juan Pérez', email: 'juan.perez@example.com', role: 'ADMINISTRADOR' },
-    { id: '2', nombre: 'María López', email: 'maria.lopez@example.com', role: 'ENCARGADO' },
-    { id: '3', nombre: 'Carlos García', email: 'carlos.garcia@example.com', role: 'ENCARGADO' },
-  ]);
+  const [users, setUsers] = useState([]);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [toDeleteId, setToDeleteId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   const handleEdit = (user) => {
-    setEditingUser(user);
+    // pass raw fields into editingUser to prefill the form with role code and accountStatus
+    setEditingUser({ id: user.id, nombre: user.nombre, email: user.email, role: user.__raw?.roleCode ?? user.role, accountStatus: user.__raw?.accountStatus ?? 'ACTIVE' });
     setIsRegisterOpen(true);
   };
 
   const handleDelete = (id) => {
-    setUsers((prev) => prev.filter((u) => u.id !== id));
+    // open confirm dialog
+    setToDeleteId(id);
+    setIsConfirmOpen(true);
   };
 
   const openRegister = () => {
@@ -32,16 +38,73 @@ const UsersPage = () => {
   };
 
   const handleSave = async (payload) => {
-    // payload: { id?, nombre, email, password, role }
-    if (payload.id) {
-      // update
-      setUsers(prev => prev.map(u => u.id === payload.id ? { ...u, nombre: payload.nombre, email: payload.email, role: payload.role } : u));
-    } else {
-      // create (generate id)
-      const newUser = { id: String(Date.now()), nombre: payload.nombre, email: payload.email, role: payload.role };
-      setUsers(prev => [newUser, ...prev]);
+    try {
+      if (payload.id) {
+        await updateUser(payload.id, { name: payload.nombre, email: payload.email, role: payload.role, accountStatus: payload.accountStatus, ...(payload.password ? { password: payload.password } : {}) });
+      } else {
+        await createUser({ name: payload.nombre, email: payload.email, role: payload.role, accountStatus: payload.accountStatus, password: payload.password });
+      }
+      await fetchUsers();
+      closeRegister();
+    } catch (err) {
+      console.error('Error saving user', err);
+      throw err;
     }
-    closeRegister();
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!toDeleteId) return;
+    try {
+      await deleteUser(toDeleteId);
+      setUsers(prev => prev.filter(u => u.id !== toDeleteId));
+    } catch (err) {
+      console.error('Error deleting user', err);
+    } finally {
+      setIsConfirmOpen(false);
+      setToDeleteId(null);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers(currentPage);
+  }, [currentPage]);
+
+  const roleMap = {
+    ADMIN: 'ADMINISTRADOR',
+    MANAGER: 'ENCARGADO',
+    USER: 'USUARIO',
+  };
+
+  const fetchUsers = async (page = 0) => {
+    setIsLoading(true);
+    try {
+      const res = await getUsers({ page, size: 20 });
+      const content = res.users || [];
+
+      // Filter out deleted or non-active accounts
+      const filtered = content.filter(u => !u.deleted && (!u.accountStatus || u.accountStatus === 'ACTIVE'));
+
+      const mapped = filtered.map(u => ({
+        id: u.id ?? u._id ?? u.userId,
+        nombre: u.name ?? u.nombre ?? '',
+        email: u.email ?? '',
+        // UI label
+        role: roleMap[u.role] ?? (u.role ?? 'ENCARGADO'),
+        // keep raw fields for edit payload
+        __raw: {
+          roleCode: u.role,
+          accountStatus: u.accountStatus,
+        }
+      }));
+
+      setUsers(mapped);
+      setTotalPages(res.totalPages ?? 1);
+      setCurrentPage(res.pageNumber ?? res.pageNumber ?? page);
+    } catch (err) {
+      console.error('Error fetching users', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -60,9 +123,27 @@ const UsersPage = () => {
             Historial de usuarios</button>
       </div>
 
-      <UsersTable users={users} onEdit={handleEdit} onDelete={handleDelete} />
+      <UsersTable users={users} onEdit={handleEdit} onDelete={handleDelete} isLoading={isLoading} />
+
+      {totalPages > 1 && (
+        <div className="mt-4 flex items-center gap-2">
+          <button disabled={currentPage === 0} onClick={() => setCurrentPage(p => Math.max(0, p - 1))} className="px-3 py-1 bg-gray-100 rounded">Anterior</button>
+          <div className="text-sm">Página {currentPage + 1} / {totalPages}</div>
+          <button disabled={currentPage >= totalPages - 1} onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))} className="px-3 py-1 bg-gray-100 rounded">Siguiente</button>
+        </div>
+      )}
 
       <RegisterUserPopup open={isRegisterOpen} onClose={closeRegister} onSave={handleSave} initialData={editingUser} />
+
+      <ConfirmDialog
+        isOpen={isConfirmOpen}
+        handleOpenChange={setIsConfirmOpen}
+        dialogTitle="¿Desea eliminar el usuario?"
+        dialogDescription="Esta acción eliminará al usuario de forma permanente."
+        cancelTitle="Cancelar"
+        acceptTitle="Sí, eliminar"
+        onAccept={handleConfirmDelete}
+      />
     </div>
   );
 };
