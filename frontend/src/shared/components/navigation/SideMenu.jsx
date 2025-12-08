@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router';
-import { Package, ShoppingBag, Percent, UsersRound, Truck, ChartLine, Sparkles, House,UserRoundIcon } from 'lucide-react';
+import { Package, ShoppingBag, Percent, UsersRound, Truck, ChartLine, Sparkles, House, UserRoundIcon } from 'lucide-react';
 import { UserMenu } from './UserMenu';
 import stokialogo from "@/assets/stockia.svg";
 
@@ -7,7 +7,7 @@ import stokialogo from "@/assets/stockia.svg";
 
 const navLinks = [
     {
-        to: '/home',
+        to: '/',
         icon: House,
         label: 'Inicio'
     },
