@@ -3,12 +3,14 @@ import { getUsername } from "@/features/auth/utils/authStorage";
 import { BookKey, Package, ShoppingBag, Users } from "lucide-react";
 import LinkCard from "../component/LinkCard";
 import InfoCard from "../component/InfoCard";
+import { useHomeStatistics } from "../home/useHomeStatistics";
 
 const HomePage = () => {
+  const { products, sales, pendingSales } = useHomeStatistics();
   return (
     <section>
       <h1 className="text-4xl font-bold">{`¡Hola, ${getUsername()}! Te damos la bienvenida`}</h1>
-      <div className="grid grid-cols-4 auto-rows-fr gap-6 mt-8">
+      <div className="grid grid-cols-1 lg:grid-cols-4 lg:auto-rows-fr gap-6 mt-8">
         <LinkCard
           href="/customers"
           image={dashboardLinkCard}
@@ -40,21 +42,21 @@ const HomePage = () => {
         <InfoCard
           title="Productos"
           badgeIcon={Package}
-          quantity={10}
+          quantity={products}
           description="Productos con poco stock"
-          className="col-span-1"
+          className="col-span-2 lg:col-span-1"
         />
         <InfoCard
           title="Ventas"
           badgeIcon={ShoppingBag}
-          quantity={80}
+          quantity={sales}
           description="Ventas registradas esta semana"
-          className="col-span-1"
+          className="col-span-2 lg:col-span-1"
         />
         <InfoCard
           title="Clientes"
           badgeIcon={Users}
-          quantity={6}
+          quantity={pendingSales}
           description="Clientes están siendo atendidos"
           className="col-span-2"
         />
