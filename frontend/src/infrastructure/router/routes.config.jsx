@@ -2,8 +2,6 @@ import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import App from '@/App.jsx';
 import NotFoundPage from '@/infrastructure/pages/NotFoundPage.jsx';
-import HomePage from '@/features/dashboard/pages/HomePage.jsx';
-import ProductsPage from '@/features/products/pages/ProductsListPage.jsx';
 import CustomersPage from '@/features/customers/pages/CustomersPage.jsx';
 import SuppliersPage from '@/features/suppliers/pages/SuppliersPage.jsx';
 import SalesPage from '@/features/sales/pages/SalesPage';
@@ -16,6 +14,7 @@ import { ProtectedRoute } from '@/infrastructure/router/ProtectedRoute.jsx';
 import { inventoryRoutes } from '@/features/products/routes/inventory.routes.jsx';
 import ProductsReport from '@/features/products/pages/ProductsReport';
 import UsersPage from '@/features/users/pages/UsersPage.jsx';
+import HomePage from '@/features/home/pages/HomePage';
 
 const router = createBrowserRouter([
     ...authRoutes,
