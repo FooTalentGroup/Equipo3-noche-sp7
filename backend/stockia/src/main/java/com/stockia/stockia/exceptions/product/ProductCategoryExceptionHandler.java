@@ -23,8 +23,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice(assignableTypes = {
-    com.stockia.stockia.controllers.ProductController.class,
-    com.stockia.stockia.controllers.CategoryController.class
+        com.stockia.stockia.controllers.ProductController.class,
+        com.stockia.stockia.controllers.CategoryController.class,
+        com.stockia.stockia.controllers.ProductReportController.class
 })
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Slf4j
@@ -50,15 +51,15 @@ public class ProductCategoryExceptionHandler {
                 "VALIDATION_ERROR",
                 "Falló la validación de los campos",
                 details,
-                request.getRequestURI()
-        );
+                request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     /**
      * Maneja errores de formato JSON y tipos de datos incorrectos.
-     * Intenta detectar TODOS los errores de formato en el JSON para reportarlos juntos.
+     * Intenta detectar TODOS los errores de formato en el JSON para reportarlos
+     * juntos.
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
@@ -94,7 +95,7 @@ public class ProductCategoryExceptionHandler {
                     details.add(String.format("%s: Debe ser un UUID válido, se recibió '%s'", fieldName, value));
                 } else {
                     details.add(String.format("%s: Se esperaba %s, se recibió '%s'",
-                        fieldName, getSpanishTypeName(targetType), value));
+                            fieldName, getSpanishTypeName(targetType), value));
                 }
 
             } else if (cause instanceof MismatchedInputException) {
@@ -104,7 +105,7 @@ public class ProductCategoryExceptionHandler {
                 String targetType = mie.getTargetType().getSimpleName();
 
                 details.add(String.format("%s: Campo requerido o formato incorrecto (tipo esperado: %s)",
-                    fieldName, getSpanishTypeName(targetType)));
+                        fieldName, getSpanishTypeName(targetType)));
 
             } else {
                 message = "JSON mal formado";
@@ -117,8 +118,7 @@ public class ProductCategoryExceptionHandler {
                 "INVALID_REQUEST_BODY",
                 message,
                 details,
-                request.getRequestURI()
-        );
+                request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
@@ -181,7 +181,8 @@ public class ProductCategoryExceptionHandler {
             if (jsonNode.has("currentStock") && !jsonNode.get("currentStock").isNull()) {
                 String currentStockValue = jsonNode.get("currentStock").asText();
                 if (!isValidInteger(currentStockValue)) {
-                    errors.add(String.format("currentStock: Se esperaba número entero, se recibió '%s'", currentStockValue));
+                    errors.add(String.format("currentStock: Se esperaba número entero, se recibió '%s'",
+                            currentStockValue));
                 }
             }
 
@@ -272,8 +273,7 @@ public class ProductCategoryExceptionHandler {
                 "INVALID_PARAMETER",
                 message,
                 details,
-                request.getRequestURI()
-        );
+                request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
@@ -338,8 +338,7 @@ public class ProductCategoryExceptionHandler {
                 "DATA_INTEGRITY_VIOLATION",
                 message,
                 details,
-                request.getRequestURI()
-        );
+                request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
@@ -354,8 +353,7 @@ public class ProductCategoryExceptionHandler {
                 "CONFLICT",
                 ex.getMessage(),
                 Collections.singletonList("El nombre del producto debe ser único"),
-                request.getRequestURI()
-        );
+                request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
@@ -370,8 +368,7 @@ public class ProductCategoryExceptionHandler {
                 "NOT_FOUND",
                 ex.getMessage(),
                 Collections.singletonList("El producto especificado no existe en el sistema"),
-                request.getRequestURI()
-        );
+                request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
@@ -386,8 +383,7 @@ public class ProductCategoryExceptionHandler {
                 "NOT_FOUND",
                 ex.getMessage(),
                 Collections.singletonList("La categoría especificada no existe en el sistema"),
-                request.getRequestURI()
-        );
+                request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
@@ -402,8 +398,7 @@ public class ProductCategoryExceptionHandler {
                 "CONFLICT",
                 ex.getMessage(),
                 Collections.singletonList("El nombre de la categoría debe ser único"),
-                request.getRequestURI()
-        );
+                request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
@@ -418,8 +413,7 @@ public class ProductCategoryExceptionHandler {
                 "BAD_REQUEST",
                 "Solicitud inválida",
                 Collections.singletonList(ex.getMessage()),
-                request.getRequestURI()
-        );
+                request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
@@ -434,8 +428,7 @@ public class ProductCategoryExceptionHandler {
                 "CONFLICT",
                 ex.getMessage(),
                 Collections.singletonList("La operación no puede completarse en el estado actual del recurso"),
-                request.getRequestURI()
-        );
+                request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
@@ -450,10 +443,8 @@ public class ProductCategoryExceptionHandler {
                 "INTERNAL_SERVER_ERROR",
                 "Error interno del servidor",
                 Collections.singletonList("Se produjo un error inesperado. Por favor, contacte al administrador."),
-                request.getRequestURI()
-        );
+                request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 }
-

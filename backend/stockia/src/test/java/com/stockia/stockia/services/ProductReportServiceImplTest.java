@@ -5,8 +5,10 @@ import com.stockia.stockia.dtos.report.DailyStockDto;
 import com.stockia.stockia.dtos.report.MonthlyCostDto;
 import com.stockia.stockia.dtos.report.MostSoldProductDto;
 import com.stockia.stockia.enums.MovementType;
+import com.stockia.stockia.models.Product;
 import com.stockia.stockia.repositories.InventoryMovementRepository;
 import com.stockia.stockia.repositories.OrderItemRepository;
+import com.stockia.stockia.repositories.ProductRepository;
 import com.stockia.stockia.services.Impl.ProductReportServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -47,6 +49,12 @@ class ProductReportServiceImplTest {
         @Mock
         private InventoryMovementRepository inventoryMovementRepository;
 
+        @Mock
+        private ProductRepository productRepository;
+
+        @Mock
+        private com.stockia.stockia.repositories.ProductCategoryRepository categoryRepository;
+
         @InjectMocks
         private ProductReportServiceImpl productReportService;
 
@@ -65,17 +73,17 @@ class ProductReportServiceImplTest {
                 mockProducts = List.of(
                                 new MostSoldProductDto(
                                                 UUID.randomUUID(),
-                                                "Laptop HP Pavilion",
-                                                "Electrónica",
-                                                new BigDecimal("1250.00"),
+                                                "helado de vainilla",
+                                                "Postres",
+                                                new BigDecimal("10.00"),
                                                 50L,
                                                 25L,
                                                 25),
                                 new MostSoldProductDto(
                                                 UUID.randomUUID(),
-                                                "Mouse Logitech",
-                                                "Accesorios",
-                                                new BigDecimal("35.00"),
+                                                "helado de chocolate",
+                                                "Postres",
+                                                new BigDecimal("10.00"),
                                                 100L,
                                                 45L,
                                                 55));
@@ -124,8 +132,8 @@ class ProductReportServiceImplTest {
                 assertThat(result.getContent()).hasSize(2);
                 assertThat(result.getTotalElements()).isEqualTo(2);
                 assertThat(result.getNumber()).isEqualTo(0);
-                assertThat(result.getContent().get(0).productName()).isEqualTo("Laptop HP Pavilion");
-                assertThat(result.getContent().get(1).productName()).isEqualTo("Mouse Logitech");
+                assertThat(result.getContent().get(0).productName()).isEqualTo("helado de vainilla");
+                assertThat(result.getContent().get(1).productName()).isEqualTo("helado de chocolate");
         }
 
         @Test
@@ -194,6 +202,8 @@ class ProductReportServiceImplTest {
         @DisplayName("getCostReport - Should return 12 months with correct calculations")
         void getCostReportShouldReturn12MonthsWithCorrectCalculations() {
                 Integer year = 2025;
+                String categoryName = null;
+                String productName = null;
                 UUID categoryId = null;
                 UUID productId = null;
 
@@ -216,7 +226,7 @@ class ProductReportServiceImplTest {
                                         .thenReturn(null);
                 }
 
-                List<MonthlyCostDto> result = productReportService.getCostReport(year, categoryId, productId);
+                List<MonthlyCostDto> result = productReportService.getCostReport(year, categoryName, productName);
 
                 assertThat(result).hasSize(12);
 
@@ -275,7 +285,7 @@ class ProductReportServiceImplTest {
                                         .thenReturn(null);
                 }
 
-                List<MonthlyCostDto> result = productReportService.getCostReport(year, categoryId, productId);
+                List<MonthlyCostDto> result = productReportService.getCostReport(year, null, null);
 
                 MonthlyCostDto january = result.get(0);
                 assertThat(january.totalAvgCost()).isEqualByComparingTo("5000.00"); // 100 * 50
@@ -307,7 +317,7 @@ class ProductReportServiceImplTest {
                                         .thenReturn(null);
                 }
 
-                List<MonthlyCostDto> result = productReportService.getCostReport(year, categoryId, productId);
+                List<MonthlyCostDto> result = productReportService.getCostReport(year, null, null);
 
                 verify(orderItemRepository).findMonthlySalesData(eq(year), eq(categoryId), eq(productId));
                 verify(inventoryMovementRepository, times(12)).findAverageCostByMonth(
@@ -330,7 +340,7 @@ class ProductReportServiceImplTest {
                                         .thenReturn(null);
                 }
 
-                List<MonthlyCostDto> result = productReportService.getCostReport(year, categoryId, productId);
+                List<MonthlyCostDto> result = productReportService.getCostReport(year, null, null);
 
                 verify(orderItemRepository).findMonthlySalesData(eq(year), eq(categoryId), eq(productId));
                 verify(inventoryMovementRepository, times(12)).findAverageCostByMonth(
@@ -353,7 +363,7 @@ class ProductReportServiceImplTest {
                                         .thenReturn(null);
                 }
 
-                List<MonthlyCostDto> result = productReportService.getCostReport(year, categoryId, productId);
+                List<MonthlyCostDto> result = productReportService.getCostReport(year, null, null);
 
                 assertThat(result).hasSize(12);
                 result.forEach(month -> {
@@ -394,9 +404,17 @@ class ProductReportServiceImplTest {
         @Test
         @DisplayName("getStockReport - Should calculate daily stock correctly")
         void getStockReportShouldCalculateDailyStockCorrectly() {
+                String productName = "helado de vainilla";
                 UUID productId = UUID.randomUUID();
                 LocalDate startDate = LocalDate.of(2025, 11, 12);
                 LocalDate endDate = LocalDate.of(2025, 11, 14);
+
+                // Mock producto
+                Product product = new Product();
+                product.setId(productId);
+                product.setName(productName);
+                when(productRepository.findByNameContainingIgnoreCaseAndDeletedFalse(productName))
+                                .thenReturn(List.of(product));
 
                 // Stock inicial: 100 unidades
                 when(inventoryMovementRepository.calculateStockBeforeDate(productId, startDate))
@@ -414,7 +432,7 @@ class ProductReportServiceImplTest {
                 when(inventoryMovementRepository.findDailyMovementsByProduct(productId, startDate, endDate))
                                 .thenReturn(movements);
 
-                List<DailyStockDto> result = productReportService.getStockReport(productId, startDate, endDate);
+                List<DailyStockDto> result = productReportService.getStockReport(productName, startDate, endDate);
 
                 assertThat(result).hasSize(3);
 
@@ -444,9 +462,16 @@ class ProductReportServiceImplTest {
         @Test
         @DisplayName("getStockReport - Should include days without movements")
         void getStockReportShouldIncludeDaysWithoutMovements() {
+                String productName = "helado de vainilla";
                 UUID productId = UUID.randomUUID();
                 LocalDate startDate = LocalDate.of(2025, 11, 12);
                 LocalDate endDate = LocalDate.of(2025, 11, 16);
+
+                Product product = new Product();
+                product.setId(productId);
+                product.setName(productName);
+                when(productRepository.findByNameContainingIgnoreCaseAndDeletedFalse(productName))
+                                .thenReturn(List.of(product));
 
                 when(inventoryMovementRepository.calculateStockBeforeDate(productId, startDate))
                                 .thenReturn(100);
@@ -459,7 +484,7 @@ class ProductReportServiceImplTest {
                 when(inventoryMovementRepository.findDailyMovementsByProduct(productId, startDate, endDate))
                                 .thenReturn(movements);
 
-                List<DailyStockDto> result = productReportService.getStockReport(productId, startDate, endDate);
+                List<DailyStockDto> result = productReportService.getStockReport(productName, startDate, endDate);
 
                 assertThat(result).hasSize(5); // Todos los días del 12 al 16
 
@@ -477,9 +502,16 @@ class ProductReportServiceImplTest {
         @Test
         @DisplayName("getStockReport - Should calculate variation percentages correctly")
         void getStockReportShouldCalculateVariationPercentagesCorrectly() {
+                String productName = "helado de vainilla";
                 UUID productId = UUID.randomUUID();
                 LocalDate startDate = LocalDate.of(2025, 11, 12);
                 LocalDate endDate = LocalDate.of(2025, 11, 14);
+
+                Product product = new Product();
+                product.setId(productId);
+                product.setName(productName);
+                when(productRepository.findByNameContainingIgnoreCaseAndDeletedFalse(productName))
+                                .thenReturn(List.of(product));
 
                 when(inventoryMovementRepository.calculateStockBeforeDate(productId, startDate))
                                 .thenReturn(100);
@@ -492,7 +524,7 @@ class ProductReportServiceImplTest {
                 when(inventoryMovementRepository.findDailyMovementsByProduct(productId, startDate, endDate))
                                 .thenReturn(movements);
 
-                List<DailyStockDto> result = productReportService.getStockReport(productId, startDate, endDate);
+                List<DailyStockDto> result = productReportService.getStockReport(productName, startDate, endDate);
 
                 // Día 1: primer día, variación = 0
                 assertThat(result.get(0).stockVariationPercent()).isEqualByComparingTo("0.0");
@@ -507,9 +539,16 @@ class ProductReportServiceImplTest {
         @Test
         @DisplayName("getStockReport - Should handle entries and exits on same day")
         void getStockReportShouldHandleEntriesAndExitsOnSameDay() {
+                String productName = "helado de vainilla";
                 UUID productId = UUID.randomUUID();
                 LocalDate startDate = LocalDate.of(2025, 11, 12);
                 LocalDate endDate = LocalDate.of(2025, 11, 12);
+
+                Product product = new Product();
+                product.setId(productId);
+                product.setName(productName);
+                when(productRepository.findByNameContainingIgnoreCaseAndDeletedFalse(productName))
+                                .thenReturn(List.of(product));
 
                 when(inventoryMovementRepository.calculateStockBeforeDate(productId, startDate))
                                 .thenReturn(100);
@@ -522,7 +561,7 @@ class ProductReportServiceImplTest {
                 when(inventoryMovementRepository.findDailyMovementsByProduct(productId, startDate, endDate))
                                 .thenReturn(movements);
 
-                List<DailyStockDto> result = productReportService.getStockReport(productId, startDate, endDate);
+                List<DailyStockDto> result = productReportService.getStockReport(productName, startDate, endDate);
 
                 assertThat(result).hasSize(1);
                 DailyStockDto day = result.get(0);
@@ -535,9 +574,16 @@ class ProductReportServiceImplTest {
         @Test
         @DisplayName("getStockReport - Should handle period without any movements")
         void getStockReportShouldHandlePeriodWithoutAnyMovements() {
+                String productName = "helado de vainilla";
                 UUID productId = UUID.randomUUID();
                 LocalDate startDate = LocalDate.of(2025, 11, 12);
                 LocalDate endDate = LocalDate.of(2025, 11, 14);
+
+                Product product = new Product();
+                product.setId(productId);
+                product.setName(productName);
+                when(productRepository.findByNameContainingIgnoreCaseAndDeletedFalse(productName))
+                                .thenReturn(List.of(product));
 
                 when(inventoryMovementRepository.calculateStockBeforeDate(productId, startDate))
                                 .thenReturn(50);
@@ -545,7 +591,7 @@ class ProductReportServiceImplTest {
                 when(inventoryMovementRepository.findDailyMovementsByProduct(productId, startDate, endDate))
                                 .thenReturn(List.of()); // Sin movimientos
 
-                List<DailyStockDto> result = productReportService.getStockReport(productId, startDate, endDate);
+                List<DailyStockDto> result = productReportService.getStockReport(productName, startDate, endDate);
 
                 assertThat(result).hasSize(3);
 
@@ -562,9 +608,16 @@ class ProductReportServiceImplTest {
         @Test
         @DisplayName("getStockReport - Should calculate initial stock from history")
         void getStockReportShouldCalculateInitialStockFromHistory() {
+                String productName = "helado de vainilla";
                 UUID productId = UUID.randomUUID();
                 LocalDate startDate = LocalDate.of(2025, 11, 12);
                 LocalDate endDate = LocalDate.of(2025, 11, 12);
+
+                Product product = new Product();
+                product.setId(productId);
+                product.setName(productName);
+                when(productRepository.findByNameContainingIgnoreCaseAndDeletedFalse(productName))
+                                .thenReturn(List.of(product));
 
                 // Verificar que se calcula stock antes del período
                 when(inventoryMovementRepository.calculateStockBeforeDate(productId, startDate))
@@ -573,7 +626,7 @@ class ProductReportServiceImplTest {
                 when(inventoryMovementRepository.findDailyMovementsByProduct(productId, startDate, endDate))
                                 .thenReturn(List.of());
 
-                List<DailyStockDto> result = productReportService.getStockReport(productId, startDate, endDate);
+                List<DailyStockDto> result = productReportService.getStockReport(productName, startDate, endDate);
 
                 verify(inventoryMovementRepository).calculateStockBeforeDate(eq(productId), eq(startDate));
                 assertThat(result.get(0).initialStock()).isEqualTo(75);
@@ -582,16 +635,23 @@ class ProductReportServiceImplTest {
         @Test
         @DisplayName("getStockReport - Should call repository methods with correct parameters")
         void getStockReportShouldCallRepositoryMethodsWithCorrectParameters() {
+                String productName = "helado de vainilla";
                 UUID productId = UUID.randomUUID();
                 LocalDate startDate = LocalDate.of(2025, 11, 12);
                 LocalDate endDate = LocalDate.of(2025, 11, 14);
+
+                Product product = new Product();
+                product.setId(productId);
+                product.setName(productName);
+                when(productRepository.findByNameContainingIgnoreCaseAndDeletedFalse(productName))
+                                .thenReturn(List.of(product));
 
                 when(inventoryMovementRepository.calculateStockBeforeDate(productId, startDate))
                                 .thenReturn(100);
                 when(inventoryMovementRepository.findDailyMovementsByProduct(productId, startDate, endDate))
                                 .thenReturn(List.of());
 
-                productReportService.getStockReport(productId, startDate, endDate);
+                productReportService.getStockReport(productName, startDate, endDate);
 
                 verify(inventoryMovementRepository, times(1))
                                 .calculateStockBeforeDate(eq(productId), eq(startDate));

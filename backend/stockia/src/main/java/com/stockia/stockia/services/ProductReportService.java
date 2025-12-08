@@ -35,21 +35,21 @@ public interface ProductReportService {
      * Obtiene el reporte de costos mensuales de productos.
      * Retorna datos agregados por mes para un año específico.
      * 
-     * @param year       Año a consultar
-     * @param categoryId ID de categoría (opcional)
-     * @param productId  ID de producto (opcional)
+     * @param year         Año a consultar
+     * @param categoryName Nombre de categoría (opcional)
+     * @param productName  Nombre de producto (opcional)
      * @return Lista de datos mensuales con costos y ventas
      */
-    List<MonthlyCostDto> getCostReport(Integer year, UUID categoryId, UUID productId);
+    List<MonthlyCostDto> getCostReport(Integer year, String categoryName, String productName);
 
     /**
      * Obtiene el reporte de stock diario de un producto específico.
      * Retorna evolución del stock día a día en un período determinado.
      * 
-     * @param productId ID del producto a consultar
-     * @param startDate Fecha de inicio del período
-     * @param endDate   Fecha de fin del período
+     * @param productName Nombre del producto a consultar
+     * @param startDate   Fecha de inicio del período
+     * @param endDate     Fecha de fin del período
      * @return Lista de datos diarios con movimientos de stock
      */
-    List<DailyStockDto> getStockReport(UUID productId, LocalDate startDate, LocalDate endDate);
+    List<DailyStockDto> getStockReport(String productName, LocalDate startDate, LocalDate endDate);
 }

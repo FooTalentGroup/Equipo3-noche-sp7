@@ -27,6 +27,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.stockia.stockia.exceptions.product.ProductNotFoundException;
+import com.stockia.stockia.models.Product;
+import com.stockia.stockia.repositories.ProductCategoryRepository;
+import com.stockia.stockia.repositories.ProductRepository;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -35,6 +40,8 @@ public class ProductReportServiceImpl implements ProductReportService {
 
         private final OrderItemRepository orderItemRepository;
         private final InventoryMovementRepository inventoryMovementRepository;
+        private final ProductRepository productRepository;
+        private final ProductCategoryRepository categoryRepository;
 
         @Override
         public Page<MostSoldProductDto> getMostSoldProducts(LocalDate startDate, LocalDate endDate, Pageable pageable) {
@@ -43,26 +50,45 @@ public class ProductReportServiceImpl implements ProductReportService {
                 LocalDateTime startDateTime = startDate.atStartOfDay();
                 LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
 
-                log.debug("Querying most sold products between {} and {}", startDateTime, endDateTime);
-
                 Page<MostSoldProductDto> result = orderItemRepository.findMostSoldProducts(
                                 startDateTime,
                                 endDateTime,
                                 pageable);
 
-                log.info("Found {} products in report, total elements: {}, page: {}/{}",
-                                result.getNumberOfElements(),
-                                result.getTotalElements(),
-                                result.getNumber() + 1,
-                                result.getTotalPages());
+                log.info("Found {} most sold products for the period", result.getTotalElements());
 
                 return result;
         }
 
         @Override
-        public List<MonthlyCostDto> getCostReport(Integer year, UUID categoryId, UUID productId) {
-                log.info("Generating cost report for year: {}, categoryId: {}, productId: {}",
-                                year, categoryId, productId);
+        public List<MonthlyCostDto> getCostReport(Integer year, String categoryName, String productName) {
+                log.info("Generating cost report for year: {}, categoryName: {}, productName: {}",
+                                year, categoryName, productName);
+
+                UUID categoryId = null;
+                UUID productId = null;
+
+                // Buscar categoría por nombre si se proporciona
+                if (categoryName != null && !categoryName.isBlank()) {
+                        com.stockia.stockia.models.ProductCategory category = categoryRepository
+                                        .findByNameIgnoreCase(categoryName)
+                                        .orElseThrow(() -> new com.stockia.stockia.exceptions.category.CategoryNotFoundException(
+                                                        "Categoría no encontrada con nombre: " + categoryName));
+                        categoryId = category.getId();
+                        log.debug("Found category with ID: {} for name: {}", categoryId, categoryName);
+                }
+
+                // Buscar producto por nombre si se proporciona
+                if (productName != null && !productName.isBlank()) {
+                        Product product = productRepository.findByNameContainingIgnoreCaseAndDeletedFalse(productName)
+                                        .stream()
+                                        .filter(p -> p.getName().equalsIgnoreCase(productName))
+                                        .findFirst()
+                                        .orElseThrow(() -> new ProductNotFoundException(
+                                                        "Producto no encontrado con nombre: " + productName));
+                        productId = product.getId();
+                        log.debug("Found product with ID: {} for name: {}", productId, productName);
+                }
 
                 List<MonthlyCostDto> salesData = orderItemRepository.findMonthlySalesData(year, categoryId, productId);
 
@@ -106,9 +132,20 @@ public class ProductReportServiceImpl implements ProductReportService {
         }
 
         @Override
-        public List<DailyStockDto> getStockReport(UUID productId, LocalDate startDate, LocalDate endDate) {
-                log.info("Generating stock report for productId: {}, period: {} to {}",
-                                productId, startDate, endDate);
+        public List<DailyStockDto> getStockReport(String productName, LocalDate startDate, LocalDate endDate) {
+                log.info("Generating stock report for productName: {},  period: {} to {}",
+                                productName, startDate, endDate);
+
+                // Buscar producto por nombre (búsqueda case-insensitive exacta)
+                Product product = productRepository.findByNameContainingIgnoreCaseAndDeletedFalse(productName)
+                                .stream()
+                                .filter(p -> p.getName().equalsIgnoreCase(productName))
+                                .findFirst()
+                                .orElseThrow(() -> new ProductNotFoundException(
+                                                "Producto no encontrado con nombre: " + productName));
+
+                UUID productId = product.getId();
+                log.debug("Found product with ID: {} for name: {}", productId, productName);
 
                 // Calcular stock al inicio del período
                 Integer initialStock = inventoryMovementRepository.calculateStockBeforeDate(productId, startDate);
@@ -118,19 +155,19 @@ public class ProductReportServiceImpl implements ProductReportService {
                 List<DailyMovementDto> movements = inventoryMovementRepository
                                 .findDailyMovementsByProduct(productId, startDate, endDate);
 
-                // Crear mapa: fecha -> Map(tipo -> cantidad)
+                // Agrupar movimientos por fecha y tipo
                 Map<LocalDate, Map<MovementType, Long>> movementsByDate = new HashMap<>();
                 for (DailyMovementDto movement : movements) {
-                        movementsByDate
-                                        .computeIfAbsent(movement.date(), k -> new HashMap<>())
+                        movementsByDate.computeIfAbsent(movement.date(), k -> new HashMap<>())
                                         .put(movement.movementType(), movement.quantity());
                 }
 
                 List<DailyStockDto> result = new ArrayList<>();
-                Integer currentStock = initialStock;
+                Integer currentStock = initialStock != null ? initialStock : 0;
                 Integer previousDayStock = null;
-
                 LocalDate currentDate = startDate;
+
+                // Generar registro para cada día del período
                 while (!currentDate.isAfter(endDate)) {
                         Map<MovementType, Long> dayMovements = movementsByDate.getOrDefault(currentDate,
                                         new HashMap<>());

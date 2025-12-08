@@ -1,11 +1,13 @@
 package com.stockia.stockia.controllers;
 
+import com.stockia.stockia.documentation.product.ProductIdParam;
 import com.stockia.stockia.documentation.report.ProductReportSwaggerDoc.*;
 import com.stockia.stockia.dtos.report.DailyStockDto;
 import com.stockia.stockia.dtos.report.MonthlyCostDto;
 import com.stockia.stockia.dtos.report.MostSoldProductDto;
 import com.stockia.stockia.services.ProductReportService;
 import com.stockia.stockia.utils.ApiResult;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -76,14 +78,14 @@ public class ProductReportController {
         public ResponseEntity<ApiResult<List<MonthlyCostDto>>> getCostReport(
                         @YearParam @RequestParam @NotNull(message = "El año es obligatorio") Integer year,
 
-                        @CategoryIdParam @RequestParam(required = false) UUID categoryId,
+                        @CategoryNameParam @RequestParam(required = false) String categoryName,
 
-                        @ProductIdParam @RequestParam(required = false) UUID productId) {
+                        @ProductNameParam @RequestParam(required = false) String productName) {
 
-                log.info("GET /api/reports/products/costs - year: {}, categoryId: {}, productId: {}",
-                                year, categoryId, productId);
+                log.info("GET /api/reports/products/costs - year: {}, categoryName: {}, productName: {}",
+                                year, categoryName, productName);
 
-                List<MonthlyCostDto> report = productReportService.getCostReport(year, categoryId, productId);
+                List<MonthlyCostDto> report = productReportService.getCostReport(year, categoryName, productName);
 
                 log.info("Successfully generated cost report with 12 months for year {}", year);
 
@@ -95,14 +97,14 @@ public class ProductReportController {
         @GetStockReportDoc
         @PreAuthorize("hasRole('ADMIN')")
         public ResponseEntity<ApiResult<List<DailyStockDto>>> getStockReport(
-                        @ProductIdParam @RequestParam @NotNull(message = "El producto es obligatorio") UUID productId,
+                        @ProductNameParam @RequestParam @NotBlank(message = "El nombre del producto es obligatorio") String productName,
 
                         @StartDateParam @RequestParam @NotNull(message = "La fecha de inicio es obligatoria") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
 
                         @EndDateParam @RequestParam @NotNull(message = "La fecha de fin es obligatoria") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-                log.info("GET /api/reports/products/stock - productId: {}, startDate: {}, endDate: {}",
-                                productId, startDate, endDate);
+                log.info("GET /api/reports/products/stock - productName: {}, startDate: {}, endDate: {}",
+                                productName, startDate, endDate);
 
                 if (endDate.isBefore(startDate)) {
                         log.warn("Invalid date range: endDate {} is before startDate {}", endDate, startDate);
@@ -111,7 +113,7 @@ public class ProductReportController {
                                                         "La fecha de fin debe ser mayor o igual a la fecha de inicio"));
                 }
 
-                List<DailyStockDto> report = productReportService.getStockReport(productId, startDate, endDate);
+                List<DailyStockDto> report = productReportService.getStockReport(productName, startDate, endDate);
 
                 log.info("Successfully generated stock report with {} days", report.size());
 

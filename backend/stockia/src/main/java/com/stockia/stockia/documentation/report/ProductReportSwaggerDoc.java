@@ -111,8 +111,18 @@ public class ProductReportSwaggerDoc {
 
         @Target({ ElementType.PARAMETER })
         @Retention(RetentionPolicy.RUNTIME)
-        @Parameter(name = "productId", description = "ID de producto para filtrar (opcional)", example = "123e4567-e89b-12d3-a456-426614174000")
-        public @interface ProductIdParam {
+        @Parameter(name = "categoryName", description = "Nombre de la categoría para filtrar (opcional). No distingue mayúsculas/minúsculas.", example = "Postres")
+        public @interface CategoryNameParam {
+        }
+
+        @Target({ ElementType.PARAMETER })
+        @Retention(RetentionPolicy.RUNTIME)
+        @Parameter(name = "productName", description = """
+                        Nombre del producto a consultar.
+
+                        El nombre debe coincidir exactamente con el nombre del producto en el sistema (no distingue mayúsculas/minúsculas).
+                        """, required = true, example = "Laptop HP", schema = @Schema(type = "string"))
+        public @interface ProductNameParam {
         }
 
         @Target({ ElementType.METHOD })
