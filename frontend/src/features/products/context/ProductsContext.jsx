@@ -74,11 +74,6 @@ export function ProductsProvider({ children }) {
   };
 
   useEffect(() => {
-    fetchProducts(0, 20, filters);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
     }
