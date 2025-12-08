@@ -1,14 +1,43 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { connectNotificationsSocket, disconnectNotificationsSocket, subscribeUnread, setUnread, decrementUnread } from '@/features/notifications/services/notificationSocket';
 import { getNotifications, getUnreadCount, markNotificationRead, markAllNotificationsRead } from '../services/notificationsService';
+import notificationIcon from '@/assets/stockia.svg';
 
 export function useNotifications() {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCountLocal] = useState(0);
   const [loading, setLoading] = useState(false);
+  const permissionRequestedRef = useRef(false);
 
   const handleIncoming = useCallback((notification) => {
     setNotifications(prev => [notification, ...prev]);
+    // show desktop notification
+    try {
+      if ('Notification' in window) {
+        if (Notification.permission === 'granted') {
+          const title = notification.referenceName ? `${notification.type || 'Notificación'} — ${notification.referenceName}` : (notification.type || 'Notificación');
+          const n = new Notification(title, {
+            body: notification.message ?? '',
+            icon: notificationIcon,
+          });
+          n.onclick = () => {
+            try { window.focus(); } catch (e) { /* ignore */ }
+            try { window.location.href = '/products'; } catch (e) { /* ignore */ }
+          };
+        } else if (Notification.permission === 'default' && !permissionRequestedRef.current) {
+          // Request permission once (avoid spamming)
+          Notification.requestPermission().then((perm) => {
+            permissionRequestedRef.current = true;
+            if (perm === 'granted') {
+              const title = notification.referenceName ? `${notification.type || 'Notificación'} — ${notification.referenceName}` : (notification.type || 'Notificación');
+              new Notification(title, { body: notification.message ?? '', icon: notificationIcon });
+            }
+          }).catch(() => { /* ignore */ });
+        }
+      }
+    } catch (err) {
+      console.error('Failed to show desktop notification', err);
+    }
     // real-time increment will be emitted by socket; local increment happens via subscription
   }, []);
 
