@@ -10,6 +10,7 @@ const HomePage = () => {
       <h1 className="text-4xl font-bold">{`¡Hola, ${getUsername()}! Te damos la bienvenida`}</h1>
       <div className="grid grid-cols-4 auto-rows-fr gap-6 mt-8">
         <LinkCard
+          href="/customers"
           image={dashboardLinkCard}
           title="Registrar cliente"
           icon={BookKey}
