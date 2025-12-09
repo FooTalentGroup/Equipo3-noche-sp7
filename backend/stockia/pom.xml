@@ -134,6 +134,11 @@
 			<artifactId>layout</artifactId>
 			<version>7.2.5</version>
 		</dependency>
+		<dependency>
+			<groupId>com.sendgrid</groupId>
+			<artifactId>sendgrid-java</artifactId>
+			<version>4.10.3</version>
+		</dependency>
 		<!-- WebSocket Support for Real-Time Notifications -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
