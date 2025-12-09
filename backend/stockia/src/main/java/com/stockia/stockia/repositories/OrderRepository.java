@@ -250,4 +250,19 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
                         @Param("startDate") LocalDateTime startDate,
                         @Param("endDate") LocalDateTime endDate,
                         @Param("productName") String productName);
+
+        @Query("""
+                    SELECT COUNT(o)
+                    FROM Order o
+                    WHERE o.status IN ('CONFIRMED', 'DELIVERED')
+                      AND o.createdAt >= :startOfWeek
+        """)
+        long countWeeklySales(@Param("startOfWeek") LocalDateTime startOfWeek);
+
+        @Query("""
+            SELECT COUNT(DISTINCT o.customer.id)
+            FROM Order o
+            WHERE o.status IN ('PENDING', 'CONFIRMED')
+        """)
+        long countClientsBeingServed();
 }

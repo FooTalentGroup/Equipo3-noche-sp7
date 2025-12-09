@@ -86,6 +86,18 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
         @Query("SELECT p FROM Product p WHERE p.currentStock <= p.minStock AND p.deleted = false")
         List<Product> findLowStockProducts();
 
+        @Query("SELECT COUNT(p) FROM Product p WHERE p.currentStock <= p.minStock AND p.deleted = false")
+        long countLowStockProducts();
+
+        @Query("""
+            SELECT COUNT(p)
+            FROM Product p
+            WHERE p.deleted = false
+              AND p.isAvailable = true
+              AND p.currentStock > 0
+        """)
+        long countActiveProducts();
+
         /**
          * Busca productos por disponibilidad excluyendo eliminados.
          *
