@@ -3,6 +3,7 @@ package com.stockia.stockia.documentation.report;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -19,7 +20,7 @@ public class ProductReportSwaggerDoc {
 
         @Target({ ElementType.TYPE })
         @Retention(RetentionPolicy.RUNTIME)
-        @Tag(name = "Reportes de Productos", description = "Endpoints para generar reportes y estadísticas de productos")
+        @Tag(name = "09 - Reportes de Productos", description = "Endpoints para generar reportes y estadísticas de productos")
         public @interface ProductReportControllerTag {
         }
 
@@ -45,10 +46,60 @@ public class ProductReportSwaggerDoc {
                         **Requiere autenticación y rol ADMIN.**
                         """, security = @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "bearer-key"))
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "Reporte generado exitosamente", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = com.stockia.stockia.utils.ApiResult.class))),
-                        @ApiResponse(responseCode = "400", description = "Parámetros de fecha inválidos (fecha fin menor que fecha inicio)", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),
-                        @ApiResponse(responseCode = "401", description = "No autenticado - Token JWT faltante o inválido", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),
-                        @ApiResponse(responseCode = "403", description = "Acceso denegado - Solo rol ADMIN puede acceder", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
+                        @ApiResponse(responseCode = "200", description = "Reporte generado exitosamente", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = com.stockia.stockia.utils.ApiResult.class), examples = @ExampleObject(name = "Ejemplo de reporte", value = """
+                                        {
+                                          "success": true,
+                                          "message": "Reporte de productos más vendidos generado exitosamente",
+                                          "data": [
+                                            {
+                                              "productName": "Laptop HP Pavilion",
+                                              "categoryName": "Electrónica",
+                                              "currentPrice": 45000.00,
+                                              "initialQuantity": 100,
+                                              "soldQuantity": 35,
+                                              "currentQuantity": 65
+                                            },
+                                            {
+                                              "productName": "Mouse Logitech",
+                                              "categoryName": "Accesorios",
+                                              "currentPrice": 1500.00,
+                                              "initialQuantity": 200,
+                                              "soldQuantity": 28,
+                                              "currentQuantity": 172
+                                            }
+                                          ]
+                                        }
+                                                                    """))),
+                        @ApiResponse(responseCode = "400", description = "Parámetros de fecha inválidos", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = com.stockia.stockia.exceptions.ErrorResponse.class), examples = @ExampleObject(name = "Error de validación", value = """
+                                        {
+                                          "statusCode": 400,
+                                          "errorCode": "VALIDATION_ERROR",
+                                          "message": "La fecha de fin no puede ser anterior a la fecha de inicio",
+                                          "details": ["Rango de fechas inválido"],
+                                          "timestamp": "2024-12-09T05:45:00.000000000Z",
+                                          "path": "/api/reports/products/most-sold"
+                                        }
+                                        """))),
+                        @ApiResponse(responseCode = "401", description = "No autenticado - Token JWT faltante o inválido", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = com.stockia.stockia.exceptions.ErrorResponse.class), examples = @ExampleObject(name = "Error de autenticación", value = """
+                                        {
+                                          "statusCode": 401,
+                                          "errorCode": "AUTH_ERROR",
+                                          "message": "Acceso no autorizado. Token inválido o ausente",
+                                          "details": ["Token inválido, ausente o expirado"],
+                                          "timestamp": "2024-12-09T05:45:00.000000000Z",
+                                          "path": "/api/reports/products/most-sold"
+                                        }
+                                        """))),
+                        @ApiResponse(responseCode = "403", description = "Acceso denegado - Solo rol ADMIN", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = com.stockia.stockia.exceptions.ErrorResponse.class), examples = @ExampleObject(name = "Error de autorización", value = """
+                                        {
+                                          "statusCode": 403,
+                                          "errorCode": "ACCESS_DENIED",
+                                          "message": "Acceso denegado",
+                                          "details": ["No tiene permisos suficientes para acceder a este recurso"],
+                                          "timestamp": "2024-12-09T05:45:00.000000000Z",
+                                          "path": "/api/reports/products/most-sold"
+                                        }
+                                        """)))
         })
         public @interface GetMostSoldProductsDoc {
         }
@@ -89,10 +140,60 @@ public class ProductReportSwaggerDoc {
                         **Requiere autenticación y rol ADMIN.**
                         """, security = @SecurityRequirement(name = "bearer-key"))
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "Reporte generado exitosamente", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = com.stockia.stockia.utils.ApiResult.class))),
-                        @ApiResponse(responseCode = "400", description = "Año inválido o fuera de rango", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),
-                        @ApiResponse(responseCode = "401", description = "No autenticado - Token JWT faltante o inválido", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),
-                        @ApiResponse(responseCode = "403", description = "Acceso denegado - Solo rol ADMIN puede acceder", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
+                        @ApiResponse(responseCode = "200", description = "Reporte generado exitosamente", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = com.stockia.stockia.utils.ApiResult.class), examples = @ExampleObject(name = "Ejemplo de reporte", value = """
+                                        {
+                                          "success": true,
+                                          "message": "Reporte de costos mensuales generado exitosamente",
+                                          "data": [
+                                            {
+                                              "month": "Enero",
+                                              "unitsSold": 150,
+                                              "averageSellingPrice": 25000.00,
+                                              "averagePurchaseCost": 18000.00,
+                                              "totalAverageCost": 2700000.00,
+                                              "costVariationPercentage": 0.0
+                                            },
+                                            {
+                                              "month": "Febrero",
+                                              "unitsSold": 175,
+                                              "averageSellingPrice": 26000.00,
+                                              "averagePurchaseCost": 19000.00,
+                                              "totalAverageCost": 3325000.00,
+                                              "costVariationPercentage": 23.15
+                                            }
+                                          ]
+                                        }
+                                        """))),
+                        @ApiResponse(responseCode = "400", description = "Año inválido o fuera de rango", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = com.stockia.stockia.exceptions.ErrorResponse.class), examples = @ExampleObject(name = "Error de validación", value = """
+                                        {
+                                          "statusCode": 400,
+                                          "errorCode": "VALIDATION_ERROR",
+                                          "message": "Año fuera de rango permitido",
+                                          "details": ["El año debe estar entre 2000 y 2100"],
+                                          "timestamp": "2024-12-09T05:45:00.000000000Z",
+                                          "path": "/api/reports/products/cost"
+                                        }
+                                        """))),
+                        @ApiResponse(responseCode = "401", description = "No autenticado - Token JWT faltante o inválido", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = com.stockia.stockia.exceptions.ErrorResponse.class), examples = @ExampleObject(name = "Error de autenticación", value = """
+                                        {
+                                          "statusCode": 401,
+                                          "errorCode": "AUTH_ERROR",
+                                          "message": "Acceso no autorizado. Token inválido o ausente",
+                                          "details": ["Token inválido, ausente o expirado"],
+                                          "timestamp": "2024-12-09T05:45:00.000000000Z",
+                                          "path": "/api/reports/products/cost"
+                                        }
+                                        """))),
+                        @ApiResponse(responseCode = "403", description = "Acceso denegado - Solo rol ADMIN", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = com.stockia.stockia.exceptions.ErrorResponse.class), examples = @ExampleObject(name = "Error de autorización", value = """
+                                        {
+                                          "statusCode": 403,
+                                          "errorCode": "ACCESS_DENIED",
+                                          "message": "Acceso denegado",
+                                          "details": ["No tiene permisos suficientes para acceder a este recurso"],
+                                          "timestamp": "2024-12-09T05:45:00.000000000Z",
+                                          "path": "/api/reports/products/cost"
+                                        }
+                                        """)))
         })
         public @interface GetCostReportDoc {
         }
@@ -148,10 +249,60 @@ public class ProductReportSwaggerDoc {
                         **Requiere autenticación y rol ADMIN.**
                         """, security = @SecurityRequirement(name = "bearer-key"))
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "Reporte generado exitosamente", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = com.stockia.stockia.utils.ApiResult.class))),
-                        @ApiResponse(responseCode = "400", description = "Fechas inválidas o producto no encontrado", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),
-                        @ApiResponse(responseCode = "401", description = "No autenticado - Token JWT faltante o inválido", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),
-                        @ApiResponse(responseCode = "403", description = "Acceso denegado - Solo rol ADMIN puede acceder", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
+                        @ApiResponse(responseCode = "200", description = "Reporte generado exitosamente", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = com.stockia.stockia.utils.ApiResult.class), examples = @ExampleObject(name = "Ejemplo de reporte", value = """
+                                        {
+                                          "success": true,
+                                          "message": "Reporte de stock diario generado exitosamente",
+                                          "data": [
+                                            {
+                                              "date": "2024-12-01",
+                                              "startDayStock": 100,
+                                              "entries": 20,
+                                              "exits": 15,
+                                              "endDayStock": 105,
+                                              "variationPercentage": 5.0
+                                            },
+                                            {
+                                              "date": "2024-12-02",
+                                              "startDayStock": 105,
+                                              "entries": 10,
+                                              "exits": 8,
+                                              "endDayStock": 107,
+                                              "variationPercentage": 1.9
+                                            }
+                                          ]
+                                        }
+                                        """))),
+                        @ApiResponse(responseCode = "400", description = "Fechas inválidas o producto no encontrado", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = com.stockia.stockia.exceptions.ErrorResponse.class), examples = @ExampleObject(name = "Error de validación", value = """
+                                        {
+                                          "statusCode": 400,
+                                          "errorCode": "VALIDATION_ERROR",
+                                          "message": "Producto no encontrado",
+                                          "details": ["No existe un producto con el nombre especificado"],
+                                          "timestamp": "2024-12-09T05:45:00.000000000Z",
+                                          "path": "/api/reports/products/stock"
+                                        }
+                                        """))),
+                        @ApiResponse(responseCode = "401", description = "No autenticado - Token JWT faltante o inválido", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = com.stockia.stockia.exceptions.ErrorResponse.class), examples = @ExampleObject(name = "Error de autenticación", value = """
+                                        {
+                                          "statusCode": 401,
+                                          "errorCode": "AUTH_ERROR",
+                                          "message": "Acceso no autorizado. Token inválido o ausente",
+                                          "details": ["Token inválido, ausente o expirado"],
+                                          "timestamp": "2024-12-09T05:45:00.000000000Z",
+                                          "path": "/api/reports/products/stock"
+                                        }
+                                        """))),
+                        @ApiResponse(responseCode = "403", description = "Acceso denegado - Solo rol ADMIN", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = com.stockia.stockia.exceptions.ErrorResponse.class), examples = @ExampleObject(name = "Error de autorización", value = """
+                                        {
+                                          "statusCode": 403,
+                                          "errorCode": "ACCESS_DENIED",
+                                          "message": "Acceso denegado",
+                                          "details": ["No tiene permisos suficientes para acceder a este recurso"],
+                                          "timestamp": "2024-12-09T05:45:00.000000000Z",
+                                          "path": "/api/reports/products/stock"
+                                        }
+                                        """)))
         })
         public @interface GetStockReportDoc {
         }

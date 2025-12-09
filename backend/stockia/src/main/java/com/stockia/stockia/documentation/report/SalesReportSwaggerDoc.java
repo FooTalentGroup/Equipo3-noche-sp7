@@ -16,10 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 
-/**
- * Documentación Swagger para el controlador de reportes de ventas.
- */
-@Tag(name = "Sales Reports", description = "Endpoints para reportes y análisis de ventas - Solo ADMIN")
+@Tag(name = "10 - Sales Reports", description = "Endpoints para reportes y análisis de ventas - Solo ADMIN")
 public interface SalesReportSwaggerDoc {
 
   @Operation(summary = "Generar reporte de ventas", description = """
@@ -60,7 +57,7 @@ public interface SalesReportSwaggerDoc {
               },
               "dailySales": [
                 {
-                  "date": "2024-12-01",
+                  "date": "2025-12-01",
                   "totalAmount": 125000.00
                 }
               ],
@@ -76,8 +73,8 @@ public interface SalesReportSwaggerDoc {
                   "percentage": 40.0
                 }
               ],
-              "startDate": "2024-12-01",
-              "endDate": "2024-12-31",
+              "startDate": "2025-12-01",
+              "endDate": "2025-12-31",
               "productName": null
             }
           }
@@ -129,9 +126,9 @@ public interface SalesReportSwaggerDoc {
           """)))
   })
   ResponseEntity<ApiResult<SalesReportResponseDto>> generateSalesReport(
-      @Parameter(description = "Fecha de inicio del período de reporte", required = true, example = "2024-12-01") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+      @Parameter(description = "Fecha de inicio del período de reporte", required = true, example = "2025-12-01") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
 
-      @Parameter(description = "Fecha de fin del período de reporte", required = true, example = "2024-12-31") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+      @Parameter(description = "Fecha de fin del período de reporte", required = true, example = "2025-12-31") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
 
-      @Parameter(description = "Nombre del producto para filtrar (opcional)", required = false, example = "Laptop") @RequestParam(required = false) String productName);
+      @Parameter(description = "Nombre del producto para filtrar (opcional)", required = false, example = "Porción de Cheesecake") @RequestParam(required = false) String productName);
 }
