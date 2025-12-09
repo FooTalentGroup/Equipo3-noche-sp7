@@ -20,7 +20,7 @@ export const getAuthToken = () => {
 };
 
 export const getUsername = () => {
-  return localStorage.getItem("username") || null;
+  return localStorage.getItem("name") || null;
 };
 
 export const getUserRole = () => {
@@ -28,46 +28,31 @@ export const getUserRole = () => {
 };
 
 export const setAuthToken = (token) => {
-  console.log(
-    "setAuthToken llamado con:",
-    token ? "token presente" : "token null/undefined"
-  );
-
   if (token) {
-    console.log("Guardando token en localStorage...");
     localStorage.setItem("token", token);
-    console.log(
-      "Token guardado. Verificando localStorage:",
-      localStorage.getItem("token") ? "OK" : "ERROR"
-    );
-
     const decoded = decodeJWT(token);
-    console.log("JWT decodificado:", decoded);
 
     if (decoded) {
-      if (decoded.username) {
-        localStorage.setItem("username", decoded.username);
-        console.log("Username guardado:", decoded.username);
+      if (decoded.name) {
+        localStorage.setItem("name", decoded.name);
       }
       if (decoded.role) {
         localStorage.setItem("role", decoded.role);
-        console.log("Role guardado:", decoded.role);
+      } else {
+        console.warn("No se pudo decodificar el JWT");
       }
     } else {
-      console.warn("No se pudo decodificar el JWT");
+      localStorage.removeItem("token");
+      localStorage.removeItem("name");
+      localStorage.removeItem("role");
     }
-  } else {
-    console.log("Token es null/undefined, limpiando localStorage...");
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
-    localStorage.removeItem("role");
   }
 };
 
 export const clearAuthData = () => {
   try {
     localStorage.removeItem("token");
-    localStorage.removeItem("username");
+    localStorage.removeItem("name");
     localStorage.removeItem("role");
     localStorage.clear();
   } catch (error) {
