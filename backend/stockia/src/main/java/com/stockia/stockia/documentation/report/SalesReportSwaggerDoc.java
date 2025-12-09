@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 
-@Tag(name = "10 - Sales Reports", description = "Endpoints para reportes y análisis de ventas - Solo ADMIN")
+@Tag(name = "10 - Reportes de Ventas", description = "Endpoints para reportes y análisis de ventas - Solo ADMIN")
 public interface SalesReportSwaggerDoc {
 
   @Operation(summary = "Generar reporte de ventas", description = """

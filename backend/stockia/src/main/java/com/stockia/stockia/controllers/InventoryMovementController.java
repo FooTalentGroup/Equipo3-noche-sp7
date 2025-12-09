@@ -27,10 +27,6 @@ import org.springframework.security.core.Authentication;
 
 import java.util.UUID;
 
-/**
- * Controlador REST para la gestión de movimientos de inventario.
- * Expone endpoints para registrar entradas, salidas y ajustes de stock.
- */
 @RestController
 @RequestMapping("/api/inventory-movements")
 @RequiredArgsConstructor
@@ -42,8 +38,9 @@ public class InventoryMovementController {
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @GetMapping
     public ResponseEntity<?> getAllWithSearch(@ParameterObject @Valid MovementSearchRequestDto params,
-                                              @ParameterObject Pageable pageable) {
-        Page<InventoryMovementResponseDto> response = inventoryMovementService.searchInventoryMovements(params, pageable);
+            @ParameterObject Pageable pageable) {
+        Page<InventoryMovementResponseDto> response = inventoryMovementService.searchInventoryMovements(params,
+                pageable);
         String message = response.isEmpty()
                 ? "No se encontraron movimientos de inventario"
                 : String.format("%d movimiento(s) de inventario encontrado(s)", response.getTotalElements());
@@ -65,7 +62,8 @@ public class InventoryMovementController {
             @RequestBody @Valid InventoryMovementRequestDto requestDto,
             Authentication authentication) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        InventoryMovementResponseDto registeredMovement = inventoryMovementService.registerInventoryMovement(requestDto, userDetails);
+        InventoryMovementResponseDto registeredMovement = inventoryMovementService.registerInventoryMovement(requestDto,
+                userDetails);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResult.success(registeredMovement, "Movimiento de inventario registrado exitosamente"));
     }
