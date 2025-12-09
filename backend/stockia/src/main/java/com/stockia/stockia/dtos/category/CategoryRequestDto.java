@@ -9,10 +9,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * DTO para crear o actualizar una categoría de producto.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-20
  */
 @Data
 @Builder
@@ -42,5 +38,3 @@ public class CategoryRequestDto {
     @Builder.Default
     private Boolean isActive = true;
 }
-
-

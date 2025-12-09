@@ -10,21 +10,11 @@ import java.lang.annotation.Target;
 
 /**
  * Documentación para el parámetro 'deleted' en endpoints de productos.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-25
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-@Parameter(
-        name = "deleted",
-        description = "Filtrar solo productos eliminados (soft delete). " +
+@Parameter(name = "deleted", description = "Filtrar solo productos eliminados (soft delete). " +
                 "Si es true, retorna solo productos eliminados. " +
-                "Si es false o no se especifica, retorna productos activos.",
-        schema = @Schema(type = "boolean", defaultValue = "false"),
-        example = "false"
-)
+                "Si es false o no se especifica, retorna productos activos.", schema = @Schema(type = "boolean", defaultValue = "false"), example = "false")
 public @interface DeletedParam {
 }
-

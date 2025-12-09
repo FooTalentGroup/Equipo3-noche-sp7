@@ -11,10 +11,6 @@ import lombok.NoArgsConstructor;
 /**
  * DTO para solicitar la cancelación de una orden.
  * Requiere un motivo obligatorio para registrar la razón de la cancelación.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-24
  */
 @Data
 @Builder

@@ -3,10 +3,6 @@ package com.stockia.stockia.exceptions.order;
 /**
  * Excepción lanzada cuando no se encuentra una orden por su ID o número de
  * orden.
- * 
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-24
  */
 public class OrderNotFoundException extends RuntimeException {
 

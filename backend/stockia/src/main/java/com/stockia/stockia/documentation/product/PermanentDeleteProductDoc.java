@@ -15,38 +15,15 @@ import com.stockia.stockia.documentation.common.SecurityResponses;
 /**
  * Documentación del endpoint: DELETE /api/products/{id}/permanent
  * Elimina permanentemente un producto de la base de datos.
- *
- * @author StockIA Team
- * @version 1.1
- * @since 2025-11-22
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Operation(
-    summary = "Eliminar producto permanentemente",
-    description = "Elimina físicamente el producto de la base de datos. Esta acción es irreversible. " +
-                  "<strong>Solo accesible para usuarios con rol ADMIN.</strong>",
-    security = @SecurityRequirement(name = "bearer-key")
-)
+@Operation(summary = "Eliminar producto permanentemente", description = "Elimina físicamente el producto de la base de datos. Esta acción es irreversible. "
+        +
+        "<strong>Solo accesible para usuarios con rol ADMIN.</strong>", security = @SecurityRequirement(name = "bearer-key"))
 @ApiResponses({
-    @ApiResponse(
-        responseCode = "200",
-        description = "Producto eliminado permanentemente",
-        content = @Content(
-            examples = @ExampleObject(
-                value = "{\"success\":true,\"message\":\"Producto eliminado permanentemente\",\"data\":null}"
-            )
-        )
-    ),
-    @ApiResponse(
-        responseCode = "404",
-        description = "Producto no encontrado",
-        content = @Content(
-            examples = @ExampleObject(
-                value = "{\"statusCode\":404,\"errorCode\":\"NOT_FOUND\",\"message\":\"No se encontró el producto con ID: 123e4567-e89b-12d3-a456-426614174000\",\"details\":[\"El producto especificado no existe en el sistema\"],\"timestamp\":\"2025-11-26T15:10:38.908929300Z\",\"path\":\"/api/products/123e4567-e89b-12d3-a456-426614174000\"}"
-            )
-        )
-    )
+        @ApiResponse(responseCode = "200", description = "Producto eliminado permanentemente", content = @Content(examples = @ExampleObject(value = "{\"success\":true,\"message\":\"Producto eliminado permanentemente\",\"data\":null}"))),
+        @ApiResponse(responseCode = "404", description = "Producto no encontrado", content = @Content(examples = @ExampleObject(value = "{\"statusCode\":404,\"errorCode\":\"NOT_FOUND\",\"message\":\"No se encontró el producto con ID: 123e4567-e89b-12d3-a456-426614174000\",\"details\":[\"El producto especificado no existe en el sistema\"],\"timestamp\":\"2025-11-26T15:10:38.908929300Z\",\"path\":\"/api/products/123e4567-e89b-12d3-a456-426614174000\"}")))
 })
 @SecurityResponses.RequiresAdmin
 public @interface PermanentDeleteProductDoc {

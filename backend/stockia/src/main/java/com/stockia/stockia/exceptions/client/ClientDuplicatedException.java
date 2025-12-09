@@ -3,8 +3,6 @@ package com.stockia.stockia.exceptions.client;
 /**
  * Excepción lanzada cuando se intenta registrar un cliente duplicado.
  * Se considera duplicado si ya existe un cliente con el mismo email o teléfono.
- *
- * @author StockIA Team
  */
 public class ClientDuplicatedException extends RuntimeException {
 

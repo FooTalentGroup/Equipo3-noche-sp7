@@ -4,10 +4,6 @@ package com.stockia.stockia.exceptions.order;
  * Excepción lanzada cuando se intenta eliminar una orden confirmada.
  * De acuerdo a RN-02, las órdenes confirmadas no pueden eliminarse,
  * solo pueden anularse para mantener el registro histórico.
- * 
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-24
  */
 public class OrderCannotBeDeletedException extends RuntimeException {
 

@@ -14,27 +14,14 @@ import java.lang.annotation.Target;
 
 /**
  * Documentación del endpoint POST /api/categories - Crear Categoría.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-22
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Operation(
-    summary = "Crear nueva categoría",
-    description = "Crea una nueva categoría de productos. El nombre debe ser único. " +
-                  "<strong>Solo accesible para usuarios con rol ADMIN o MANAGER.</strong>",
-    security = @SecurityRequirement(name = "bearer-key")
-)
+@Operation(summary = "Crear nueva categoría", description = "Crea una nueva categoría de productos. El nombre debe ser único. "
+        +
+        "<strong>Solo accesible para usuarios con rol ADMIN o MANAGER.</strong>", security = @SecurityRequirement(name = "bearer-key"))
 @ApiResponses(value = {
-    @ApiResponse(
-        responseCode = "201",
-        description = "Categoría creada exitosamente",
-        content = @Content(
-            mediaType = "application/json",
-            examples = @ExampleObject(
-                value = """
+        @ApiResponse(responseCode = "201", description = "Categoría creada exitosamente", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = """
                 {
                   "success": true,
                   "message": "Categoría creada exitosamente",
@@ -46,17 +33,8 @@ import java.lang.annotation.Target;
                     "productCount": 0
                   }
                 }
-                """
-            )
-        )
-    ),
-    @ApiResponse(
-        responseCode = "400",
-        description = "Datos de entrada inválidos",
-        content = @Content(
-            mediaType = "application/json",
-            examples = @ExampleObject(
-                value = """
+                """))),
+        @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = """
                 {
                   "statusCode": 400,
                   "errorCode": "VALIDATION_ERROR",
@@ -65,17 +43,8 @@ import java.lang.annotation.Target;
                   "timestamp": "2025-11-26T15:10:38.908929300Z",
                   "path": "/api/categories"
                 }
-                """
-            )
-        )
-    ),
-    @ApiResponse(
-        responseCode = "409",
-        description = "Ya existe una categoría con ese nombre",
-        content = @Content(
-            mediaType = "application/json",
-            examples = @ExampleObject(
-                value = """
+                """))),
+        @ApiResponse(responseCode = "409", description = "Ya existe una categoría con ese nombre", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = """
                 {
                   "statusCode": 409,
                   "errorCode": "CONFLICT",
@@ -84,11 +53,8 @@ import java.lang.annotation.Target;
                   "timestamp": "2025-11-26T15:10:38.908929300Z",
                   "path": "/api/categories"
                 }
-                """
-            )
-        )
-    )
+                """)))
 })
 @SecurityResponses.RequiresAdminOrManager
-public @interface CreateCategoryDoc {}
-
+public @interface CreateCategoryDoc {
+}

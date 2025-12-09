@@ -2,10 +2,6 @@ package com.stockia.stockia.enums;
 
 /**
  * Enum que representa el estado del pago de una orden.
- * 
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-24
  */
 public enum PaymentStatus {
     /**

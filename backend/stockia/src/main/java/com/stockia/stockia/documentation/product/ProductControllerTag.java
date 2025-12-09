@@ -9,14 +9,9 @@ import java.lang.annotation.Target;
 
 /**
  * Tag principal para el controlador de productos en Swagger.
- *
- * @author StockIA Team
- * @version 1.1
- * @since 2025-11-22
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Tag(name = "04 - Productos", description = "API para gestión de productos del inventario")
 public @interface ProductControllerTag {
 }
-

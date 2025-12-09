@@ -18,10 +18,6 @@ import java.util.UUID;
  * DTO de respuesta para órdenes de venta.
  * Incluye información completa de la orden con todos sus items,
  * cliente, usuario responsable y detalles de pago.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-24
  */
 @Data
 @Builder

@@ -11,10 +11,6 @@ import java.util.stream.Collectors;
 
 /**
  * Mapper para convertir entre entidades ProductCategory y DTOs.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-20
  */
 @Component
 public class CategoryMapper {
@@ -74,10 +70,11 @@ public class CategoryMapper {
     }
 
     /**
-     * Actualiza una entidad existente con los datos del DTO (para creación/actualización completa).
+     * Actualiza una entidad existente con los datos del DTO (para
+     * creación/actualización completa).
      *
      * @param category Entidad existente
-     * @param dto DTO con nuevos datos
+     * @param dto      DTO con nuevos datos
      */
     public void updateEntityFromDto(ProductCategory category, CategoryRequestDto dto) {
         if (category == null || dto == null) {
@@ -96,11 +93,12 @@ public class CategoryMapper {
     }
 
     /**
-     * Actualiza una entidad existente con los datos del DTO (para actualización parcial).
+     * Actualiza una entidad existente con los datos del DTO (para actualización
+     * parcial).
      * Solo actualiza los campos que no son null.
      *
      * @param category Entidad existente
-     * @param dto DTO con nuevos datos (todos opcionales)
+     * @param dto      DTO con nuevos datos (todos opcionales)
      */
     public void updateEntityFromDto(ProductCategory category, CategoryUpdateDto dto) {
         if (category == null || dto == null) {
@@ -118,4 +116,3 @@ public class CategoryMapper {
         }
     }
 }
-

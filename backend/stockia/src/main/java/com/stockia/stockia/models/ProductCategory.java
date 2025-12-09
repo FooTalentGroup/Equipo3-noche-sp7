@@ -12,10 +12,6 @@ import java.util.UUID;
 /**
  * Entidad que representa una categoría de productos.
  * Agrupa productos relacionados para facilitar su organización y búsqueda.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-20
  */
 @Entity
 @Table(name = "product_categories", indexes = {

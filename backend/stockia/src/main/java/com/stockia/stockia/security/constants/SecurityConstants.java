@@ -3,10 +3,6 @@ package com.stockia.stockia.security.constants;
 /**
  * Constantes de seguridad centralizadas para roles y expresiones SpEL.
  * Evita duplicación de strings en anotaciones @PreAuthorize.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-23
  */
 public final class SecurityConstants {
 
@@ -40,4 +36,3 @@ public final class SecurityConstants {
         }
     }
 }
-

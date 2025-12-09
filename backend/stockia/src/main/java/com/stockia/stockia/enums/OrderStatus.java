@@ -2,10 +2,6 @@ package com.stockia.stockia.enums;
 
 /**
  * Enum que representa los estados posibles de una orden de venta.
- * 
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-24
  */
 public enum OrderStatus {
     /**

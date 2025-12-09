@@ -56,13 +56,6 @@ public class ProductReportController {
                 log.info("GET /api/reports/products/most-sold - startDate: {}, endDate: {}, page: {}, size: {}",
                                 startDate, endDate, pageable.getPageNumber(), pageable.getPageSize());
 
-                if (endDate.isBefore(startDate)) {
-                        log.warn("Invalid date range: endDate {} is before startDate {}", endDate, startDate);
-                        return ResponseEntity.badRequest()
-                                        .body(ApiResult.error(
-                                                        "La fecha de fin debe ser mayor o igual a la fecha de inicio"));
-                }
-
                 Page<MostSoldProductDto> report = productReportService.getMostSoldProducts(startDate, endDate,
                                 pageable);
 
@@ -105,13 +98,6 @@ public class ProductReportController {
 
                 log.info("GET /api/reports/products/stock - productName: {}, startDate: {}, endDate: {}",
                                 productName, startDate, endDate);
-
-                if (endDate.isBefore(startDate)) {
-                        log.warn("Invalid date range: endDate {} is before startDate {}", endDate, startDate);
-                        return ResponseEntity.badRequest()
-                                        .body(ApiResult.error(
-                                                        "La fecha de fin debe ser mayor o igual a la fecha de inicio"));
-                }
 
                 List<DailyStockDto> report = productReportService.getStockReport(productName, startDate, endDate);
 

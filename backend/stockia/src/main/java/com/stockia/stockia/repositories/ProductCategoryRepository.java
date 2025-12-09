@@ -16,10 +16,6 @@ import java.util.UUID;
  * Repositorio JPA para la entidad ProductCategory.
  * Proporciona métodos para acceder y manipular categorías de productos en la
  * base de datos.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-20
  */
 @Repository
 public interface ProductCategoryRepository extends JpaRepository<ProductCategory, UUID> {
@@ -43,7 +39,8 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
     Optional<ProductCategory> findByNameIgnoreCase(String name);
 
     /**
-     * Verifica si existe una categoría con el nombre especificado (case-insensitive).
+     * Verifica si existe una categoría con el nombre especificado
+     * (case-insensitive).
      * Optimizado para validaciones de existencia sin cargar la entidad completa.
      * Más eficiente que findByNameIgnoreCase().isPresent()
      *
@@ -56,9 +53,9 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
      * Busca categorías con filtros dinámicos (nombre, estado activo, eliminadas).
      * Soporta paginación y ordenamiento.
      *
-     * @param name Filtro por nombre (búsqueda parcial, case-insensitive)
+     * @param name     Filtro por nombre (búsqueda parcial, case-insensitive)
      * @param isActive Filtro por estado activo (null = todos)
-     * @param deleted Filtro por estado de eliminación (null = todos)
+     * @param deleted  Filtro por estado de eliminación (null = todos)
      * @param pageable Configuración de paginación y ordenamiento
      * @return Página de categorías que cumplen con los criterios
      */

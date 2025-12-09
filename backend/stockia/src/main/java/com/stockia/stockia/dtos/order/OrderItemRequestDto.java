@@ -13,10 +13,6 @@ import java.util.UUID;
 /**
  * DTO para solicitar la creación de un item dentro de una orden.
  * Contiene la información mínima necesaria para agregar un producto a la venta.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-24
  */
 @Data
 @Builder

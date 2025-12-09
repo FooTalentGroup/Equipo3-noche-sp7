@@ -14,10 +14,6 @@ import java.util.UUID;
  * DTO de respuesta para items de orden.
  * Incluye información completa del producto vendido junto con cantidad y
  * totales.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-24
  */
 @Data
 @Builder

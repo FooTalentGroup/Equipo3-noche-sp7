@@ -17,10 +17,6 @@ import java.util.UUID;
  * DTO para solicitar la creación de una nueva orden de venta.
  * Contiene toda la información necesaria para registrar una venta completa.
  * El usuario responsable se obtiene automáticamente del contexto de seguridad.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-24
  */
 @Data
 @Builder
