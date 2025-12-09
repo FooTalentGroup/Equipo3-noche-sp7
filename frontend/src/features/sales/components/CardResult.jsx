@@ -1,9 +1,46 @@
-import React from "react";
+import React, { useState } from "react";
 import { Plus, Minus } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 
-export const ProductCard = ({ name, stock, price, imageUrl }) => {
+export const ProductCard = ({
+  id,
+  name,
+  stock,
+  price,
+  imageUrl,
+  onAddToCart,
+}) => {
+  const [quantity, setQuantity] = useState(1);
+
+  const handleIncrement = () => {
+    if (quantity < stock) {
+      setQuantity((q) => q + 1);
+    }
+  };
+
+  const handleDecrement = () => {
+    if (quantity > 1) {
+      setQuantity((q) => q - 1);
+    }
+  };
+
+  const handleAddToCart = () => {
+    if (stock > 0 && quantity > 0) {
+      onAddToCart({
+        id,
+        name,
+        price,
+        currentStock: stock,
+        photoUrl: imageUrl,
+        quantity,
+      });
+      setQuantity(1);
+    }
+  };
+
+  const isOutOfStock = stock === 0;
+
   return (
     <div className="bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden flex flex-col">
       <div className="h-32 overflow-hidden">
@@ -32,17 +69,21 @@ export const ProductCard = ({ name, stock, price, imageUrl }) => {
           <div className="flex items-center border border-gray-300 rounded-md">
             <Button
               variant="ghost"
+              onClick={handleDecrement}
+              disabled={quantity <= 1 || isOutOfStock}
               className="p-1 h-8 w-8 text-gray-600 hover:bg-gray-100"
             >
               <Minus className="h-4 w-4" />
             </Button>
             <Input
-              value="0"
+              value={quantity.toString()}
               readOnly
               className="w-10 text-center p-0 h-8 border-y-0 border-x border-gray-300 focus:outline-none focus:ring-0 text-sm"
             />
             <Button
               variant="ghost"
+              onClick={handleIncrement}
+              disabled={quantity >= stock || isOutOfStock}
               className="p-1 h-8 w-8 text-gray-600 hover:bg-gray-100"
             >
               <Plus className="h-4 w-4" />
@@ -50,10 +91,11 @@ export const ProductCard = ({ name, stock, price, imageUrl }) => {
           </div>
 
           <Button
-            onClick={() => console.log(`Agregar ${name}`)}
+            onClick={handleAddToCart}
+            disabled={isOutOfStock}
             className="bg-[#436086] hover:bg-[#384d6b] text-white py-1 h-8 px-18 rounded-md shadow-sm text-sm"
           >
-            Agregar
+            {isOutOfStock ? "Sin Stock" : `Agregar ${quantity} Uds.`}
           </Button>
         </div>
       </div>
