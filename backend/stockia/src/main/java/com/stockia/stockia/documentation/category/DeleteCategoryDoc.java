@@ -13,44 +13,23 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Documentación del endpoint DELETE /api/categories/{id} - Eliminar (soft delete).
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-22
+ * Documentación del endpoint DELETE /api/categories/{id} - Eliminar (soft
+ * delete).
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Operation(
-    summary = "Eliminar categoría (soft delete)",
-    description = "Marca la categoría como eliminada sin borrarla físicamente. Se guarda en el historial. " +
-                  "<strong>Solo accesible para usuarios con rol ADMIN.</strong>",
-    security = @SecurityRequirement(name = "bearer-key")
-)
+@Operation(summary = "Eliminar categoría (soft delete)", description = "Marca la categoría como eliminada sin borrarla físicamente. Se guarda en el historial. "
+        +
+        "<strong>Solo accesible para usuarios con rol ADMIN.</strong>", security = @SecurityRequirement(name = "bearer-key"))
 @ApiResponses(value = {
-    @ApiResponse(
-        responseCode = "200",
-        description = "Categoría eliminada exitosamente",
-        content = @Content(
-            mediaType = "application/json",
-            examples = @ExampleObject(
-                value = """
+        @ApiResponse(responseCode = "200", description = "Categoría eliminada exitosamente", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = """
                 {
                   "success": true,
                   "message": "Categoría eliminada exitosamente",
                   "data": null
                 }
-                """
-            )
-        )
-    ),
-    @ApiResponse(
-        responseCode = "404",
-        description = "Categoría no encontrada",
-        content = @Content(
-            mediaType = "application/json",
-            examples = @ExampleObject(
-                value = """
+                """))),
+        @ApiResponse(responseCode = "404", description = "Categoría no encontrada", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = """
                 {
                   "statusCode": 404,
                   "errorCode": "NOT_FOUND",
@@ -59,17 +38,8 @@ import java.lang.annotation.Target;
                   "timestamp": "2025-11-26T15:10:38.908929300Z",
                   "path": "/api/categories/123e4567-e89b-12d3-a456-426614174001"
                 }
-                """
-            )
-        )
-    ),
-    @ApiResponse(
-        responseCode = "409",
-        description = "La categoría ya está eliminada",
-        content = @Content(
-            mediaType = "application/json",
-            examples = @ExampleObject(
-                value = """
+                """))),
+        @ApiResponse(responseCode = "409", description = "La categoría ya está eliminada", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = """
                 {
                   "statusCode": 409,
                   "errorCode": "CONFLICT",
@@ -78,10 +48,8 @@ import java.lang.annotation.Target;
                   "timestamp": "2025-11-26T15:10:38.908929300Z",
                   "path": "/api/categories/123e4567-e89b-12d3-a456-426614174001"
                 }
-                """
-            )
-        )
-    )
+                """)))
 })
 @SecurityResponses.RequiresAdmin
-public @interface DeleteCategoryDoc {}
+public @interface DeleteCategoryDoc {
+}

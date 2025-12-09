@@ -9,10 +9,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * DTO de respuesta para una categoría de producto.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-20
  */
 @Data
 @Builder

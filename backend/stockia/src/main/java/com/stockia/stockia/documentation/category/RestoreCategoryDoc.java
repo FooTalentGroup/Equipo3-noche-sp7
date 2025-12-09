@@ -14,27 +14,14 @@ import com.stockia.stockia.documentation.common.SecurityResponses;
 
 /**
  * Documentación del endpoint PATCH /api/categories/{id}/restore - Restaurar.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-22
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Operation(
-    summary = "Restaurar categoría eliminada",
-    description = "Recupera una categoría previamente eliminada (soft delete). " +
-                  "<strong>Solo accesible para usuarios con rol ADMIN.</strong>",
-    security = @SecurityRequirement(name = "bearer-key")
-)
+@Operation(summary = "Restaurar categoría eliminada", description = "Recupera una categoría previamente eliminada (soft delete). "
+        +
+        "<strong>Solo accesible para usuarios con rol ADMIN.</strong>", security = @SecurityRequirement(name = "bearer-key"))
 @ApiResponses(value = {
-    @ApiResponse(
-        responseCode = "200",
-        description = "Categoría restaurada exitosamente",
-        content = @Content(
-            mediaType = "application/json",
-            examples = @ExampleObject(
-                value = """
+        @ApiResponse(responseCode = "200", description = "Categoría restaurada exitosamente", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = """
                 {
                   "success": true,
                   "message": "Categoría restaurada exitosamente",
@@ -46,17 +33,8 @@ import com.stockia.stockia.documentation.common.SecurityResponses;
                     "productCount": 0
                   }
                 }
-                """
-            )
-        )
-    ),
-    @ApiResponse(
-        responseCode = "404",
-        description = "Categoría no encontrada",
-        content = @Content(
-            mediaType = "application/json",
-            examples = @ExampleObject(
-                value = """
+                """))),
+        @ApiResponse(responseCode = "404", description = "Categoría no encontrada", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = """
                 {
                   "statusCode": 404,
                   "errorCode": "NOT_FOUND",
@@ -65,17 +43,8 @@ import com.stockia.stockia.documentation.common.SecurityResponses;
                   "timestamp": "2025-11-26T15:10:38.908929300Z",
                   "path": "/api/categories/123e4567-e89b-12d3-a456-426614174001/restore"
                 }
-                """
-            )
-        )
-    ),
-    @ApiResponse(
-        responseCode = "409",
-        description = "La categoría no está eliminada",
-        content = @Content(
-            mediaType = "application/json",
-            examples = @ExampleObject(
-                value = """
+                """))),
+        @ApiResponse(responseCode = "409", description = "La categoría no está eliminada", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = """
                 {
                   "statusCode": 409,
                   "errorCode": "CONFLICT",
@@ -84,10 +53,8 @@ import com.stockia.stockia.documentation.common.SecurityResponses;
                   "timestamp": "2025-11-26T15:10:38.908929300Z",
                   "path": "/api/categories/123e4567-e89b-12d3-a456-426614174001/restore"
                 }
-                """
-            )
-        )
-    )
+                """)))
 })
 @SecurityResponses.RequiresAdmin
-public @interface RestoreCategoryDoc {}
+public @interface RestoreCategoryDoc {
+}

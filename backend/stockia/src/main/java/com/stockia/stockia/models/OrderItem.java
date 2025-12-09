@@ -11,10 +11,6 @@ import java.util.UUID;
  * Entidad que representa un item/línea dentro de una orden de venta.
  * Contiene el detalle de cada producto vendido incluyendo cantidad,
  * precio unitario al momento de la venta y total del item.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-24
  */
 @Entity
 @Table(name = "order_items", indexes = {

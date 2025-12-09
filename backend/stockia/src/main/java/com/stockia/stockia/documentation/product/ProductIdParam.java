@@ -9,10 +9,6 @@ import java.lang.annotation.Target;
 
 /**
  * Documentación del parámetro ID de producto.
- *
- * @author StockIA Team
- * @version 1.1
- * @since 2025-11-22
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)

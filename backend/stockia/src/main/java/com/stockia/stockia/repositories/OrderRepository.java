@@ -23,10 +23,6 @@ import java.util.UUID;
  * Repositorio para gestionar las operaciones de persistencia de órdenes.
  * Proporciona métodos de consulta personalizados además de los heredados de
  * JpaRepository.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-24
  */
 @Repository
 public interface OrderRepository extends JpaRepository<Order, UUID> {

@@ -13,10 +13,6 @@ import java.util.UUID;
 
 /**
  * Interfaz de servicio para la gestión de categorías de productos.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-20
  */
 public interface CategoryService {
 
@@ -33,7 +29,7 @@ public interface CategoryService {
      * Busca categorías con filtros dinámicos (nombre, estado activo, eliminadas).
      * Soporta paginación y ordenamiento.
      *
-     * @param params Parámetros de búsqueda (nombre, isActive, deleted)
+     * @param params   Parámetros de búsqueda (nombre, isActive, deleted)
      * @param pageable Configuración de paginación y ordenamiento
      * @return Página de categorías que cumplen con los criterios
      */

@@ -6,10 +6,6 @@ import java.util.UUID;
  * Excepción lanzada cuando no se encuentra un producto solicitado.
  * Típicamente se lanza al buscar un producto por ID que no existe
  * o que ha sido eliminado (soft delete).
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-20
  */
 public class ProductNotFoundException extends RuntimeException {
 

@@ -22,10 +22,6 @@ import java.util.UUID;
 
 /**
  * Implementación del servicio de gestión de categorías.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-20
  */
 @Service
 @RequiredArgsConstructor
@@ -69,8 +65,7 @@ public class CategoryServiceImpl implements CategoryService {
                 params.name(),
                 params.isActive(),
                 params.deleted(),
-                pageable
-        );
+                pageable);
 
         return categories.map(categoryMapper::toResponseDto);
     }
@@ -101,7 +96,8 @@ public class CategoryServiceImpl implements CategoryService {
             }
         }
 
-        // Actualizar solo los demás campos proporcionados (excepto nombre que ya se actualizó)
+        // Actualizar solo los demás campos proporcionados (excepto nombre que ya se
+        // actualizó)
         if (dto.getDescription() != null) {
             category.setDescription(dto.getDescription());
         }

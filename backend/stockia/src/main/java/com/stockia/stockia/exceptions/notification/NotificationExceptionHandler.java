@@ -19,117 +19,115 @@ import java.util.stream.Collectors;
 /**
  * Manejador de excepciones específico para el controlador de notificaciones.
  * Se ejecuta antes que el GlobalExceptionHandler debido a @Order.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-12-01
  */
 @RestControllerAdvice(assignableTypes = {
-        com.stockia.stockia.controllers.NotificationController.class
+                com.stockia.stockia.controllers.NotificationController.class
 })
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Slf4j
 public class NotificationExceptionHandler {
 
-    /**
-     * Maneja errores de validación de campos anotados con @Valid.
-     */
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationExceptions(
-            MethodArgumentNotValidException ex, HttpServletRequest request) {
+        /**
+         * Maneja errores de validación de campos anotados con @Valid.
+         */
+        @ExceptionHandler(MethodArgumentNotValidException.class)
+        public ResponseEntity<ErrorResponse> handleValidationExceptions(
+                        MethodArgumentNotValidException ex, HttpServletRequest request) {
 
-        log.warn("Validation error in notifications: {}", ex.getMessage());
+                log.warn("Validation error in notifications: {}", ex.getMessage());
 
-        List<String> details = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(f -> f.getField() + ": " + f.getDefaultMessage())
-                .collect(Collectors.toList());
+                List<String> details = ex.getBindingResult()
+                                .getFieldErrors()
+                                .stream()
+                                .map(f -> f.getField() + ": " + f.getDefaultMessage())
+                                .collect(Collectors.toList());
 
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                "VALIDATION_ERROR",
-                "Falló la validación de los campos",
-                details,
-                request.getRequestURI());
+                ErrorResponse errorResponse = new ErrorResponse(
+                                HttpStatus.BAD_REQUEST.value(),
+                                "VALIDATION_ERROR",
+                                "Falló la validación de los campos",
+                                details,
+                                request.getRequestURI());
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-    }
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
 
-    /**
-     * Maneja excepción cuando no se encuentra una notificación.
-     */
-    @ExceptionHandler(NotificationNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotificationNotFoundException(
-            NotificationNotFoundException ex, HttpServletRequest request) {
+        /**
+         * Maneja excepción cuando no se encuentra una notificación.
+         */
+        @ExceptionHandler(NotificationNotFoundException.class)
+        public ResponseEntity<ErrorResponse> handleNotificationNotFoundException(
+                        NotificationNotFoundException ex, HttpServletRequest request) {
 
-        log.warn("Notification not found: {}", ex.getMessage());
+                log.warn("Notification not found: {}", ex.getMessage());
 
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
-                "NOT_FOUND",
-                ex.getMessage(),
-                Collections.singletonList("La notificación especificada no existe en el sistema"),
-                request.getRequestURI());
+                ErrorResponse errorResponse = new ErrorResponse(
+                                HttpStatus.NOT_FOUND.value(),
+                                "NOT_FOUND",
+                                ex.getMessage(),
+                                Collections.singletonList("La notificación especificada no existe en el sistema"),
+                                request.getRequestURI());
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
-    }
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        }
 
-    /**
-     * Maneja errores de acceso denegado (403 Forbidden).
-     * Se activa cuando un usuario intenta acceder sin los permisos necesarios.
-     */
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleAccessDeniedException(
-            AccessDeniedException ex, HttpServletRequest request) {
+        /**
+         * Maneja errores de acceso denegado (403 Forbidden).
+         * Se activa cuando un usuario intenta acceder sin los permisos necesarios.
+         */
+        @ExceptionHandler(AccessDeniedException.class)
+        public ResponseEntity<ErrorResponse> handleAccessDeniedException(
+                        AccessDeniedException ex, HttpServletRequest request) {
 
-        log.warn("Access denied in notifications: {}", ex.getMessage());
+                log.warn("Access denied in notifications: {}", ex.getMessage());
 
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.FORBIDDEN.value(),
-                "FORBIDDEN",
-                "Acceso denegado. No tienes permisos para realizar esta acción",
-                Collections.singletonList("No tienes los permisos necesarios para realizar esta operación"),
-                request.getRequestURI());
+                ErrorResponse errorResponse = new ErrorResponse(
+                                HttpStatus.FORBIDDEN.value(),
+                                "FORBIDDEN",
+                                "Acceso denegado. No tienes permisos para realizar esta acción",
+                                Collections.singletonList(
+                                                "No tienes los permisos necesarios para realizar esta operación"),
+                                request.getRequestURI());
 
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
-    }
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+        }
 
-    /**
-     * Maneja argumentos ilegales.
-     */
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
-            IllegalArgumentException ex, HttpServletRequest request) {
+        /**
+         * Maneja argumentos ilegales.
+         */
+        @ExceptionHandler(IllegalArgumentException.class)
+        public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
+                        IllegalArgumentException ex, HttpServletRequest request) {
 
-        log.warn("Illegal argument in notifications: {}", ex.getMessage());
+                log.warn("Illegal argument in notifications: {}", ex.getMessage());
 
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                "BAD_REQUEST",
-                "Solicitud inválida",
-                Collections.singletonList(ex.getMessage()),
-                request.getRequestURI());
+                ErrorResponse errorResponse = new ErrorResponse(
+                                HttpStatus.BAD_REQUEST.value(),
+                                "BAD_REQUEST",
+                                "Solicitud inválida",
+                                Collections.singletonList(ex.getMessage()),
+                                request.getRequestURI());
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-    }
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
 
-    /**
-     * Maneja errores generales no capturados por otros handlers.
-     */
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGlobalException(
-            Exception ex, HttpServletRequest request) {
+        /**
+         * Maneja errores generales no capturados por otros handlers.
+         */
+        @ExceptionHandler(Exception.class)
+        public ResponseEntity<ErrorResponse> handleGlobalException(
+                        Exception ex, HttpServletRequest request) {
 
-        log.error("Unexpected error in notifications: {}", ex.getMessage(), ex);
+                log.error("Unexpected error in notifications: {}", ex.getMessage(), ex);
 
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "INTERNAL_SERVER_ERROR",
-                "Error interno del servidor",
-                Collections.singletonList("Se produjo un error inesperado. Por favor, contacte al administrador."),
-                request.getRequestURI());
+                ErrorResponse errorResponse = new ErrorResponse(
+                                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                                "INTERNAL_SERVER_ERROR",
+                                "Error interno del servidor",
+                                Collections.singletonList(
+                                                "Se produjo un error inesperado. Por favor, contacte al administrador."),
+                                request.getRequestURI());
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-    }
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
 }

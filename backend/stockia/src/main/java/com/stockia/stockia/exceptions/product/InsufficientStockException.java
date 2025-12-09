@@ -3,8 +3,6 @@ package com.stockia.stockia.exceptions.product;
 /**
  * Excepción lanzada cuando no hay stock suficiente para realizar un movimiento
  * de inventario.
- * 
- * @author StockIA Team
  */
 public class InsufficientStockException extends RuntimeException {
 

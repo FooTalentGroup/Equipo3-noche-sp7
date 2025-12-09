@@ -6,10 +6,6 @@ import java.util.UUID;
  * Excepción lanzada cuando no se encuentra una categoría solicitada.
  * Se utiliza principalmente al validar la existencia de una categoría
  * antes de asignarla a un producto.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-20
  */
 public class CategoryNotFoundException extends RuntimeException {
 

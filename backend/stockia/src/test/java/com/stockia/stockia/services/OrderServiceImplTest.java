@@ -42,10 +42,6 @@ import static org.mockito.Mockito.*;
 /**
  * Pruebas unitarias para OrderServiceImpl.
  * Valida toda la lógica de negocio del módulo de ventas.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-25
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("OrderService - Unit Tests")

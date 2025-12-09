@@ -5,10 +5,6 @@ package com.stockia.stockia.exceptions.order;
  * debido al estado actual de la orden.
  * Por ejemplo: confirmar una orden ya confirmada, cancelar una orden entregada,
  * etc.
- * 
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-24
  */
 public class InvalidOrderStatusException extends RuntimeException {
 

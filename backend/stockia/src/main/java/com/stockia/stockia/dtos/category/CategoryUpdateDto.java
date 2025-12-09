@@ -9,11 +9,8 @@ import lombok.NoArgsConstructor;
 
 /**
  * DTO para actualizar una categoría de producto.
- * Todos los campos son opcionales - solo se actualizan los campos proporcionados.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-22
+ * Todos los campos son opcionales - solo se actualizan los campos
+ * proporcionados.
  */
 @Data
 @Builder
@@ -45,4 +42,3 @@ public class CategoryUpdateDto {
     @Schema(description = "Nuevo estado de activación de la categoría", example = "true", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private Boolean isActive;
 }
-

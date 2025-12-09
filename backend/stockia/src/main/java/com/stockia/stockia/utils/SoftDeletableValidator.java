@@ -7,10 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Clase de utilidad para validaciones comunes de entidades con soft delete.
  * Reduce código duplicado en servicios que manejan soft delete.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-21
  */
 @Slf4j
 public class SoftDeletableValidator {

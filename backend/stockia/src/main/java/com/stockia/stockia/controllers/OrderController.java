@@ -39,10 +39,6 @@ import static com.stockia.stockia.security.constants.SecurityConstants.Roles.*;
  * - PATCH [/api/orders/{id}/cancel] → Cancelar orden
  * - PATCH [/api/orders/{id}/deliver] → Marcar como entregada
  * - GET [/api/orders/{id}/pdf] → Generar comprobante PDF
- * 
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-24
  */
 @RestController
 @RequestMapping("/api/orders")

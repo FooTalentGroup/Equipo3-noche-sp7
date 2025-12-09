@@ -20,10 +20,6 @@ import java.util.UUID;
  * Entidad que representa una orden de venta en el sistema.
  * Contiene información completa de la transacción incluyendo cliente,
  * usuario responsable, items, totales, método de pago y estados.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-24
  */
 @Entity
 @Table(name = "orders", indexes = {

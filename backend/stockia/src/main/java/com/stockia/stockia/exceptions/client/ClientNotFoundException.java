@@ -6,8 +6,6 @@ import java.util.UUID;
  * Excepción lanzada cuando no se encuentra un cliente solicitado.
  * Típicamente se lanza al buscar un cliente por ID, email o teléfono
  * que no existe en el sistema.
- *
- * @author StockIA Team
  */
 public class ClientNotFoundException extends RuntimeException {
 

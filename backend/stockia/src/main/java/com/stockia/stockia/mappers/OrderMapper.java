@@ -13,10 +13,6 @@ import java.util.stream.Collectors;
 /**
  * Mapper para convertir entre entidades Order/OrderItem y sus DTOs.
  * Utiliza ProductMapper para mapear los productos dentro de los items.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-24
  */
 @Component
 @RequiredArgsConstructor

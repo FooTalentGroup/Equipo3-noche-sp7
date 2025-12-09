@@ -15,10 +15,6 @@ import java.util.UUID;
  * Entidad que representa un producto en el sistema de inventario.
  * Incluye información básica del producto, relación con categoría,
  * control de stock y auditoría de cambios.
- *
- * @author StockIA Team
- * @version 1.0
- * @since 2025-11-20
  */
 @Entity
 @Table(name = "products", indexes = {
