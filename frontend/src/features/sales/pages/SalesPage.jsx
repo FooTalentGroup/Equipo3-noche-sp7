@@ -6,9 +6,19 @@ import { ProductsSection } from "../components/ProductsSection";
 import { ProductCard } from "../components/CardResult";
 import { SalesSummary } from "../components/SalesSummary";
 import { useSalesProductSearch } from "../hooks/useSalesProductSearch";
+import { useCart } from "../hooks/useCart"; 
 
 const SalesPage = () => {
   const [activeTab, setActiveTab] = useState("register");
+
+  const { 
+    items, 
+    addItem, 
+    subtotal, 
+    total, 
+    removeItem, 
+    decrementItemQuantity 
+  } = useCart(); 
 
   const {
     searchQuery: productQuery,
@@ -19,6 +29,10 @@ const SalesPage = () => {
 
   const handleClearSearch = () => {
     setProductQuery("");
+  };
+
+  const handleSelectProduct = (product) => {
+    addItem(product);
   };
 
   return (
@@ -58,11 +72,12 @@ const SalesPage = () => {
                   {products.map((product) => (
                     <ProductCard
                       key={product.id || product.name}
+                      id={product.id} 
                       name={product.name}
                       stock={product.currentStock}
                       price={product.price}
                       imageUrl={product.photoUrl}
-                      onSelect={() => handleSelectProduct(product)}
+                      onAddToCart={handleSelectProduct} 
                     />
                   ))}
                 </div>
@@ -74,7 +89,14 @@ const SalesPage = () => {
             <h2 className="text-base font-medium text-foreground mb-4">
               Resumen de compra
             </h2>
-            <SalesSummary />
+            <SalesSummary 
+                cartItems={items} 
+                subtotal={subtotal} 
+                total={total}
+                onAddItem={addItem}
+                onDecrementItem={decrementItemQuantity}
+                onRemoveItem={removeItem}
+            />
             <div className="flex space-x-4">
               <Button
                 onClick={() => console.log("Agregar nota")}

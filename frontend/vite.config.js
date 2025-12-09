@@ -11,7 +11,7 @@ export default defineConfig({
     global: 'window',
   },
   // dev server proxy: forward websocket/sockjs requests to backend server
-  server: {
+  /*server: {
     proxy: {
       // Forward /ws to backend websocket endpoint. Change target if your backend runs elsewhere.
       '/ws': {
@@ -20,7 +20,7 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
-  },
+  },*/
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
