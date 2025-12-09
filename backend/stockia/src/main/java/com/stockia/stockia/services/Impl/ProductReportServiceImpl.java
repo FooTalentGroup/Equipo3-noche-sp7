@@ -47,6 +47,12 @@ public class ProductReportServiceImpl implements ProductReportService {
         public Page<MostSoldProductDto> getMostSoldProducts(LocalDate startDate, LocalDate endDate, Pageable pageable) {
                 log.info("Generating most sold products report for period: {} to {}", startDate, endDate);
 
+                // Validar rango de fechas
+                if (endDate.isBefore(startDate)) {
+                        throw new IllegalArgumentException(
+                                        "La fecha de fin debe ser mayor o igual a la fecha de inicio");
+                }
+
                 LocalDateTime startDateTime = startDate.atStartOfDay();
                 LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
 
@@ -135,6 +141,12 @@ public class ProductReportServiceImpl implements ProductReportService {
         public List<DailyStockDto> getStockReport(String productName, LocalDate startDate, LocalDate endDate) {
                 log.info("Generating stock report for productName: {},  period: {} to {}",
                                 productName, startDate, endDate);
+
+                // Validar rango de fechas
+                if (endDate.isBefore(startDate)) {
+                        throw new IllegalArgumentException(
+                                        "La fecha de fin debe ser mayor o igual a la fecha de inicio");
+                }
 
                 // Buscar producto por nombre (búsqueda case-insensitive exacta)
                 Product product = productRepository.findByNameContainingIgnoreCaseAndDeletedFalse(productName)

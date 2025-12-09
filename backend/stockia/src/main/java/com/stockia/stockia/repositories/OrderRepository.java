@@ -1,5 +1,8 @@
 package com.stockia.stockia.repositories;
 
+import com.stockia.stockia.dtos.report.DailySalesDto;
+import com.stockia.stockia.dtos.report.PaymentMethodDistributionDto;
+import com.stockia.stockia.dtos.report.SalesMetricsDto;
 import com.stockia.stockia.enums.OrderStatus;
 import com.stockia.stockia.enums.PaymentMethod;
 import com.stockia.stockia.enums.PaymentStatus;
@@ -78,41 +81,48 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
          * @param start Fecha de inicio (inclusive)
          * @param end   Fecha de fin (inclusive)
          * @return Lista de órdenes en el rango de fechas
-         
+         * 
          */
 
-         /**
- * Busca todas las órdenes de un cliente específico ordenadas por fecha descendente.
- * 
- * Este método de consulta recupera el historial completo de compras de un cliente,
- * ordenado cronológicamente de la orden más reciente a la más antigua. Es utilizado
- * principalmente para generar historiales de compra y análisis de comportamiento.
- * 
- * Características de la consulta:
- * - Busca por customer.id (relación JPA)
- * - Ordena por orderDate DESC (más recientes primero)
- * - Retorna todas las órdenes sin filtros de estado
- * - Utiliza índices de base de datos para optimización
- * 
- * Casos de uso:
- * - Generación de historial de compras para clientes
- * - Análisis de frecuencia de compra
- * - Reportes de ventas por cliente
- * - Soporte al cliente y consultas de órdenes
- * 
- * @param customerId ID del cliente (UUID) - debe existir en la tabla clients
- * @return Lista ordenada de órdenes del cliente:
- *         - Lista con órdenes si el cliente tiene compras
- *         - Lista vacía si el cliente no tiene órdenes
- * 
- * @implNote Genera SQL: SELECT * FROM orders WHERE customer_id = ? ORDER BY order_date DESC
- * @implNote Utiliza índice compuesto en (customer_id, order_date) para optimización
- * @implNote No valida existencia del cliente - esa responsabilidad es del servicio
- * 
- * @see Order#getCustomer()
- * @see Order#getOrderDate()
- * 
- */
+        /**
+         * Busca todas las órdenes de un cliente específico ordenadas por fecha
+         * descendente.
+         * 
+         * Este método de consulta recupera el historial completo de compras de un
+         * cliente,
+         * ordenado cronológicamente de la orden más reciente a la más antigua. Es
+         * utilizado
+         * principalmente para generar historiales de compra y análisis de
+         * comportamiento.
+         * 
+         * Características de la consulta:
+         * - Busca por customer.id (relación JPA)
+         * - Ordena por orderDate DESC (más recientes primero)
+         * - Retorna todas las órdenes sin filtros de estado
+         * - Utiliza índices de base de datos para optimización
+         * 
+         * Casos de uso:
+         * - Generación de historial de compras para clientes
+         * - Análisis de frecuencia de compra
+         * - Reportes de ventas por cliente
+         * - Soporte al cliente y consultas de órdenes
+         * 
+         * @param customerId ID del cliente (UUID) - debe existir en la tabla clients
+         * @return Lista ordenada de órdenes del cliente:
+         *         - Lista con órdenes si el cliente tiene compras
+         *         - Lista vacía si el cliente no tiene órdenes
+         * 
+         * @implNote Genera SQL: SELECT * FROM orders WHERE customer_id = ? ORDER BY
+         *           order_date DESC
+         * @implNote Utiliza índice compuesto en (customer_id, order_date) para
+         *           optimización
+         * @implNote No valida existencia del cliente - esa responsabilidad es del
+         *           servicio
+         * 
+         * @see Order#getCustomer()
+         * @see Order#getOrderDate()
+         * 
+         */
 
         List<Order> findByOrderDateBetweenOrderByOrderDateDesc(LocalDateTime start, LocalDateTime end);
 
@@ -162,4 +172,86 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
                         @Param("startDate") LocalDateTime startDate,
                         @Param("endDate") LocalDateTime endDate,
                         Pageable pageable);
+
+        /**
+         * Calcula las métricas de ventas para un período específico.
+         * 
+         * Retorna:
+         * - Total de ingresos (suma de totalAmount)
+         * - Cantidad de órdenes
+         * - Ticket promedio (promedio de totalAmount)
+         * 
+         * Solo considera órdenes CONFIRMED o DELIVERED.
+         * Permite filtrar por nombre de producto (opcional).
+         * 
+         * @param startDate   Fecha de inicio del período
+         * @param endDate     Fecha de fin del período
+         * @param productName Nombre del producto (opcional)
+         * @return DTO con las métricas calculadas
+         */
+        @Query("SELECT new com.stockia.stockia.dtos.report.SalesMetricsDto(" +
+                        "COALESCE(SUM(o.totalAmount), 0.0), " +
+                        "CAST(COUNT(o) AS long), " +
+                        "COALESCE(AVG(o.totalAmount), 0.0)) " +
+                        "FROM Order o LEFT JOIN o.items oi LEFT JOIN oi.product p " +
+                        "WHERE o.status IN ('CONFIRMED', 'DELIVERED') " +
+                        "AND o.orderDate >= :startDate AND o.orderDate <= :endDate " +
+                        "AND (:productName IS NULL OR :productName = '' OR LOWER(p.name) LIKE LOWER(CONCAT('%', :productName, '%')))")
+        SalesMetricsDto calculateSalesMetrics(
+                        @Param("startDate") LocalDateTime startDate,
+                        @Param("endDate") LocalDateTime endDate,
+                        @Param("productName") String productName);
+
+        /**
+         * Obtiene las ventas diarias agrupadas por fecha.
+         * 
+         * Retorna la suma de totalAmount por cada día del período.
+         * Solo considera órdenes CONFIRMED o DELIVERED.
+         * Permite filtrar por nombre de producto (opcional).
+         * 
+         * @param startDate   Fecha de inicio del período
+         * @param endDate     Fecha de fin del período
+         * @param productName Nombre del producto (opcional)
+         * @return Lista de ventas diarias ordenadas por fecha
+         */
+        @Query("SELECT new com.stockia.stockia.dtos.report.DailySalesDto(" +
+                        "CAST(o.orderDate AS LocalDate), " +
+                        "COALESCE(SUM(o.totalAmount), 0.0)) " +
+                        "FROM Order o LEFT JOIN o.items oi LEFT JOIN oi.product p " +
+                        "WHERE o.status IN ('CONFIRMED', 'DELIVERED') " +
+                        "AND o.orderDate >= :startDate AND o.orderDate <= :endDate " +
+                        "AND (:productName IS NULL OR :productName = '' OR LOWER(p.name) LIKE LOWER(CONCAT('%', :productName, '%'))) "
+                        +
+                        "GROUP BY CAST(o.orderDate AS LocalDate) " +
+                        "ORDER BY CAST(o.orderDate AS LocalDate)")
+        List<DailySalesDto> getDailySales(
+                        @Param("startDate") LocalDateTime startDate,
+                        @Param("endDate") LocalDateTime endDate,
+                        @Param("productName") String productName);
+
+        /**
+         * Obtiene la distribución de ventas por método de pago.
+         * 
+         * Retorna la suma de totalAmount agrupada por paymentMethod.
+         * Solo considera órdenes CONFIRMED o DELIVERED.
+         * Permite filtrar por nombre de producto (opcional).
+         * 
+         * @param startDate   Fecha de inicio del período
+         * @param endDate     Fecha de fin del período
+         * @param productName Nombre del producto (opcional)
+         * @return Lista de distribución por método de pago
+         */
+        @Query("SELECT new com.stockia.stockia.dtos.report.PaymentMethodDistributionDto(" +
+                        "o.paymentMethod, " +
+                        "COALESCE(SUM(o.totalAmount), 0.0)) " +
+                        "FROM Order o LEFT JOIN o.items oi LEFT JOIN oi.product p " +
+                        "WHERE o.status IN ('CONFIRMED', 'DELIVERED') " +
+                        "AND o.orderDate >= :startDate AND o.orderDate <= :endDate " +
+                        "AND (:productName IS NULL OR :productName = '' OR LOWER(p.name) LIKE LOWER(CONCAT('%', :productName, '%'))) "
+                        +
+                        "GROUP BY o.paymentMethod")
+        List<PaymentMethodDistributionDto> getPaymentMethodDistribution(
+                        @Param("startDate") LocalDateTime startDate,
+                        @Param("endDate") LocalDateTime endDate,
+                        @Param("productName") String productName);
 }
