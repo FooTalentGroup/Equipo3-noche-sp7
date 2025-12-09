@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Trash2, ChevronLeft, ChevronRight, LoaderCircle } from "lucide-react";
+import { Trash2, LoaderCircle } from "lucide-react";
 import Badge from "@/features/products/components/Badge.jsx";
 import { useProducts } from "../context/ProductsContext";
 import { useNavigate } from "react-router";
@@ -7,7 +7,18 @@ import { ConfirmDialog } from "./ConfirmDialog";
 import { useDeleteProduct } from "../hooks/useDeleteProduct";
 import { Trash } from "lucide-react";
 import ActionsMenu from './ActionsMenu';
-import { Button } from "@/shared/components/ui/button";
+import { Pagination } from "@/shared/components/ui/pagination";
+
+const getStockBadge = (actual, minimo) => {
+  const stock = actual ?? 0;
+  if (stock === 0) {
+    return <Badge title="Sin stock" variant="destructive">Sin stock</Badge>;
+  }
+  if (stock <= minimo) {
+    return <Badge title={`${actual}/${minimo}`} variant="warning">Bajo stock</Badge>;
+  }
+  return <Badge title={`${actual}/${minimo}`} variant="success">Alto stock</Badge>;
+};
 
 export const ProductsTable = () => {
   const [isOpenDelete, setIsOpenDelete] = useState(false);
@@ -30,57 +41,45 @@ export const ProductsTable = () => {
     setIsOpenDelete(true);
   };
 
-  const getStockBadge = (actual, minimo) => {
-    const stock = actual ?? 0;
-    if (stock === 0) {
-      return <Badge title="Sin stock" variant="destructive">Sin stock</Badge>;
-    }
-    if (stock <= minimo) {
-      return <Badge title={`${actual}/${minimo}`} variant="warning">Bajo stock</Badge>;
-    }
-    return <Badge title={`${actual}/${minimo}`} variant="success">Alto stock</Badge>;
-  };
-
   return (
     <div className="h-full max-w-5xl max-h-[720px] flex flex-col shadow-lg">
       <div className={`relative overflow-x-auto ${loading ? 'h-[400px] overflow-hidden' : ''} flex-1`}>
-
         <table className="w-full text-left border-separate border-spacing-0">
           <thead className="text-sm bg-stokia-primary-100 text-stokia-neutral-950 font-normal h-[46px] sticky top-0 z-10">
-            <tr>
-              <th className="px-6 py-3 rounded-tl-xl">Estado</th>
-              <th className="px-6 py-3">Producto</th>
-              <th className="px-6 py-3">Categoría</th>
-              <th className="px-6 py-3">Precio</th>
-              <th className="px-6 py-3">Descuento</th>
-              <th className="px-6 py-3 rounded-tr-xl">Acciones</th>
+            <tr className="[&_th]:px-6 [&_th]:py-3">
+              <th className="rounded-tl-xl">Estado</th>
+              <th>Producto</th>
+              <th>Categoría</th>
+              <th>Precio</th>
+              <th>Descuento</th>
+              <th className="rounded-tr-xl">Acciones</th>
             </tr>
           </thead>
 
           <tbody className="divide-y divide-stokia-neutral-100">
             {products.map((product) => (
-              <tr key={product.id} className="hover:bg-stokia-neutral-100 transition-colors [&_td]:text-stokia-neutral-950 [&_td]:text-sm">
-                <td className="px-6 py-4">
+              <tr key={product.id} className="hover:bg-stokia-neutral-100 transition-colors [&_td]:text-stokia-neutral-950 [&_td]:text-sm [&_td]:px-6 [&_td]:py-4">
+                <td>
                   <div className="w-28">
                     {getStockBadge(product.currentStock, product.minStock)}
                   </div>
                 </td>
 
-                <td className="px-6 py-4">{product.name}</td>
+                <td>{product.name}</td>
 
-                <td className="px-6 py-4">
+                <td>
                   {typeof product.category === "string"
                     ? product.category
                     : product.categoryObj?.name || product.category || "Sin categoría"}
                 </td>
 
-                <td className="px-6 py-4">${product.price}</td>
+                <td>${product.price}</td>
 
-                <td className="px-6 py-4">
+                <td>
                   {product.descuento > 0 ? `${product.descuento}%` : "0%"}
                 </td>
 
-                <td className="px-6 py-4">
+                <td>
                   <div className="flex items-center justify-center gap-4">
                     <ActionsMenu
                       product={product}
@@ -120,39 +119,14 @@ export const ProductsTable = () => {
       </div>
 
       {pagination.totalPages > 1 && (
-        <div className="flex items-center justify-center px-6 py-3 bg-stokia-neutral-50 border-t mt-auto">
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={previousPage}
-              disabled={pagination.isFirst}
-              variant="outline"
-            >
-              <ChevronLeft className="w-4 h-4" /> Anterior
-            </Button>
-            <div className="flex gap-1 justify-center">
-              {Array.from({ length: pagination.totalPages }, (_, i) => i).map(
-                (page) => (
-                  <Button
-                    key={page}
-                    onClick={() => goToPage(page)}
-                    size="sm"
-                    variant={page === pagination.currentPage ? "stokia" : "outline"}
-                  >
-                    {page + 1}
-                  </Button>
-                )
-              )}
-            </div>
-
-            <Button
-              onClick={nextPage}
-              disabled={pagination.isLast}
-              variant="outline"
-            >
-              Siguiente <ChevronRight className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
+        <Pagination
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          onPageChange={goToPage}
+          onNext={nextPage}
+          onPrevious={previousPage}
+          className="py-3"
+        />
       )}
 
       <ConfirmDialog
