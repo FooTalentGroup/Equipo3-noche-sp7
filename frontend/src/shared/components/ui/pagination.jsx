@@ -76,7 +76,7 @@ export function Pagination({
   return (
     <div className={cn('flex flex-col gap-4', className)}>
       {showInfo && totalElements > 0 && (
-        <div className="text-sm text-gray-600 text-center">
+        <div className="text-sm text-stokia-neutral-400 text-center">
           Mostrando {startItem}-{endItem} de {totalElements} resultados
         </div>
       )}
@@ -87,7 +87,7 @@ export function Pagination({
           onClick={handlePrevious}
           disabled={currentPage === 0}
           aria-label="Página anterior"
-          className="border-orange-600 text-orange-600 hover:bg-orange-50 hover:border-orange-700 hover:text-orange-700 disabled:opacity-50 disabled:cursor-not-allowed"
+
         >
           <ChevronLeft className="h-4 w-4" />
           <span className="sr-only md:not-sr-only">Anterior</span>
@@ -99,7 +99,7 @@ export function Pagination({
               return (
                 <span
                   key={`ellipsis-${index}`}
-                  className="px-2 text-orange-600"
+                  className="px-2 text-stokia-neutral-400"
                 >
                   ...
                 </span>
@@ -111,13 +111,9 @@ export function Pagination({
             return (
               <Button
                 key={page}
-                variant="outline"
+                variant={isCurrentPage ? 'stokia' : 'outline'}
                 size="sm"
                 onClick={() => handlePageClick(page)}
-                className={cn(
-                  'min-w-[2.5rem] border-orange-600 text-orange-600 hover:bg-orange-50 hover:border-orange-700 hover:text-orange-700',
-                  isCurrentPage && 'bg-orange-600 text-white border-orange-600 hover:bg-orange-700 hover:border-orange-700 hover:text-white pointer-events-none'
-                )}
                 aria-label={`Ir a página ${page + 1}`}
                 aria-current={isCurrentPage ? 'page' : undefined}
               >
@@ -133,7 +129,6 @@ export function Pagination({
           onClick={handleNext}
           disabled={currentPage >= totalPages - 1}
           aria-label="Página siguiente"
-          className="border-orange-600 text-orange-600 hover:bg-orange-50 hover:border-orange-700 hover:text-orange-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span className="sr-only md:not-sr-only">Siguiente</span>
           <ChevronRight className="h-4 w-4" />

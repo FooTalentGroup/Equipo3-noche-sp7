@@ -48,6 +48,7 @@
   --color-stokia-neutral-500: var(--stokia-neutral-500);
   --color-stokia-neutral-600: var(--stokia-neutral-600);
   --color-stokia-neutral-950: var(--stokia-neutral-950);
+  --color-stokia-primary-50: var(--stokia-primary-50);
   --color-stokia-primary-100: var(--stokia-primary-100);
   --color-stokia-primary-800: var(--stokia-primary-800);
   --color-stokia-primary-500: var(--stokia-primary-500);
@@ -93,10 +94,11 @@
   --stokia-neutral-50: oklch(0.97 0.0029 264.54);
   --stokia-neutral-100: oklch(0.9282 0.0045 214.33);
   --stokia-neutral-300: oklch(0.7596 0.0143 226.62);
-  --stokia-neutral-400: oklch(0.6281 0.0203 232.71); 
+  --stokia-neutral-400: oklch(0.6281 0.0203 232.71);
   --stokia-neutral-500: oklch(0.5363 0.021 232.83);
   --stokia-neutral-600: oklch(0.4785 0.0177 235.72);
   --stokia-neutral-950: oklch(0.2543 0.0072 248.11);
+  --stokia-primary-50: oklch(0.9755 0.0045 258.32);
   --stokia-primary-100: oklch(0.9478 0.0091 258.34);
   --stokia-primary-500: oklch(0.5684 0.0732 251.13);
   --stokia-primary-600: oklch(0.483 0.0707 255.51);
@@ -177,10 +179,12 @@ body,
   .btn-standard {
     @apply w-[204px] h-[40px] py-2 px-4 rounded-md flex items-center space-x-2 shadow-sm text-sm;
   }
+
   .bg-stockia-primary-600-activo {
     background: var(--Stockia-Primary-600---Activo, #436086);
   }
-    .bg-stockia-primary-100-disabled {
-        background: var(--Stockia-Primary-100---Disabled, #EAEEF4);
-    }
+
+  .bg-stockia-primary-100-disabled {
+    background: var(--Stockia-Primary-100---Disabled, #EAEEF4);
+  }
 }
