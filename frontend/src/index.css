@@ -53,6 +53,7 @@
   --color-stokia-primary-800: var(--stokia-primary-800);
   --color-stokia-primary-500: var(--stokia-primary-500);
   --color-stokia-primary-600: var(--stokia-primary-600);
+  --color-stokia-blue-light: var(--stokia-blue-light);
 }
 
 :root {
@@ -102,8 +103,10 @@
   --stokia-primary-100: oklch(0.9478 0.0091 258.34);
   --stokia-primary-500: oklch(0.5684 0.0732 251.13);
   --stokia-primary-600: oklch(0.483 0.0707 255.51);
+  --stokia-blue-light: oklch(0.87 0.025 250);
   --stokia-primary-800: oklch(0.3781 0.0495 255.54);
   font-family: 'Roboto Flex', system-ui, sans-serif;
+
 }
 
 .dark {

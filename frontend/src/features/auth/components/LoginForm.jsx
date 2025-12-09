@@ -17,8 +17,7 @@ import { Button } from "@/shared/components/ui/button";
 import { useLogin } from "../hooks/useAuth.js";
 import { setAuthToken, clearAuthData } from "../utils/authStorage.js";
 import { loginSchema } from "../validators/authValidators.js";
-import logoImg from "@/assets/logo-stockia.jpg"
-import Stockia from "@/assets/stockia2.svg"
+import { AuthLayout } from "@/shared/components/layout/AuthLayout.jsx";
 
 
 export function LoginForm() {
@@ -65,32 +64,8 @@ export function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen w-full grid grid-cols-1 md:grid-cols-2">
-    {/* --- Lado izquierdo --- */}
-    <div className="hidden md:block w-full h-full"
-         style={{ 
-                  backgroundImage: `url(${logoImg})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",}}
-    >
-      <img
-        src={Stockia}  
-        alt="Logo"
-        className="absolute"
-        style={{
-            width: "204.5px",
-            height: "44px",
-            bottom: "20px",
-            left: "2%",
-            opacity: 1,
-        }}
-      />
-    </div>
-     
+    <AuthLayout>    
     
-
-    {/* --- Lado derecho ---- */}
-    <div className="flex flex-col items-center justify-center">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -227,7 +202,6 @@ export function LoginForm() {
           </Button>
         </form>
       </Form>
-    </div>
-  </div>
+ </AuthLayout>
   );
 }
