@@ -50,7 +50,7 @@ export function ResetPasswordForm() {
       form.setError("root", { message: "Token inválido o expirado" });
       return;
     }
-    resetPassword.mutate({ token, password: data.password });
+    resetPassword.mutate({ token, newPassword: data.password });
   }
 
   return (
