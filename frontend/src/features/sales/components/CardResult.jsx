@@ -43,7 +43,7 @@ export const ProductCard = ({
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden flex flex-col">
-      <div className="h-32 overflow-hidden">
+      <div className="p-2 h-32 overflow-hidden">
         <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
       </div>
 
@@ -95,7 +95,7 @@ export const ProductCard = ({
             disabled={isOutOfStock}
             className="bg-[#436086] hover:bg-[#384d6b] text-white py-1 h-8 px-18 rounded-md shadow-sm text-sm"
           >
-            {isOutOfStock ? "Sin Stock" : `Agregar ${quantity} Uds.`}
+            {isOutOfStock ? "Sin Stock" : `Agregar`}
           </Button>
         </div>
       </div>

@@ -2,12 +2,45 @@ import { useState, useEffect, useMemo } from "react";
 import { getProducts } from "@/features/products/services/productService";
 import { useDebounce } from "use-debounce";
 
+const INITIAL_PRODUCT_COUNT = 6;
+
+const normalizeString = (str) => {
+  if (!str) return "";
+  return str
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+};
+
 export const useSalesProductSearch = (debounceTime = 300) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const [initialProducts, setInitialProducts] = useState([]);
+
   const [debouncedQuery] = useDebounce(searchQuery, debounceTime);
+
+  useEffect(() => {
+    const loadInitialProducts = async () => {
+      setLoading(true);
+      try {
+        const response = await getProducts({
+          q: "",
+          size: INITIAL_PRODUCT_COUNT,
+        });
+
+        const productList = response.data?.content || [];
+        setInitialProducts(productList);
+      } catch (error) {
+        console.error("Error al cargar productos iniciales:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadInitialProducts();
+  }, []);
 
   useEffect(() => {
     if (debouncedQuery.trim() === "") {
@@ -20,11 +53,19 @@ export const useSalesProductSearch = (debounceTime = 300) => {
       try {
         const response = await getProducts({
           q: debouncedQuery,
-          size: 10,
+          size: 50,
         });
 
-        const productList = response.data?.content || [];
-        
+        let productList = response.data?.content || [];
+
+        const normalizedQuery = normalizeString(debouncedQuery);
+
+        if (normalizedQuery.length > 0) {
+          productList = productList.filter((product) => {
+            const normalizedName = normalizeString(product.name);
+            return normalizedName.includes(normalizedQuery);
+          });
+        }
         setProducts(productList);
       } catch (error) {
         console.error("Error al buscar productos en la venta:", error);
@@ -37,15 +78,20 @@ export const useSalesProductSearch = (debounceTime = 300) => {
     fetchProducts();
   }, [debouncedQuery]);
 
-  const showResults = useMemo(() => {
-    return searchQuery.trim() !== "" && (loading || products.length > 0);
-  }, [searchQuery, loading, products]);
+  const currentProducts = useMemo(() => {
+    if (searchQuery.trim() === "") {
+      return initialProducts;
+    }
+    return products;
+  }, [searchQuery, initialProducts, products]);
+
+  const isInitialLoading = searchQuery.trim() === "" && loading;
+  const isSearchLoading = searchQuery.trim() !== "" && loading;
 
   return {
     searchQuery,
     setSearchQuery,
-    products,
-    loading,
-    showResults,
+    products: currentProducts,
+    loading: isSearchLoading || isInitialLoading,
   };
 };
