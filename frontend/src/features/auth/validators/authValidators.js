@@ -30,3 +30,14 @@ export const forgotPasswordSchema = z.object({
     .email("Ingresa un correo electrónico válido"),
 });
 
+export const resetPasswordSchema = z.object({
+    password: z
+      .string()
+      .min(1, "La contraseña es requerida")
+      .min(8, "Mínimo 8 caracteres, incluyendo 1 mayúscula, 1 minúscula y 1 número"),
+    confirmPassword: z.string().min(1, "Debes repetir la contraseña"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Las contraseñas no coinciden",
+    path: ["confirmPassword"],
+  });
