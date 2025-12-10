@@ -10,24 +10,31 @@
           <value>
             <set>
               <option value="06606c67-ed18-4f67-b9a9-687f1fb8409e" />
-              <option value="66c8df83-ba5c-4aff-b525-c4f41b5428e4" />
-              <option value="e4847f2a-894d-40c7-a698-5c706c3eab17" />
-              <option value="dc599316-3da2-4c8a-bc34-49a9e42944b0" />
-              <option value="75e2e1f7-3e72-4cea-b10e-7cc192ee8d78" />
-              <option value="4998724e-1879-4046-bcd6-24601c9319cf" />
-              <option value="ff128624-47ef-4b7e-9e97-aa1542604daa" />
-              <option value="8cf8a722-49e0-4fa8-aaa7-bb80735f6d3b" />
+              <option value="08eb7724-9848-4484-a1be-6a1871961afe" />
               <option value="08fdd837-1220-4be3-99da-edc33b3677ea" />
-              <option value="3ec6b60a-f766-4a3f-84a0-7352b3b7b3c0" />
-              <option value="3098b377-2e67-468e-b8b5-14d5a53f17af" />
-              <option value="4c6478de-7d30-4919-960a-59952807246e" />
-              <option value="5cd36ad4-7fef-45fe-a24b-ae81628b080f" />
-              <option value="d89e5738-c45b-4e74-800b-932f27f09d30" />
-              <option value="9ee56824-9ad9-42ed-9b11-f279ded1252a" />
-              <option value="82a0fed3-af8b-4824-89b8-72db54ef794b" />
               <option value="2b40d3ce-3c57-4351-9f9f-3871a25cbfb8" />
-              <option value="e28186fe-3aeb-4bbe-8e1d-371d55df8094" />
+              <option value="3098b377-2e67-468e-b8b5-14d5a53f17af" />
+              <option value="3ec6b60a-f766-4a3f-84a0-7352b3b7b3c0" />
+              <option value="4998724e-1879-4046-bcd6-24601c9319cf" />
+              <option value="4c6478de-7d30-4919-960a-59952807246e" />
+              <option value="5241ea83-5e7f-42de-aef4-92fb72e259d2" />
               <option value="5c5edc50-6668-4ad7-bd6e-ccbfa29cd3ba" />
+              <option value="5cd36ad4-7fef-45fe-a24b-ae81628b080f" />
+              <option value="66c8df83-ba5c-4aff-b525-c4f41b5428e4" />
+              <option value="6cdfd1ee-e50b-49ff-adf8-1f0698995b14" />
+              <option value="75e2e1f7-3e72-4cea-b10e-7cc192ee8d78" />
+              <option value="82a0fed3-af8b-4824-89b8-72db54ef794b" />
+              <option value="8b9fa2b2-1089-46e4-a4b5-ebda2450287a" />
+              <option value="8cf8a722-49e0-4fa8-aaa7-bb80735f6d3b" />
+              <option value="95d33f96-9761-4b46-a04a-581e6f4f51b1" />
+              <option value="9ee56824-9ad9-42ed-9b11-f279ded1252a" />
+              <option value="d0f38a28-a639-4f00-8eb1-bdcb3bf2159e" />
+              <option value="d89e5738-c45b-4e74-800b-932f27f09d30" />
+              <option value="dc599316-3da2-4c8a-bc34-49a9e42944b0" />
+              <option value="dc79a8b3-df1b-4973-b449-f0c7da6e705f" />
+              <option value="e28186fe-3aeb-4bbe-8e1d-371d55df8094" />
+              <option value="e4847f2a-894d-40c7-a698-5c706c3eab17" />
+              <option value="ff128624-47ef-4b7e-9e97-aa1542604daa" />
             </set>
           </value>
         </entry>
@@ -36,19 +43,10 @@
     <pendingWorkingSetItems>
       <entry key="9513e958-bb15-4457-8d52-e95eb68e6c23">
         <set>
-          <option value="file://$PROJECT_DIR$/frontend/src/features/users/services/usersService.js" />
-          <option value="file://$PROJECT_DIR$/frontend/src/features/users/pages/UsersPage.jsx" />
-          <option value="file://$PROJECT_DIR$/frontend/src/features/users/components/UsersTable.jsx" />
-          <option value="file://$PROJECT_DIR$/frontend/src/features/users/components/RegisterUserPopup.jsx" />
-          <option value="file://$PROJECT_DIR$/frontend/src/features/notifications/services/notificationsService.js" />
-          <option value="file://$PROJECT_DIR$/frontend/src/features/notifications/hooks/useNotifications.js" />
+          <option value="file://$PROJECT_DIR$/frontend/src/features/products/components/MovementHistoryTable.jsx" />
           <option value="file://$PROJECT_DIR$/frontend/src/features/notifications/components/NotificationsDropdown.jsx" />
           <option value="file://$PROJECT_DIR$/frontend/src/shared/components/layout/TopBar.jsx" />
-          <option value="file://$PROJECT_DIR$/frontend/vite.config.js" />
-          <option value="file://$PROJECT_DIR$/frontend/src/index.css" />
-          <option value="file://$PROJECT_DIR$/frontend/src/main.jsx" />
-          <option value="file://$PROJECT_DIR$/frontend/src/features/notifications/client/notificationsClient.js" />
-          <option value="file://$PROJECT_DIR$/frontend/src/features/notifications/services/notificationSocket.js" />
+          <option value="file://$PROJECT_DIR$/frontend/src/features/notifications/hooks/useNotifications.js" />
         </set>
       </entry>
     </pendingWorkingSetItems>

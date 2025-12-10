@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Bell } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { useLocation } from "react-router-dom";
-import NotificationsDropdown from '@/features/notifications/components/NotificationsDropdown';
+import {NotificationsDropdown} from '@/features/notifications/components/NotificationsDropdown';
 import { useNotifications } from '@/features/notifications/hooks/useNotifications';
 
 const PAGE_LABELS = [
@@ -22,12 +22,29 @@ export function TopBar() {
   const { pathname } = useLocation();
   const [showNotif, setShowNotif] = useState(false);
   const btnRef = useRef(null);
-  const { unreadCount, fetchUnread, fetchList } = useNotifications();
+  const { unreadCount, fetchUnread, fetchList, showLowStockNotification } = useNotifications();
 
-  const toggleNotif = () => {
+  const toggleNotif = async () => {
     setShowNotif(s => !s);
     // refresh unread when opening
-    if (!showNotif) fetchUnread();
+    if (!showNotif) {
+      fetchUnread();
+      try {
+        await fetchList();
+        if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'default') {
+          // ask for permission once, then show aggregated notification if granted
+          Notification.requestPermission().then((perm) => {
+            if (perm === 'granted') {
+              try { showLowStockNotification(); } catch (e) { /* ignore */ }
+            }
+          }).catch(() => {
+            /* ignore */
+          });
+        } else {
+          try { showLowStockNotification(); } catch (e) { /* ignore */ }
+        }
+      } catch (e) { /* ignore */ }
+    }
   };
 
   // Refresh notifications on every navigation (pathname change)
@@ -80,7 +97,7 @@ export function TopBar() {
 
         {showNotif && (
           <div className="absolute right-0 mt-2 z-50">
-            <NotificationsDropdown className="shadow-lg" />
+            <NotificationsDropdown className="shadow-lg" onClose={() => setShowNotif(false)} />
           </div>
         )}
       </div>

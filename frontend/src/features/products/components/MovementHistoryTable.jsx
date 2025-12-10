@@ -1,21 +1,51 @@
 // src/features/products/components/MovementHistoryTable.jsx
 import { ChevronLeft, ChevronRight, LoaderCircle, MoveDown, MoveUp } from 'lucide-react';
+import {useEffect, useState} from "react";
 
 export function MovementHistoryTable({
     movements = [],
     isLoading = false,
     currentPage = 0,
     totalPages = 0,
-    onPageChange
+    onPageChange,
+    pageSize = 10,
 }) {
+    // If onPageChange is provided, treat component as controlled for pagination.
+    const isControlled = typeof onPageChange === 'function';
+    const [internalPage, setInternalPage] = useState(currentPage || 0);
+
+    // Keep internalPage in range when movements length changes
+    useEffect(() => {
+        const totalItems = movements?.length || 0;
+        const calcTotal = totalItems === 0 ? 0 : Math.ceil(totalItems / pageSize);
+        if (!isControlled) {
+            // if no pages, reset to 0; otherwise clamp to last page
+            if (calcTotal === 0) setInternalPage(0);
+            else if (internalPage > calcTotal - 1) setInternalPage(calcTotal - 1);
+        }
+    }, [movements, pageSize, internalPage, isControlled]);
+
+    const page = isControlled ? currentPage : internalPage;
+    const totalItems = movements?.length || 0;
+    const computedTotalPages = totalItems === 0 ? 0 : Math.ceil(totalItems / pageSize);
+    const usedTotalPages = totalPages > 0 ? totalPages : computedTotalPages;
+
+    const setPage = (p) => {
+        if (isControlled) {
+            onPageChange?.(p);
+        } else {
+            setInternalPage(p);
+        }
+    };
+
     const handlePrev = () => {
-        if (currentPage === 0) return;
-        onPageChange?.(currentPage - 1);
+        if (page === 0) return;
+        setPage(page - 1);
     };
 
     const handleNext = () => {
-        if (currentPage >= totalPages - 1) return;
-        onPageChange?.(currentPage + 1);
+        if (page >= usedTotalPages - 1) return;
+        setPage(page + 1);
     };
 
     const formatDate = (dateString) => {
@@ -59,7 +89,7 @@ export function MovementHistoryTable({
     }
 
     return (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1086px] max-h-[673px]">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1086px] max-h-[700px]">
             <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
                     <thead className="text-[14px] bg-slate-200 text-[#404040] font-semibold h-[46px]">
@@ -74,7 +104,7 @@ export function MovementHistoryTable({
                     </thead>
 
                     <tbody className="divide-y divide-gray-200">
-                        {movements.map((movement) => (
+                        { (movements || []).slice(page * pageSize, (page + 1) * pageSize).map((movement) => (
                             <tr key={movement.id} className="hover:bg-gray-50 transition-colors">
                                 <td className="px-6 py-4 text-[#171717] text-[14px] font-medium">
                                     {movement.productName || '—'}
@@ -97,7 +127,7 @@ export function MovementHistoryTable({
                             </tr>
                         ))}
 
-                        {movements.length === 0 && (
+                        {(movements || []).length === 0 && (
                             <tr>
                                 <td colSpan={6} className="px-6 py-6 text-center text-gray-500 text-sm">
                                     No hay movimientos para mostrar.
@@ -109,32 +139,31 @@ export function MovementHistoryTable({
             </div>
 
             {/* Pagination */}
-            {totalPages > 1 && (
+            {(usedTotalPages >= 1 && totalItems > 0) && (
                 <div className="flex items-center justify-center px-6 py-3 bg-gray-50 border-t">
                     <div className="flex items-center gap-2">
                         <button
                             onClick={handlePrev}
-                            disabled={currentPage === 0}
+                            disabled={page === 0}
                             className="border-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 rounded-md disabled:opacity-50 flex items-center gap-1"
                         >
                             <ChevronLeft className="w-4 h-4" /> Anterior
                         </button>
 
                         <div className="flex gap-1 justify-center">
-                            {Array.from({ length: totalPages }, (_, i) => i).map((page) => (
+                            {Array.from({ length: usedTotalPages }, (_, i) => i).map((p) => (
                                 <button
-                                    key={page}
-                                    onClick={() => onPageChange?.(page)}
-                                    className={`px-3 py-1.5 text-sm rounded-md ${currentPage === page ? 'bg-slate-600 text-white' : 'text-gray-700 hover:bg-gray-200'}`}
-                                >
-                                    {page + 1}
+                                    key={p}
+                                    onClick={() => setPage(p)}
+                                    className={`px-3 py-1.5 text-sm rounded-md ${page === p ? 'bg-slate-600 text-white' : 'text-gray-700 hover:bg-gray-200'}`}>
+                                    {p + 1}
                                 </button>
                             ))}
                         </div>
 
                         <button
                             onClick={handleNext}
-                            disabled={currentPage >= totalPages - 1}
+                            disabled={usedTotalPages === 0 || page >= usedTotalPages - 1}
                             className="border-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 rounded-md disabled:opacity-50 flex items-center gap-1"
                         >
                             Siguiente <ChevronRight className="w-4 h-4" />
