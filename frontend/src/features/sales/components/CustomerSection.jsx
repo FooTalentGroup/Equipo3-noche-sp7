@@ -1,15 +1,15 @@
 import { UserPlus, UserCheck } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import RegisterCustomerPopup from "@/features/customers/components/RegisterCustomerPopup";
-import { CustomerSearchInput } from './CustomerSearchInput';
-import { CustomerSearchResults } from './CustomerSearchResults';
-import { createCustomer } from '@/features/customers/services/customerService';
-import { useSalesCustomerSearch } from '../hooks/useSalesCustomerSearch';
-import { useState } from 'react';
+import { CustomerSearchInput } from "./CustomerSearchInput";
+import { CustomerSearchResults } from "./CustomerSearchResults";
+import { createCustomer } from "@/features/customers/services/customerService";
+import { useSalesCustomerSearch } from "../hooks/useSalesCustomerSearch";
+import { useState } from "react";
 
-export function CustomerSection() {
+export function CustomerSection({ onCustomerSelected }) {
   const [showRegisterPopup, setShowRegisterPopup] = useState(false);
-  
+
   const {
     searchQuery: customerQuery,
     setSearchQuery: setCustomerQuery,
@@ -17,10 +17,17 @@ export function CustomerSection() {
     loading: loadingCustomers,
     showResults: showCustomerResults,
     selectedCustomer,
-    selectCustomer,
-    selectConsumidorFinal,
+    selectCustomer: internalSelectCustomer,
+    selectConsumidorFinal: internalSelectConsumidorFinal,
     clearCustomer,
   } = useSalesCustomerSearch();
+
+  const handleSelectCustomer = (customer) => {
+    internalSelectCustomer(customer);
+    if (onCustomerSelected) {
+      onCustomerSelected(customer);
+    }
+  };
 
   const handleSaveCustomer = async (customerData) => {
     try {
@@ -28,14 +35,14 @@ export function CustomerSection() {
         name: customerData.nombre,
         phone: customerData.telefono,
         email: customerData.email,
-        isFrequent: customerData.joined
+        isFrequent: customerData.joined,
       };
-      
+
       const savedCustomer = await createCustomer(mappedData);
-      selectCustomer(savedCustomer);
+      handleSelectCustomer(savedCustomer);
       setShowRegisterPopup(false);
 
-      return savedCustomer; 
+      return savedCustomer;
     } catch (error) {
       console.error("Error al guardar el cliente:", error);
       throw error;
@@ -43,7 +50,17 @@ export function CustomerSection() {
   };
 
   const handleConsumidorFinal = () => {
-    selectConsumidorFinal();
+    internalSelectConsumidorFinal();
+    if (onCustomerSelected) {
+      onCustomerSelected({ id: "final", name: "Consumidor Final" });
+    }
+  };
+
+  const handleClearCustomer = () => {
+    clearCustomer();
+    if (onCustomerSelected) {
+      onCustomerSelected(null);
+    }
   };
 
   return (
@@ -55,15 +72,15 @@ export function CustomerSection() {
           <CustomerSearchInput
             value={customerQuery}
             onChange={setCustomerQuery}
-            onClear={clearCustomer}
+            onClear={handleClearCustomer}
             placeholder="Buscar clientes"
             className="w-[432px] h-[36px]"
           />
-          
+
           <CustomerSearchResults
             customers={customers}
             loading={loadingCustomers}
-            onSelect={selectCustomer}
+            onSelect={handleSelectCustomer}
             show={showCustomerResults && !selectedCustomer}
           />
         </div>
@@ -79,7 +96,7 @@ export function CustomerSection() {
           </Button>
 
           <Button
-            onClick={() => setShowRegisterPopup(true)} 
+            onClick={() => setShowRegisterPopup(true)}
             className="btn-standard bg-btn-primary hover:bg-btn-primary/90 text-white disabled:text-muted-foreground disabled:bg-secondary disabled:cursor-not-allowed disabled:shadow-none"
             disabled={selectedCustomer !== null}
           >
