@@ -14,13 +14,17 @@ import java.util.UUID;
 public record NotificationResponseDto(
                 @Schema(description = "ID único de la notificación", example = "123e4567-e89b-12d3-a456-426614174000") UUID id,
 
-                @Schema(description = "Mensaje descriptivo de la notificación", example = "Stock bajo: El producto 'Laptop HP' tiene stock bajo (5 unidades)") String message,
+                @Schema(description = "Titulo de la notificación", example = "¡Alerta, se agotó el stock!") String title,
+
+                @Schema(description = "Mensaje descriptivo de la notificación", example = "El producto 'Laptop HP' quedo sin stock. Contactate con tu proveedor para evitar perdida de ventas.") String message,
 
                 @Schema(description = "Tipo de notificación", example = "LOW_STOCK") NotificationType type,
 
                 @Schema(description = "ID del recurso relacionado (ej: producto)", example = "123e4567-e89b-12d3-a456-426614174001") UUID referenceId,
 
                 @Schema(description = "Nombre del recurso relacionado (ej: nombre del producto)", example = "Laptop HP") String referenceName,
+
+                @Schema(description = "URL de la imagen del recurso", example = "https://example.com/images/laptop.jpg") String photoUrl,
 
                 @Schema(description = "Indica si el usuario autenticado ha leído esta notificación", example = "false") Boolean isRead,
 
