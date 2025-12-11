@@ -5,9 +5,9 @@ import { CustomerSearchInput } from './CustomerSearchInput';
 import { CustomerSearchResults } from './CustomerSearchResults';
 import { createCustomer } from '@/features/customers/services/customerService';
 import { useSalesCustomerSearch } from '../hooks/useSalesCustomerSearch';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-export function CustomerSection() {
+export function CustomerSection({ preSelectedCustomer, onCustomerChange }) {
   const [showRegisterPopup, setShowRegisterPopup] = useState(false);
   
   const {
@@ -21,6 +21,20 @@ export function CustomerSection() {
     selectConsumidorFinal,
     clearCustomer,
   } = useSalesCustomerSearch();
+
+  useEffect(() => {
+    if (preSelectedCustomer && !selectedCustomer) {
+      selectCustomer(preSelectedCustomer);
+      setCustomerQuery(preSelectedCustomer.name || '');
+    }
+  }, [preSelectedCustomer]);
+
+  useEffect(() => {
+    if (onCustomerChange) {
+      onCustomerChange(selectedCustomer);
+    }
+  }, [selectedCustomer, onCustomerChange]);
+
 
   const handleSaveCustomer = async (customerData) => {
     try {
