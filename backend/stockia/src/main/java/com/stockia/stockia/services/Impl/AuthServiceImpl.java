@@ -14,6 +14,7 @@ import com.stockia.stockia.services.AuthService;
 import com.stockia.stockia.services.EmailService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,6 +31,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthServiceImpl implements AuthService {
     // --- Repositories ---
     private final UserRepository userRepository;
@@ -59,14 +61,22 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public RegisterResponseDto register(RegisterRequestDto requestDto) {
+        log.info("Creating new user.");
         if (userRepository.existsByEmail(requestDto.email())) {
+            log.warn("Registration failed: email {} is already registered", requestDto.email());
             throw new DuplicateResourceException("El email '" + requestDto.email() + "' ya está registrado");
+        }
+        if (userRepository.existsByName(requestDto.name())) {
+            log.warn("Registration failed: name {} is already registered", requestDto.email());
+            throw new DuplicateResourceException("El nombre '" + requestDto.name() + "' ya está registrado");
         }
         String encodedPassword = passwordEncoder.encode(requestDto.password());
 
         User user = userMapper.toUser(requestDto, encodedPassword);
 
         User savedUser = userRepository.save(user);
+
+        log.info("User created successfully with id: {}", savedUser.getId());
 
         return userMapper.toDto(savedUser);
     }
@@ -76,6 +86,8 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public LoginResponseDto login(LoginRequestDto requestDto) {
+        log.info("Login attempt for user: {}", requestDto.email());
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(requestDto.email(), requestDto.password()));
 
@@ -83,11 +95,15 @@ public class AuthServiceImpl implements AuthService {
         User user = userDetails.getUser();
 
         if (user.getAccountStatus() != AccountStatus.ACTIVE) {
+            log.warn("Login denied for user {}: account status {}", user.getEmail(), user.getAccountStatus());
             throw new UnauthorizedException(
                     "Acceso denegado. Estado del usuario: " + user.getAccountStatus());
         }
 
         String token = jwtService.generateToken(userMapper.toJwtDataDto(user), TokenPurpose.AUTHENTICATION);
+
+        log.info("Login successful for user: {}", user.getEmail());
+
         return new LoginResponseDto(token);
     }
 
@@ -112,6 +128,7 @@ public class AuthServiceImpl implements AuthService {
     public void changePassword(ChangePasswordRequestDto requestDto) {
         User currentUser = getAuthenticatedUser()
                 .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
+        log.info("Password change requested for user: {}", currentUser.getEmail());
 
         if (!passwordEncoder.matches(requestDto.currentPassword(), currentUser.getPassword())) {
             throw new InvalidPasswordException("La contraseña actual es incorrecta");
@@ -119,6 +136,7 @@ public class AuthServiceImpl implements AuthService {
 
         currentUser.setPassword(passwordEncoder.encode(requestDto.newPassword()));
         userRepository.save(currentUser);
+        log.info("Password changed successfully for user: {}", currentUser.getEmail());
     }
 
     /**
@@ -126,11 +144,16 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public void forgotPassword(ForgotPasswordRequestDto requestDto) {
+        log.info("Starting password recovery for email: {}", requestDto.email());
+
         User user = userRepository.findByEmail(requestDto.email())
                 .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
 
+        log.info("User found. Generating reset token for userId: {}", user.getId());
         String token = jwtService.generateToken(userMapper.toJwtDataDto(user), TokenPurpose.RESET_PASSWORD);
+
         sendPasswordResetEmail(user, token);
+        log.info("Password recovery email sent successfully for user: {}", user.getEmail());
     }
 
     /**
