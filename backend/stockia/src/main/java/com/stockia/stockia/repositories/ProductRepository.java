@@ -98,6 +98,9 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
         """)
         long countActiveProducts();
 
+        @Query("SELECT p.photoUrl FROM Product p WHERE p.id = :id")
+        String findPhotoUrlById(@Param("id") UUID id);
+
         /**
          * Busca productos por disponibilidad excluyendo eliminados.
          *

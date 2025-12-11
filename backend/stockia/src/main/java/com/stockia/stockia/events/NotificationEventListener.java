@@ -73,14 +73,13 @@ public class NotificationEventListener {
      */
     private String buildStockMessage(LowStockEvent event, NotificationType type) {
         if (type == NotificationType.OUT_OF_STOCK) {
-            return String.format("¡Stock agotado! El producto '%s' no tiene unidades disponibles.",
+            return String.format(
+                    "¡Alerta, se agotó el stock! - El producto '%s' quedo sin stock. Contactate con tu proveedor para evitar perdida de ventas.",
                     event.getProductName());
         } else {
             return String.format(
-                    "¡Alerta de stock! Stock bajo: El producto '%s' tiene %d unidades (mínimo: %d). Contáctate con tu proveedor para evitar faltas.",
-                    event.getProductName(),
-                    event.getCurrentStock(),
-                    event.getMinStock());
+                    "¡Alerta, stock bajo! - El producto '%s' alcanzo la cantidad mínima indicada. Contáctate con tu proveedor para evitar faltas.",
+                    event.getProductName());
         }
     }
 

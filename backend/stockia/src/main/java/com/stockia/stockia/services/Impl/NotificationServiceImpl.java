@@ -9,6 +9,7 @@ import com.stockia.stockia.models.Notification;
 import com.stockia.stockia.models.User;
 import com.stockia.stockia.models.UserNotificationRead;
 import com.stockia.stockia.repositories.NotificationRepository;
+import com.stockia.stockia.repositories.ProductRepository;
 import com.stockia.stockia.repositories.UserNotificationReadRepository;
 import com.stockia.stockia.repositories.UserRepository;
 import com.stockia.stockia.services.NotificationService;
@@ -34,6 +35,7 @@ public class NotificationServiceImpl implements NotificationService {
         private final NotificationRepository notificationRepository;
         private final UserNotificationReadRepository readRepository;
         private final UserRepository userRepository;
+        private final ProductRepository productRepository;
         private final NotificationMapper notificationMapper;
 
         @Override
@@ -81,9 +83,14 @@ public class NotificationServiceImpl implements NotificationService {
 
                 // Mapear a DTOs con información de lectura
                 List<NotificationResponseDto> dtos = filteredNotifications.stream()
-                                .map(notification -> notificationMapper.toResponseDto(
+                                .map(notification -> {
+                                        String photoUrl = null;
+                                        if (notification.getReferenceId() != null) {
+                                                photoUrl = productRepository.findPhotoUrlById(notification.getReferenceId());
+                                        }
+                                        return notificationMapper.toResponseDto(
                                                 notification,
-                                                readRecordMap.get(notification.getId())))
+                                                readRecordMap.get(notification.getId()), photoUrl);})
                                 .toList();
 
                 return new PageImpl<>(dtos, pageable, notifications.getTotalElements());
@@ -111,7 +118,10 @@ public class NotificationServiceImpl implements NotificationService {
                         UserNotificationRead existingRead = readRepository
                                         .findByUserIdAndNotificationId(userId, notificationId)
                                         .orElseThrow();
-                        return notificationMapper.toResponseDto(notification, existingRead);
+                        return notificationMapper.toResponseDto(notification,
+                                existingRead,
+                                productRepository.findPhotoUrlById(notification.getReferenceId())
+                        );
                 }
 
                 // Crear registro de lectura
@@ -123,7 +133,11 @@ public class NotificationServiceImpl implements NotificationService {
                 readRecord = readRepository.save(readRecord);
                 log.info("Notificación {} marcada como leída por usuario {}", notificationId, userId);
 
-                return notificationMapper.toResponseDto(notification, readRecord);
+                return notificationMapper.toResponseDto(
+                        notification,
+                        readRecord,
+                        productRepository.findPhotoUrlById(notification.getReferenceId())
+                        );
         }
 
         @Override
