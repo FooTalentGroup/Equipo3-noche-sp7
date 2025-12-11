@@ -3,6 +3,7 @@ import { Edit, ShoppingCart } from 'lucide-react';
 
 export function ActionsDropdown({ onEdit, onViewHistory, className = '' }) {
     const [isOpen, setIsOpen] = useState(false);
+    const [openUpward, setOpenUpward] = useState(false);
     const dropdownRef = useRef(null);
 
     useEffect(() => {
@@ -14,6 +15,14 @@ export function ActionsDropdown({ onEdit, onViewHistory, className = '' }) {
 
         if (isOpen) {
             document.addEventListener('mousedown', handleClickOutside);
+
+            if (dropdownRef.current) {
+                const rect = dropdownRef.current.getBoundingClientRect();
+                const spaceBelow = window.innerHeight - rect.bottom;
+                const spaceAbove = rect.top;
+                const dropdownHeight = 120;
+                setOpenUpward(spaceBelow < dropdownHeight && spaceAbove > dropdownHeight);
+            }
         }
 
         return () => {
@@ -56,7 +65,8 @@ export function ActionsDropdown({ onEdit, onViewHistory, className = '' }) {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                <div className={`absolute right-0 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50 ${openUpward ? 'bottom-full mb-1' : 'top-full mt-1'
+                    }`}>
                     <button
                         onClick={handleEdit}
                         className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 transition"

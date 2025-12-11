@@ -23,8 +23,10 @@ export function CustomersTable({
         onPageChange?.(currentPage + 1);
     };
 
-    const handleViewHistory = (customerId) => {
-        navigate(`/customers/purchase-history/${customerId}`);
+    const handleViewHistory = (customer) => {
+        navigate(`/customers/purchase-history/${customer.id}`, {
+            state: { customerName: customer.nombre }
+        });
     };
 
     if (isLoading) {
@@ -40,7 +42,7 @@ export function CustomersTable({
 
     return (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1086px]">
-            <div className="overflow-x-auto">
+            <div className="overflow-visible">
                 <table className="w-full text-sm">
                     <thead className="text-[14px] bg-slate-200 text-[#404040]">
                         <tr>
@@ -65,7 +67,7 @@ export function CustomersTable({
                                     <div className="flex items-center justify-center gap-4">
                                         <ActionsDropdown
                                             onEdit={() => onEdit?.(c)}
-                                            onViewHistory={() => handleViewHistory(c.id)}
+                                            onViewHistory={() => handleViewHistory(c)}
                                         />
                                         <button onClick={() => onDelete?.(c.id)} className="text-red-600 hover:text-red-700 transition">
                                             <Trash2 className="h-4 w-4" />

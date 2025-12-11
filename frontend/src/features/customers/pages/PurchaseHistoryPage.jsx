@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router';
+import { useParams, useNavigate, useLocation } from 'react-router';
 import { ChevronLeft, ChevronRight, FileUp, LoaderCircle } from 'lucide-react';
 import { getPurchaseHistory } from '../services/customerService';
 import { Button } from '@/shared/components/ui/button';
@@ -9,8 +9,9 @@ const PAGE_SIZE = 10;
 export default function PurchaseHistoryPage() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const [purchases, setPurchases] = useState([]);
-    const [customerName, setCustomerName] = useState('');
+    const [customerName, setCustomerName] = useState(location.state?.customerName || 'Cliente');
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(0);
     const [pagination, setPagination] = useState({ totalPages: 0, totalElements: 0, pageSize: PAGE_SIZE });
@@ -27,11 +28,6 @@ export default function PurchaseHistoryPage() {
                     totalElements: data.totalElements,
                     pageSize: data.pageSize
                 });
-
-                // Get customer name from first purchase
-                if (data.purchases && data.purchases.length > 0) {
-                    setCustomerName(data.purchases[0].customerName || 'Cliente');
-                }
             } catch (error) {
                 console.error('Error fetching purchase history:', error);
                 setPurchases([]);
