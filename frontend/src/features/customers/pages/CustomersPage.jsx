@@ -15,8 +15,7 @@ const mapCustomer = (c) => ({
     nombre: c.name,
     email: c.email,
     telefono: c.phone,
-    ultimaCompra: c.lastPurchaseDate ?? 'No existe compra',
-    joined: c.isFrequent ?? false
+    esFrecuente: c.isFrequent ?? false
 });
 
 export default function CustomersPage() {
@@ -47,6 +46,7 @@ export default function CustomersPage() {
                 totalElements: data.totalElements,
                 pageSize: data.pageSize
             });
+            console.log('Pagination set to:', { totalPages: data.totalPages, totalElements: data.totalElements, pageSize: data.pageSize });
         } catch {
             setCustomers([]);
         } finally {
@@ -73,7 +73,7 @@ export default function CustomersPage() {
             nombre: c.nombre,
             email: c.email,
             telefono: c.telefono,
-            joined: c.joined
+            esFrecuente: c.isFrequent
         });
         setIsRegisterOpen(true);
     };
@@ -90,14 +90,14 @@ export default function CustomersPage() {
                     name: payload.nombre.trim(),
                     email: payload.email.trim(),
                     phone: payload.telefono.trim(),
-                    isFrequent: payload.joined
+                    isFrequent: payload.esFrecuente
                 });
             } else {
                 await createCustomer({
                     name: payload.nombre.trim(),
                     email: payload.email.trim(),
                     phone: payload.telefono.trim(),
-                    isFrequent: payload.joined
+                    isFrequent: payload.esFrecuente
                 });
                 setShowSuccessModal(true);
             }
@@ -115,8 +115,8 @@ export default function CustomersPage() {
 
     const handleExport = () => {
         const rows = [
-            ['Nombre', 'Email', 'Telefono', 'Ultima compra'],
-            ...customers.map(c => [c.nombre, c.email, c.telefono, c.ultimaCompra || ''])
+            ['Tipo', 'Nombre', 'Email', 'Telefono'],
+            ...customers.map(c => [c.isFrequent, c.nombre, c.email, c.telefono])
         ];
         const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });

@@ -2,7 +2,6 @@ import React from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import App from '@/App.jsx';
 import NotFoundPage from '@/infrastructure/pages/NotFoundPage.jsx';
-import CustomersPage from '@/features/customers/pages/CustomersPage.jsx';
 import SuppliersPage from '@/features/suppliers/pages/SuppliersPage.jsx';
 import SalesPage from '@/features/sales/pages/SalesPage';
 import DiscountsPage from '@/features/discounts/pages/DiscountPage.jsx';
@@ -12,6 +11,7 @@ import ReportsSales from '@/features/repor/pages/ReportsSales.jsx';
 import ReportsUsers from '@/features/repor/pages/ReportsUsers.jsx';
 import { productsRoutes } from '@/features/products/routes/products.routes';
 import { authRoutes } from '@/features/auth/routes/auth.routes.jsx';
+import { customersRoutes } from '@/features/customers/routes/customers.routes.jsx';
 import { ProtectedRoute } from '@/infrastructure/router/ProtectedRoute.jsx';
 import { inventoryRoutes } from '@/features/products/routes/inventory.routes.jsx';
 import ProductsReport from '@/features/repor/pages/ProductsReportPage';
@@ -35,7 +35,7 @@ const router = createBrowserRouter([
             { index: true, element: <HomePage /> },
             ...productsRoutes,
             ...inventoryRoutes,
-            { path: 'customers', element: <CustomersPage /> },
+            ...customersRoutes,
             { path: 'suppliers', element: <SuppliersPage /> },
             { path: 'sales', element: <SalesPage /> },
             { path: 'discounts', element: <DiscountsPage /> },
