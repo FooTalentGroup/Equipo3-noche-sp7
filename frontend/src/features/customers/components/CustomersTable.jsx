@@ -1,4 +1,4 @@
-import { Edit, Trash2, ChevronLeft, ChevronRight, LoaderCircle } from 'lucide-react';
+import { Edit, Trash2, ChevronLeft, ChevronRight, LoaderCircle, ShieldCheck, ShieldUser } from 'lucide-react';
 
 export function CustomersTable({
     customers = [],
@@ -36,10 +36,10 @@ export function CustomersTable({
                 <table className="w-full text-sm">
                     <thead className="text-[14px] bg-slate-200 text-[#404040] font-semibold h-[46px]">
                         <tr>
+                            <th className="px-6 py-3 text-left text-gray-700">Tipo</th>
                             <th className="px-6 py-3 text-left text-gray-700">Nombre</th>
                             <th className="px-6 py-3 text-left text-gray-700">Email</th>
                             <th className="px-6 py-3 text-left text-gray-700">Numero telefónico</th>
-                            <th className="px-6 py-3 text-left text-gray-700">Última compra</th>
                             <th className="px-6 py-3 text-center text-gray-700">Acción</th>
                         </tr>
                     </thead>
@@ -47,10 +47,12 @@ export function CustomersTable({
                     <tbody className="divide-y divide-gray-100">
                         {customers.map((c) => (
                             <tr key={c.id} className="hover:bg-gray-50 transition-colors">
+                                <td className="px-6 py-4 font-normal text-[#525252] text-[14px]">
+                                    {c.esFrecuente && <ShieldUser className="h-5 w-5 text-[#436086]" />}
+                                </td>
                                 <td className="px-6 py-4 font-normal text-[#171717] text-[14px]">{c.nombre}</td>
                                 <td className="px-6 py-4 font-normal text-[#525252] text-[14px]">{c.email}</td>
                                 <td className="px-6 py-4 font-normal text-[#525252] text-[14px]">{c.telefono}</td>
-                                <td className="px-6 py-4 font-normal text-[#525252] text-[14px]">{c.ultimaCompra ?? '—'}</td>
                                 <td className="px-6 py-4">
                                     <div className="flex items-center justify-center gap-4">
                                         <button onClick={() => onEdit?.(c)} className="text-gray-500 hover:text-blue-600 transition">
