@@ -46,6 +46,7 @@ export default function CustomersPage() {
                 totalElements: data.totalElements,
                 pageSize: data.pageSize
             });
+            console.log('Pagination set to:', { totalPages: data.totalPages, totalElements: data.totalElements, pageSize: data.pageSize });
         } catch {
             setCustomers([]);
         } finally {
