@@ -1,23 +1,81 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
-import { LogOut, User } from "lucide-react";
+import { LogOut, HelpCircle } from "lucide-react"; 
 import { useLogout } from "@/features/auth/hooks/useAuth.js";
-import { clearAuthData, getUsername } from "@/features/auth/utils/authStorage.js";
+import { clearAuthData } from "@/features/auth/utils/authStorage.js";
+import ButtonExitIcon from "@/assets/button-exit.png"; 
 
-const getInitials = (username) => {
-  if (!username) return "?";
-  const parts = username.trim().split(" ");
-  if (parts.length >= 2) {
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-  }
-  return username.substring(0, 2).toUpperCase();
+
+const LogoutModal = ({ isOpen, onClose, onConfirm, isPending }) => {
+  if (!isOpen) return null;
+
+  return (
+    
+    <div 
+      className="fixed inset-0 flex justify-center items-center z-50"
+      
+      style={{ backgroundColor: 'rgba(31, 41, 55, 0.7)' }} 
+    > 
+      <div className="bg-white p-6 rounded-lg shadow-2xl w-full max-w-md"> 
+        
+        <div className="flex justify-center items-center mb-6"> 
+          <h2 className="text-lg font-bold">¿Estás seguro que quieres cerrar sesión?</h2>
+        </div>
+
+        <div className="flex justify-center gap-4 mt-4"> 
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-gray-700 bg-gray-100 rounded hover:bg-gray-200 transition shadow-sm border border-gray-200"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={isPending}
+            className={`px-4 py-2 rounded transition font-semibold 
+              ${isPending 
+                ? "bg-red-300 cursor-not-allowed text-white" 
+                : "bg-[#C93939] text-white hover:bg-red-700"} 
+              flex items-center gap-2
+            `}
+          >
+          
+            {!isPending && (
+              <img 
+                src={ButtonExitIcon} 
+                alt="Icono de Salir" 
+                
+                className="h-6 w-10" 
+              />
+            )}
+            {isPending ? "Cerrando sesión..." : "Cerrar sesión"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
-export const UserMenu = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef(null);
+
+const SidebarItem = ({ icon: Icon, label, onClick, className = "", isActive = false }) => {
+  const baseClasses = "flex items-center gap-3 w-full p-6 transition text-base";
+  
+  const activeHoverStyles = "hover:bg-[#F4F5F7] hover:shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]";
+  const activeClasses = isActive
+    ? "bg-[#F4F5F7] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]" 
+    : activeHoverStyles; 
+
+  return (
+    <button onClick={onClick} className={`${baseClasses} ${activeClasses} ${className}`}>
+      <Icon className="h-[18px] w-[18px]" />
+      <span>{label}</span>
+    </button>
+  );
+};
+
+export const SidebarFooter = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
-  const username = getUsername() || "Administrador";
 
   const logout = useLogout({
     onSuccess: () => {
@@ -26,59 +84,47 @@ export const UserMenu = () => {
     },
     onError: (error) => {
       console.error("Error al cerrar sesión:", error.message);
-      clearAuthData();
+      clearAuthData(); 
       navigate("/login", { replace: true });
     },
   });
 
   const handleLogout = () => {
-    logout.mutate();
-    setIsOpen(false);
+    logout.mutate(); 
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
 
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
+  const navigateToFAQ = () => {
+   
+  };
 
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen]);
-
-  if (!username) return null;
-
-  const initials = getInitials(username);
+  const logoutColorClasses = "text-[#C93939]"; 
 
   return (
-    <div className="relative" ref={menuRef}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 p-6 text-stokia-neutral-600 hover:bg-gray-200 w-full transition"
-      >
-        <User className="h-[18px] w-[18px] text-stokia-neutral-600" />
-        <span className="text-base!">{username}</span>
-      </button>
+    <div className="flex flex-col border-t border-[#E4E8E9]">
+      
+      <SidebarItem 
+        icon={HelpCircle} 
+        label="Preguntas frecuentes"
+        onClick={navigateToFAQ}
+        className="text-[#525252]" 
+      />
+      
+      <SidebarItem
+        icon={LogOut} 
+        label="Cerrar sesión"
+        onClick={handleOpenModal}
+        className={logoutColorClasses} 
+      />
 
-      {isOpen && (
-        <div className="absolute -top-10 right-0 mt-2 w-48 bg-white shadow-lg border border-gray-200 py-1 z-50">
-          <button
-            onClick={handleLogout}
-            disabled={logout.isPending}
-            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <LogOut className="h-4 w-4" />
-            {logout.isPending ? "Cerrando sesión..." : "Cerrar Sesión"}
-          </button>
-        </div>
-      )}
+      <LogoutModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onConfirm={handleLogout}
+        isPending={logout.isPending}  
+      />
     </div>
   );
 };
-
