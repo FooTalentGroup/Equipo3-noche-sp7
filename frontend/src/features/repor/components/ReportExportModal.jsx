@@ -50,14 +50,14 @@ export function ReportExportModal({ isOpen, onClose, reportData }) {
                 el.style.border = 'none';
                 el.style.boxShadow = 'none';
                 el.style.outline = 'none';
-                el.style.overflow = 'hidden';
+                el.style.overflow = 'visible';
             });
 
             const dataUrl = await domtoimage.toPng(container, {
                 quality: 1,
                 bgcolor: '#ffffff',
                 width: container.offsetWidth,
-                height: container.offsetHeight
+                height: container.scrollHeight
             });
 
             if (footer) {
@@ -163,7 +163,7 @@ export function ReportExportModal({ isOpen, onClose, reportData }) {
                         </div>
                     </div>
 
-                    <div className="mb-6 bg-white rounded-lg border border-stokia-neutral-200 p-4" style={{ height: '280px' }}>
+                    <div className="mb-6 bg-white rounded-lg border border-stokia-neutral-200 p-4" style={{ minHeight: '280px' }}>
                         {reportData.chartComponent}
                     </div>
                     <div className="mb-6 overflow-x-auto rounded-lg border border-stokia-neutral-200">
@@ -188,6 +188,12 @@ export function ReportExportModal({ isOpen, onClose, reportData }) {
                             </tbody>
                         </table>
                     </div>
+
+                    {reportData.endComponent && (
+                        <div className="mb-6 bg-white rounded-lg border border-stokia-neutral-200 p-4">
+                            {reportData.endComponent}
+                        </div>
+                    )}
 
                     <div className="flex justify-between items-center pt-4 border-t border-stokia-neutral-200 export-footer">
                         <Button
