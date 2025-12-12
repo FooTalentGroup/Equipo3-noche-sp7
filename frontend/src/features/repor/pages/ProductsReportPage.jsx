@@ -74,7 +74,17 @@ function ProductsReport() {
           <p className="text-stokia-neutral-500">{SUB_TITLE}</p>
         </div>
         <Button
-          onClick={() => setIsExportModalOpen(true)}
+          onClick={() => {
+            try {
+              // debug click
+              // eslint-disable-next-line no-console
+              console.debug('Ver reporte clicked, setIsExportModalOpen:', !!setIsExportModalOpen);
+              setIsExportModalOpen?.(true);
+            } catch (e) {
+              // eslint-disable-next-line no-console
+              console.error('Error al abrir modal de export:', e);
+            }
+          }}
           className="bg-stokia-primary-600 hover:bg-stokia-primary-700 text-white flex items-center gap-2"
         >
           <FileText className="h-4 w-4" />
