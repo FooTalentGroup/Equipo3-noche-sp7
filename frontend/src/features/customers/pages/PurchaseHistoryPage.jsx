@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router';
 import { ChevronLeft, ChevronRight, FileUp, LoaderCircle } from 'lucide-react';
 import { getPurchaseHistory } from '../services/customerService';
 import { Button } from '@/shared/components/ui/button';
+import apiClient from '@/shared/services/apiClient.js';
 
 const PAGE_SIZE = 10;
 
@@ -55,7 +56,7 @@ export default function PurchaseHistoryPage() {
             ...purchases.map(p => [
                 new Date(p.orderDate).toLocaleString('es-ES'),
                 p.customerName || customerName,
-                p.orderNumber || '',
+                `#${p.orderNumber || 'N/A'}`,
                 `$${p.totalAmount || 0}`
             ])
         ];
@@ -67,6 +68,21 @@ export default function PurchaseHistoryPage() {
         a.download = `historial-compras-${customerName.replace(/\s+/g, '-')}-${new Date().toISOString().slice(0, 10)}.csv`;
         a.click();
         URL.revokeObjectURL(url);
+    };
+
+    const handleDownloadPdf = async (orderId) => {
+        try {
+            const response = await apiClient.get(`/api/orders/${orderId}/pdf`, {
+                responseType: 'blob'
+            });
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+            setTimeout(() => URL.revokeObjectURL(url), 100);
+        } catch (error) {
+            console.error('Error downloading PDF:', error);
+            alert('Error al descargar el comprobante. Por favor, intenta de nuevo.');
+        }
     };
 
     if (isLoading) {
@@ -125,7 +141,17 @@ export default function PurchaseHistoryPage() {
                                             {purchase.customerName || customerName}
                                         </td>
                                         <td className="px-6 py-4 font-normal text-[#525252] text-[14px] text-center">
-                                            {purchase.orderNumber || 'N/A'}
+                                            <div className="flex flex-col items-center gap-2">
+                                                <div>{purchase.orderNumber || 'N/A'}</div>
+                                                {purchase.id && (
+                                                    <button
+                                                        onClick={() => handleDownloadPdf(purchase.id)}
+                                                        className="px-3 py-1 text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 rounded transition-colors cursor-pointer"
+                                                    >
+                                                        Ver comprobante
+                                                    </button>
+                                                )}
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4 font-normal text-[#525252] text-[14px] text-center">
                                             ${purchase.totalAmount?.toLocaleString('es-ES') || '0'}
