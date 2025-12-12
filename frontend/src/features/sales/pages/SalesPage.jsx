@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { AlertCircle } from "lucide-react";
 import { OrderTabs } from "../components/OrderTabs";
 import { Button } from "@/shared/components/ui/button";
 import { CustomerSection } from "../components/CustomerSection";

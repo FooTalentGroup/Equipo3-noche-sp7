@@ -1,12 +1,12 @@
 import { NavLink } from 'react-router';
-import { Package, ShoppingBag, Percent, UsersRound, Truck, ChartLine, Sparkles, House,UserRoundIcon } from 'lucide-react';
-import { SidebarFooter } from './UserMenu'; 
+import { Package, ShoppingBag, UsersRound, ChartLine, House, UserRoundIcon } from 'lucide-react';
+import { SidebarFooter } from './UserMenu';
 import stokialogo from "@/assets/stockia.svg";
 
 
 const navLinks = [
     {
-        to: '/home',
+        to: '/',
         icon: House,
         label: 'Inicio'
     },
@@ -19,17 +19,6 @@ const navLinks = [
         to: '/products',
         icon: Package,
         label: 'Productos'
-    }
-    ,
-    {
-        to: '/discounts',
-        icon: Percent,
-        label: 'Descuentos'
-    },
-    {
-        to: '/predictions-IA',
-        icon: Sparkles,
-        label: 'Predicciones de IA'
     },
     {
         to: '/reports',
@@ -40,11 +29,6 @@ const navLinks = [
         to: '/customers',
         icon: UsersRound,
         label: 'Clientes'
-    },
-    {
-        to: '/suppliers',
-        icon: Truck,
-        label: 'Proveedores'
     },
     {
         to: '/users',
@@ -90,8 +74,8 @@ const SideMenu = () => {
                     ))}
                 </nav>
             </div>
-      
-            <SidebarFooter /> 
+
+            <SidebarFooter />
         </aside>
     );
 };

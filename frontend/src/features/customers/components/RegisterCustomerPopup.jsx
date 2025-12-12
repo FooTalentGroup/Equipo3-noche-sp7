@@ -9,7 +9,7 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function RegisterCustomerPopup({ open, onClose, onSave, initialData = null }) {
     const isEditMode = !!initialData?.id;
-    const [form, setForm] = useState({ nombre: "", telefono: "", email: "", joined: true });
+    const [form, setForm] = useState({ nombre: "", telefono: "", email: "", esFrecuente: true });
     const [errors, setErrors] = useState({});
     const [showSuccess, setShowSuccess] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,10 +21,10 @@ export default function RegisterCustomerPopup({ open, onClose, onSave, initialDa
                     nombre: initialData.nombre || "",
                     telefono: initialData.telefono || "",
                     email: initialData.email || "",
-                    joined: initialData.joined ?? true
+                    esFrecuente: initialData.esFrecuente ?? true
                 });
             } else {
-                setForm({ nombre: "", telefono: "", email: "", joined: true });
+                setForm({ nombre: "", telefono: "", email: "", esFrecuente: true });
             }
             setErrors({});
             setShowSuccess(false);
@@ -59,7 +59,7 @@ export default function RegisterCustomerPopup({ open, onClose, onSave, initialDa
                 nombre: form.nombre.trim(),
                 email: form.email.trim(),
                 telefono: form.telefono.trim(),
-                joined: !!form.joined
+                esFrecuente: !!form.esFrecuente
             });
 
             setIsSubmitting(false);
@@ -70,17 +70,13 @@ export default function RegisterCustomerPopup({ open, onClose, onSave, initialDa
                 handleClose();
             }
         } catch (error) {
-            console.error('Error saving customer:', error);
             setIsSubmitting(false);
-
-            // Check if it's a 500 error (customer already exists)
             if (error.response?.status === 500) {
                 setErrors(prev => ({
                     ...prev,
                     email: "Cliente ya existente"
                 }));
             } else {
-                // Handle other errors
                 setErrors(prev => ({
                     ...prev,
                     email: error.response?.data?.message || "Cliente ya existente"
@@ -90,7 +86,7 @@ export default function RegisterCustomerPopup({ open, onClose, onSave, initialDa
     }
 
     const handleClose = () => {
-        setForm({ nombre: "", telefono: "", email: "", joined: true });
+        setForm({ nombre: "", telefono: "", email: "", esFrecuente: true });
         setErrors({});
         setShowSuccess(false);
         setIsSubmitting(false);
@@ -99,7 +95,7 @@ export default function RegisterCustomerPopup({ open, onClose, onSave, initialDa
 
     const handleRegisterAnother = () => {
         setShowSuccess(false);
-        setForm({ nombre: "", telefono: "", email: "", joined: true });
+        setForm({ nombre: "", telefono: "", email: "", esFrecuente: true });
         setErrors({});
     };
 
@@ -170,13 +166,13 @@ export default function RegisterCustomerPopup({ open, onClose, onSave, initialDa
                                 <input
                                     type="checkbox"
                                     className="sr-only peer"
-                                    checked={form.joined}
-                                    onChange={(e) => setForm(f => ({ ...f, joined: e.target.checked }))}
+                                    checked={form.esFrecuente}
+                                    onChange={(e) => setForm(f => ({ ...f, esFrecuente: e.target.checked }))}
                                 />
                                 <div className="w-[33px] h-[18px] bg-gray-200 peer-checked:bg-[#545F66] rounded-full transition-colors duration-300" />
                                 <div className="pointer-events-none absolute inset-0 flex items-center px-1">
                                     <div
-                                        className={`h-4 w-4 bg-white rounded-full shadow-lg transform transition-transform duration-300 ease-in-out ${form.joined ? 'translate-x-3' : 'translate-x-0'}`}
+                                        className={`h-4 w-4 bg-white rounded-full shadow-lg transform transition-transform duration-300 ease-in-out ${form.esFrecuente ? 'translate-x-3' : 'translate-x-0'}`}
                                     />
                                 </div>
                             </label>

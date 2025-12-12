@@ -7,7 +7,7 @@ import { createCustomer } from '@/features/customers/services/customerService';
 import { useSalesCustomerSearch } from '../hooks/useSalesCustomerSearch';
 import { useEffect, useState } from 'react';
 
-export function CustomerSection({ preSelectedCustomer, onCustomerChange,disableRemove = false }) {
+export function CustomerSection({ preSelectedCustomer,onCustomerSelected, onCustomerChange,disableRemove = false }) {
   const [showRegisterPopup, setShowRegisterPopup] = useState(false);
   const [isLocked, setIsLocked] = useState(false)
   
@@ -18,8 +18,8 @@ export function CustomerSection({ preSelectedCustomer, onCustomerChange,disableR
     loading: loadingCustomers,
     showResults: showCustomerResults,
     selectedCustomer,
-    selectCustomer,
-    selectConsumidorFinal,
+    selectCustomer: internalSelectCustomer,
+    selectConsumidorFinal: internalSelectConsumidorFinal,
     clearCustomer,
   } = useSalesCustomerSearch();
 
@@ -44,14 +44,14 @@ export function CustomerSection({ preSelectedCustomer, onCustomerChange,disableR
         name: customerData.nombre,
         phone: customerData.telefono,
         email: customerData.email,
-        isFrequent: customerData.joined
+        isFrequent: customerData.joined,
       };
-      
+
       const savedCustomer = await createCustomer(mappedData);
-      selectCustomer(savedCustomer);
+      handleSelectCustomer(savedCustomer);
       setShowRegisterPopup(false);
 
-      return savedCustomer; 
+      return savedCustomer;
     } catch (error) {
       console.error("Error al guardar el cliente:", error);
       throw error;
@@ -59,7 +59,17 @@ export function CustomerSection({ preSelectedCustomer, onCustomerChange,disableR
   };
 
   const handleConsumidorFinal = () => {
-    selectConsumidorFinal();
+    internalSelectConsumidorFinal();
+    if (onCustomerSelected) {
+      onCustomerSelected({ id: "final", name: "Consumidor Final" });
+    }
+  };
+
+  const handleClearCustomer = () => {
+    clearCustomer();
+    if (onCustomerSelected) {
+      onCustomerSelected(null);
+    }
   };
   const handleClearCustomer = () => {
    if (!isLocked && !disableRemove) {
@@ -88,7 +98,7 @@ export function CustomerSection({ preSelectedCustomer, onCustomerChange,disableR
             className="w-[432px] h-[36px]"
             disableClear={isLocked || disableRemove}
           />
-          
+
           <CustomerSearchResults
             customers={customers}
             loading={loadingCustomers}
@@ -108,7 +118,7 @@ export function CustomerSection({ preSelectedCustomer, onCustomerChange,disableR
           </Button>
 
           <Button
-            onClick={() => setShowRegisterPopup(true)} 
+            onClick={() => setShowRegisterPopup(true)}
             className="btn-standard bg-btn-primary hover:bg-btn-primary/90 text-white disabled:text-muted-foreground disabled:bg-secondary disabled:cursor-not-allowed disabled:shadow-none"
             disabled={selectedCustomer !== null || isLocked}
           >

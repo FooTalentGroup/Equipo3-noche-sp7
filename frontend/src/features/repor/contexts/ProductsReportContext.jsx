@@ -3,8 +3,12 @@ import { createContext, useContext, useState } from "react";
 const ProductsReportContext = createContext();
 
 export function ProductsReportProvider({ children }) {
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [productName, setProductName] = useState('');
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [reportData, setReportData] = useState(null);
 
 
   return (
@@ -14,6 +18,14 @@ export function ProductsReportProvider({ children }) {
         endDate,
         setStartDate,
         setEndDate,
+        year,
+        setYear,
+        productName,
+        setProductName,
+        isExportModalOpen,
+        setIsExportModalOpen,
+        reportData,
+        setReportData,
       }}
     >
       {children}
