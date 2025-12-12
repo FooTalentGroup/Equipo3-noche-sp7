@@ -24,28 +24,31 @@ ChartJS.register(
 export const options = {
   responsive: true,
   maintainAspectRatio: false,
+  interaction: {
+    mode: 'index',
+    intersect: false,
+  },
   plugins: {
     legend: {
       display: false,
     },
     tooltip: {
-      backgroundColor: 'rgba(255, 255, 255, 0.9)',
+      enabled: true,
+      mode: 'index',
+      intersect: false,
+      backgroundColor: 'rgba(255, 255, 255, 0.95)',
       titleColor: '#1e293b',
       bodyColor: '#475569',
       borderColor: '#e2e8f0',
       borderWidth: 1,
-      padding: 10,
+      padding: 12,
       displayColors: true,
       callbacks: {
         label: function (context) {
-          let label = context.dataset.label || '';
-          if (label) {
-            label += ': ';
-          }
           if (context.parsed.y !== null) {
-            label += new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(context.parsed.y);
+            return `Precio $${context.parsed.y.toFixed(2)}`;
           }
-          return label;
+          return '';
         }
       }
     },
@@ -72,8 +75,9 @@ export const options = {
     },
     point: {
       radius: 0, // Hide points by default
-      hitRadius: 10, // Larger hit area for tooltip
+      hitRadius: 15, // Larger hit area for tooltip
       hoverRadius: 6,
+      hoverBackgroundColor: '#5F7B99',
     }
   }
 };
@@ -81,12 +85,14 @@ export const options = {
 const labels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
 export default function ChartPricing({ dataPoints }) {
+  const validDataPoints = dataPoints && dataPoints.length > 0 ? dataPoints : Array(12).fill(0);
+
   const data = {
     labels,
     datasets: [
       {
-        label: 'Costo',
-        data: dataPoints || [38, 42, 45, 42, 38, 35, 30, 32, 38, 40, 41, 41],
+        label: 'Precio',
+        data: validDataPoints,
         borderColor: '#5F7B99',
         backgroundColor: 'rgba(95, 123, 153, 0.5)',
         borderWidth: 2,
@@ -94,5 +100,5 @@ export default function ChartPricing({ dataPoints }) {
     ],
   };
 
-  return <Line options={options} data={data} />;
+  return <Line key={JSON.stringify(validDataPoints)} options={options} data={data} />;
 }

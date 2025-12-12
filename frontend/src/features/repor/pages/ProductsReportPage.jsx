@@ -4,12 +4,15 @@ import { Dialog, DialogContent, DialogTitle } from "@/shared/components/ui/dialo
 import { Label } from "@/shared/components/ui/label";
 import { NativeSelect } from "@/shared/components/ui/native-select";
 import { Description } from "@radix-ui/react-dialog";
-import { Calendar1 } from "lucide-react";
+import { Calendar1, FileText } from "lucide-react";
 import { useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router";
 import { useProductsReport } from "../contexts/ProductsReportContext";
 import { useMostSoldProducts } from "../hooks/useMostSold";
 import { useTopFiveProducts } from "../hooks/useTopFiveSellers";
+import { CostReportFilters } from "../components/CostReportFilters";
+import { StockReportFilters } from "../components/StockReportFilters";
+import { ReportExportModal } from "../components/ReportExportModal";
 
 const TITLE = "Reporte de productos";
 const SUB_TITLE =
@@ -39,6 +42,13 @@ function ProductsReport() {
     endDate,
     setStartDate,
     setEndDate,
+    year,
+    setYear,
+    productName,
+    setProductName,
+    isExportModalOpen,
+    setIsExportModalOpen,
+    reportData,
   } = useProductsReport();
 
   const { fetch: fetchMostSold } = useMostSoldProducts();
@@ -58,8 +68,19 @@ function ProductsReport() {
 
   return (
     <section className="w-6xl">
-      <h3 className="text-3xl font-semibold pb-3">{TITLE}</h3>
-      <p className="text-stokia-neutral-500">{SUB_TITLE}</p>
+      <div className="flex justify-between items-center pb-3">
+        <div>
+          <h3 className="text-3xl font-semibold">{TITLE}</h3>
+          <p className="text-stokia-neutral-500">{SUB_TITLE}</p>
+        </div>
+        <Button
+          onClick={() => setIsExportModalOpen(true)}
+          className="bg-stokia-primary-600 hover:bg-stokia-primary-700 text-white flex items-center gap-2"
+        >
+          <FileText className="h-4 w-4" />
+          Ver reporte
+        </Button>
+      </div>
 
       <div id="filters" className="flex flex-row pt-3 gap-3.5">
         <Label className="flex flex-col gap-3 items-start">
@@ -74,19 +95,37 @@ function ProductsReport() {
         </Label>
 
         <section id="specificFilters" className="flex flex-row gap-3">
-          <Label className="flex flex-col gap-3 items-start">
-            Selección de periodo
-            <Button
-              variant="stokia"
-              className=""
-              onClick={() => setIsModalOpen(true)}
-            >
-              <Calendar1 size={12} />
-              {startDate && endDate
-                ? `${formatDateArg(startDate)} - ${formatDateArg(endDate)}`
-                : 'Seleccionar período'}
-            </Button>
-          </Label>
+          {currentReportType === 'pricing' ? (
+            <CostReportFilters
+              year={year}
+              onYearChange={setYear}
+              productName={productName}
+              onProductChange={setProductName}
+            />
+          ) : currentReportType === 'stock' ? (
+            <StockReportFilters
+              productName={productName}
+              onProductChange={setProductName}
+              startDate={startDate}
+              endDate={endDate}
+              onOpenDateModal={() => setIsModalOpen(true)}
+              formatDateArg={formatDateArg}
+            />
+          ) : (
+            <Label className="flex flex-col gap-3 items-start">
+              Selección de periodo
+              <Button
+                variant="stokia"
+                className=""
+                onClick={() => setIsModalOpen(true)}
+              >
+                <Calendar1 size={12} />
+                {startDate && endDate
+                  ? `${formatDateArg(startDate)} - ${formatDateArg(endDate)}`
+                  : 'Seleccionar período'}
+              </Button>
+            </Label>
+          )}
         </section>
       </div>
 
@@ -148,6 +187,12 @@ function ProductsReport() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <ReportExportModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        reportData={reportData}
+      />
     </section>
   );
 }
