@@ -38,18 +38,19 @@ export function ReportExportModal({ isOpen, onClose, reportData }) {
             container.style.boxShadow = 'none';
             container.style.border = 'none';
 
-            // Store and remove all borders from child elements
             const allElements = container.querySelectorAll('*');
             const originalStyles = [];
             allElements.forEach((el, index) => {
                 originalStyles[index] = {
                     border: el.style.border,
                     boxShadow: el.style.boxShadow,
-                    outline: el.style.outline
+                    outline: el.style.outline,
+                    overflow: el.style.overflow
                 };
                 el.style.border = 'none';
                 el.style.boxShadow = 'none';
                 el.style.outline = 'none';
+                el.style.overflow = 'hidden';
             });
 
             const dataUrl = await domtoimage.toPng(container, {
@@ -65,12 +66,12 @@ export function ReportExportModal({ isOpen, onClose, reportData }) {
             container.style.boxShadow = originalBoxShadow;
             container.style.border = originalBorder;
 
-            // Restore child element styles
             allElements.forEach((el, index) => {
                 if (originalStyles[index]) {
                     el.style.border = originalStyles[index].border || '';
                     el.style.boxShadow = originalStyles[index].boxShadow || '';
                     el.style.outline = originalStyles[index].outline || '';
+                    el.style.overflow = originalStyles[index].overflow || '';
                 }
             });
 
@@ -91,22 +92,17 @@ export function ReportExportModal({ isOpen, onClose, reportData }) {
 
             const pdf = new jsPDF('p', 'mm', 'a4');
 
-            // If content fits in one page, just add it
-            // If taller, scale it down to fit on one page
             if (imgHeight <= pageHeight) {
                 pdf.addImage(dataUrl, 'PNG', 0, 0, imgWidth, imgHeight);
             } else {
-                // Scale down to fit on one page
                 const scale = pageHeight / imgHeight;
                 const scaledWidth = imgWidth * scale;
                 const scaledHeight = pageHeight;
-                const xOffset = (imgWidth - scaledWidth) / 2; // Center horizontally
+                const xOffset = (imgWidth - scaledWidth) / 2;
                 pdf.addImage(dataUrl, 'PNG', xOffset, 0, scaledWidth, scaledHeight);
             }
 
             const filename = `${reportData.title.replace(/ /g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
-
-            console.log('Saving PDF:', filename);
             pdf.save(filename);
 
             console.log('PDF saved successfully');
