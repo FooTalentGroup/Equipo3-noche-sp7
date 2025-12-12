@@ -6,18 +6,24 @@ import { CustomerSection } from "../components/CustomerSection";
 import { ProductsSection } from "../components/ProductsSection";
 import { ProductCard } from "../components/CardResult";
 import { SalesSummary } from "../components/SalesSummary";
+import { OrdersListTab } from "../components/OrdersListTab";
+import { OrderCancelModal } from "../components/OrderCancelModal";
 import { useSalesProductSearch } from "../hooks/useSalesProductSearch";
+import { useOrderManagement } from "../hooks/useOrderManagement";
+import { OrderNoteModal } from "../components/OrderNoteModal";
+import { OrderSuccessModal } from "../components/OrderSuccessModal";
 import { useCart } from "../hooks/useCart";
+
 
 const SalesPage = () => {
   const [activeTab, setActiveTab] = useState("register");
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingOrderId, setEditingOrderId] = useState(null);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
-
-  const [showCustomerWarning, setShowCustomerWarning] = useState(false);
-  const [showCartWarning, setShowCartWarning] = useState(false);
-
-  const { items, addItem, subtotal, total, removeItem, decrementItemQuantity } =
-    useCart();
+  const [orderNote, setOrderNote] = useState("");
+  const [showNoteModal, setShowNoteModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  
 
   const {
     searchQuery: productQuery,
@@ -26,157 +32,271 @@ const SalesPage = () => {
     loading: loadingProducts,
   } = useSalesProductSearch();
 
+  const {
+    orders: ordersData,
+    selectedOrder,
+    showCancelModal,
+    handleSaveEditedOrder,
+    handleCancelOrder,
+    handleConfirmCancel,
+    handleCollectOrder,
+    handleCloseCancelModal,
+    handleCreateOrder,
+  } = useOrderManagement();
+
+  
+  const {
+    items: cartItems,
+    discount,
+    addItem,
+    removeItem,
+    applyDiscount,
+    clearCart,
+    loadFromOrder,
+    subtotal,
+    discountAmount,
+    total,
+  } = useCart();
+
   const handleClearSearch = () => {
     setProductQuery("");
   };
 
-  const handleSelectProduct = (product) => {
+ const handleSelectProduct = (product) => {
     addItem(product);
   };
+  const isCheckoutEnabled = selectedCustomer !== null && cartItems.length > 0;
 
-  const handleCustomerSelected = (customer) => {
-    setSelectedCustomer(customer);
-    if (customer !== null) {
-      setShowCustomerWarning(false);
-    }
+  const handleEditOrder = (order) => {
+   
+    loadFromOrder(order);
+    setSelectedCustomer(order.customer);
+    setOrderNote(order.note || "");
+    setEditingOrderId(order.id);
+    setIsEditing(true);
+    setActiveTab("register");
   };
 
-  const isCheckoutEnabled = selectedCustomer !== null && items.length > 0;
-
-  const handleFinalizeOrder = () => {
-    setShowCustomerWarning(false);
-    setShowCartWarning(false);
-
-    if (selectedCustomer === null) {
-      setShowCustomerWarning(true);
+  const handleFinishOrder = () => {
+    if (!selectedCustomer) {
+      alert("Por favor selecciona un cliente");
       return;
     }
 
-    if (items.length === 0) {
-      setShowCartWarning(true);
+    if (cartItems.length === 0) {
+      alert("Por favor agrega al menos un producto");
       return;
     }
 
-    console.log("Iniciando proceso de pago...");
+    const orderData = {
+      customer: selectedCustomer,
+      products: cartItems,
+      note: orderNote,
+      subtotal: subtotal,
+      discount: discountAmount,
+      discountType: discount?.type || null,
+      discountValue: discount?.value || null,
+      total: total,
+    };
+
+    if (isEditing) {
+      handleSaveEditedOrder({
+        ...orderData,
+        id: editingOrderId,
+      });
+
+      clearCart();
+      setSelectedCustomer(null);
+      setOrderNote("");
+      setIsEditing(false);
+      setEditingOrderId(null);
+      setActiveTab("pending");
+      return;
+    
+    } else {
+      handleCreateOrder(orderData);
+    }
+
+    clearCart();
+    setSelectedCustomer(null);
+    setOrderNote("");
+    setIsEditing(false);
+    setEditingOrderId(null);
+    setActiveTab("pending");
+    setTimeout(() => {
+      setShowSuccessModal(true);
+    }, 200);
   };
 
-  const WarningBox = ({ title, description }) => (
-    <div className="flex justify-end mb-4">
-      <div className="border border-red-500 bg-red-50 p-3 rounded-lg max-w-sm text-sm">
-        <div className="flex items-start space-x-2">
-          <AlertCircle className="h-4 w-4 text-red-700 mt-0.5" />
-          <div>
-            <p className="font-semibold text-red-700">{title}</p>
-            <p className="text-red-600">{description}</p>
+  const handleCloseSuccessModal = () => {
+  setShowSuccessModal(false);
+}; 
+
+  const handleAddNote = () => {
+  setShowNoteModal(true);
+};
+
+const handleSaveNote = (note) => {
+  setOrderNote(note);
+};
+
+  
+
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "register":
+        return (
+          <div className="flex-grow grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8 items-start">
+            <section className="flex-grow flex flex-col">
+              <h2 className="text-base font-medium text-foreground mb-4">
+                Resultados
+              </h2>
+
+              <div className="overflow-y-auto max-h-[450px] bg-secondary border border-border rounded-lg p-4 custom-scroll">
+                {loadingProducts && (
+                  <div className="text-center p-8 text-muted-foreground">
+                    Cargando productos...
+                  </div>
+                )}
+
+                {!loadingProducts && productQuery && products.length === 0 && (
+                  <div className="text-center p-8 text-muted-foreground">
+                    No se encontraron productos para "{productQuery}"
+                  </div>
+                )}
+
+                {products.length > 0 && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 min-w-[773px]">
+                    {products.map((product) => (
+                      <ProductCard
+                        key={product.id || product.name}
+                        id={product.id}
+                        name={product.name}
+                        stock={product.currentStock}
+                        price={product.price}
+                        imageUrl={product.photoUrl}
+                        onAddToCart={() => handleSelectProduct(product)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </section>
+
+            <div className="sticky top-8 flex flex-col space-y-4">
+              <h2 className="text-base font-medium text-foreground mb-4">
+                Resumen de compra
+              </h2>
+              
+              <SalesSummary
+                cartItems={cartItems}
+                subtotal={subtotal}
+                total={total}
+                discount={discount}
+                onRemoveItem={removeItem}
+                onApplyDiscount={applyDiscount}
+                onRemoveDiscount={() => applyDiscount(null)}
+              />
+
+              <div className="flex space-x-4">
+                <Button
+                  onClick={handleAddNote}
+                  className="bg-stokia-neutral-50 text-foreground py-2 px-4 rounded-lg flex items-center space-x-2 shadow-sm text-sm min-w-[131px] h-[40px] hover:bg-stokia-neutral-50"
+                >
+                  <span>{isEditing || orderNote ? "Editar nota" : "Agregar nota"}</span>
+                </Button>
+                <Button
+                  onClick={handleFinishOrder}
+                  className={`
+                      py-2 px-4 rounded-lg flex items-center space-x-2 shadow-sm text-sm 
+                      min-w-[149px] h-[40px]
+                      ${isCheckoutEnabled
+                        ? "bg-btn-primary text-white hover:bg-btn-primary/80"
+                        : "bg-stokia-neutral-50 text-foreground cursor-not-allowed"
+                      }
+                    `}
+                  disabled={!selectedCustomer || cartItems.length === 0}
+                >
+                  <span>{isEditing ? "Guardar cambios" : "Finalizar pedido"}</span>
+                </Button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    </div>
-  );
+        );
 
-  let TopWarning = null;
-  if (showCustomerWarning) {
-    TopWarning = (
-      <WarningBox
-        title="Falta cargar cliente"
-        description="Debes seleccionar un cliente o consumidor final antes de confirmar la venta."
-      />
-    );
-  } else if (showCartWarning) {
-    TopWarning = (
-      <WarningBox
-        title="Carrito vacío"
-        description="Debes añadir productos a la orden antes de confirmar la venta."
-      />
-    );
-  }
+      case "pending":
+        return (
+          <OrdersListTab
+            orders={ordersData.pending}
+            status="pending"
+            onEdit={handleEditOrder}
+            onCancel={handleCancelOrder}
+            onCollect={handleCollectOrder}
+          />
+        );
+
+      case "confirmed":
+        return (
+          <OrdersListTab orders={ordersData.confirmed} status="confirmed" />
+        );
+
+      case "cancelled":
+        return (
+          <OrdersListTab orders={ordersData.cancelled} status="cancelled" />
+        );
+
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="min-h-screen w-full flex flex-col">
       <OrderTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
       <div className="bg-background rounded-2xl shadow-sm p-8 border border-border max-w-[1200px] mx-auto w-full">
-        {TopWarning}
-
-        <CustomerSection onCustomerSelected={handleCustomerSelected} />
-
-        <ProductsSection
-          productQuery={productQuery}
-          setProductQuery={setProductQuery}
-          handleClearSearch={handleClearSearch}
-        />
-
-        <div className="flex-grow grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8 items-start">
-          <section className="flex-grow flex flex-col">
-            <h2 className="text-base font-medium text-foreground mb-4">
-              Resultados
-            </h2>
-
-            <div className="overflow-y-auto max-h-[450px] bg-secondary border border-border rounded-lg p-4 custom-scroll">
-              {loadingProducts && (
-                <div className="text-center p-8 text-muted-foreground">
-                  Cargando productos...
-                </div>
-              )}
-
-              {!loadingProducts && productQuery && products.length === 0 && (
-                <div className="text-center p-8 text-muted-foreground">
-                  No se encontraron productos para "{productQuery}"
-                </div>
-              )}
-
-              {products.length > 0 && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 min-w-[773px]">
-                  {products.map((product) => (
-                    <ProductCard
-                      key={product.id || product.name}
-                      id={product.id}
-                      name={product.name}
-                      stock={product.currentStock}
-                      price={product.price}
-                      imageUrl={product.photoUrl}
-                      onAddToCart={handleSelectProduct}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          </section>
-
-          <div className="sticky top-8 flex flex-col space-y-4">
-            <h2 className="text-base font-medium text-foreground mb-4">
-              Resumen de compra
-            </h2>
-
-            <SalesSummary
-              cartItems={items}
-              subtotal={subtotal}
-              total={total}
-              onAddItem={addItem}
-              onDecrementItem={decrementItemQuantity}
-              onRemoveItem={removeItem}
+        {activeTab === "register" && (
+          <>
+            <CustomerSection 
+             preSelectedCustomer={isEditing ? selectedCustomer : null}
+             onCustomerChange={setSelectedCustomer}
+             disableRemove={isEditing}
             />
-            <div className="flex space-x-4">
-              <Button className="bg-stokia-neutral-50 text-foreground py-2 px-4 rounded-lg flex items-center space-x-2 shadow-sm text-sm min-w-[131px] h-[40px]">
-                <span>Agregar nota</span>
-              </Button>
-              <Button
-                onClick={handleFinalizeOrder}
-                className={`
-                    py-2 px-4 rounded-lg flex items-center space-x-2 shadow-sm text-sm min-w-[149px] h-[40px]
-                    ${
-                      isCheckoutEnabled
-                        ? "bg-btn-primary text-white"
-                        : "bg-stokia-neutral-50 text-foreground opacity-50"
-                    }
-                `}
-              >
-                <span>Finalizar pedido</span>
-              </Button>
-            </div>
-          </div>
-        </div>
+            <ProductsSection
+              productQuery={productQuery}
+              setProductQuery={setProductQuery}
+              handleClearSearch={handleClearSearch}
+            />
+          </>
+        )}
+
+        {renderTabContent()}
       </div>
+
+      {showCancelModal && (
+        <OrderCancelModal
+          order={selectedOrder}
+          onConfirm={handleConfirmCancel}
+          onCancel={handleCloseCancelModal}
+        />
+      )}
+      {showNoteModal && (
+        <OrderNoteModal
+          isOpen={showNoteModal}
+          onClose={() => setShowNoteModal(false)}
+          onSave={handleSaveNote}
+          initialNote={orderNote}
+        />
+      )}
+    {showSuccessModal && (
+      <OrderSuccessModal
+        isOpen={showSuccessModal}
+        onClose={handleCloseSuccessModal}
+        orderNote={orderNote}
+      />
+    )}
+
     </div>
   );
 };
