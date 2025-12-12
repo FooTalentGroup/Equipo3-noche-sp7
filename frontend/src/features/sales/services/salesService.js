@@ -1,7 +1,7 @@
 import apiClient from "@/shared/services/apiClient";
 
 export async function getSalesLastWeek() {
-  const endDate = new Date();// Today
+  const endDate = new Date();
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 7);
 
@@ -18,6 +18,16 @@ export async function getSalesLastWeek() {
 
 export async function getPendingSales() {
   const { data } = await apiClient.get('/api/orders?status=PENDING');
+  return data;
+}
+
+export async function getConfirmedOrdersToday() {
+  const { data } = await apiClient.get('/api/orders?status=CONFIRMED');
+  return data;
+}
+
+export async function getCancelledOrders() {
+  const { data } = await apiClient.get('/api/orders?status=CANCELLED');
   return data;
 }
 

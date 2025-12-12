@@ -2,17 +2,17 @@ import { useState } from "react";
 
 
 export const useOrderManagement = () => {
-    
- const [orders, setOrders] = useState({
+
+  const [orders, setOrders] = useState({
     pending: [],
     confirmed: [],
     cancelled: []
   });
-  
+
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [nextOrderId, setNextOrderId] = useState(1);
-  // const [showEditModal, setShowEditModal] = useState(false);
 
   const handleCreateOrder = (orderData) => {
     const newOrder = {
@@ -35,7 +35,7 @@ export const useOrderManagement = () => {
     }));
 
     setNextOrderId(prev => prev + 1);
-    
+
     return newOrder;
   };
 
@@ -78,14 +78,67 @@ export const useOrderManagement = () => {
     setSelectedOrder(null);
   };
 
+  const handleCollectOrder = (order) => {
+    setSelectedOrder(order);
+    setShowPaymentModal(true);
+  };
+
+  const handleConfirmPayment = async (order, receivedAmount, change) => {
+    if (!order) return;
+
+    try {
+      const orderPayload = {
+        customerId: order.customer.id,
+        items: order.products.map(product => ({
+          productId: product.id,
+          quantity: product.quantity,
+          unitPrice: product.price
+        })),
+        paymentMethod: "CASH",
+        paymentNote: order.note || `Pago en efectivo. Recibido: $${receivedAmount.toLocaleString("es-CL")}, Cambio: $${change.toLocaleString("es-CL")}`,
+        discountAmount: order.discount || 0
+      };
+
+      const { createSale } = await import('../services/salesService');
+      const createdOrder = await createSale(orderPayload);
+
+      setOrders((prev) => ({
+        ...prev,
+        pending: prev.pending.filter((o) => o.id !== order.id),
+        confirmed: [...prev.confirmed, {
+          ...order,
+          status: "confirmed",
+          confirmedAt: new Date().toISOString(),
+          receivedAmount,
+          change,
+          backendId: createdOrder.id || createdOrder.data?.id,
+          orderNumber: createdOrder.orderNumber || createdOrder.data?.orderNumber
+        }],
+      }));
+
+      return createdOrder;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || error.message || "Error al procesar el pago");
+    }
+  };
+
+  const handleClosePaymentModal = () => {
+    setShowPaymentModal(false);
+    setSelectedOrder(null);
+  };
+
   return {
     orders,
     selectedOrder,
     showCancelModal,
+    showPaymentModal,
     handleCreateOrder,
     handleSaveEditedOrder,
     handleCancelOrder,
     handleConfirmCancel,
     handleCloseCancelModal,
+    handleCollectOrder,
+    handleConfirmPayment,
+    handleClosePaymentModal,
   };
 };

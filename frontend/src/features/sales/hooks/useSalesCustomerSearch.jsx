@@ -18,7 +18,7 @@ export function useSalesCustomerSearch(delay = 500) {
     return () => clearTimeout(id);
   }, [searchQuery, delay]);
 
- 
+
   useEffect(() => {
     const fetchCustomers = async () => {
       if (debouncedSearch.length < 2) {
@@ -29,7 +29,7 @@ export function useSalesCustomerSearch(delay = 500) {
 
       setLoading(true);
       setShowResults(true);
-      
+
       try {
         const response = await getCustomers({ name: debouncedSearch });
         const customersList = response?.customers?.content || [];
@@ -45,7 +45,7 @@ export function useSalesCustomerSearch(delay = 500) {
     fetchCustomers();
   }, [debouncedSearch]);
 
-   const selectCustomer = (customer) => {
+  const selectCustomer = (customer) => {
     setSelectedCustomer(customer);
     setSearchQuery(customer.name);
     setShowResults(false);
@@ -59,11 +59,11 @@ export function useSalesCustomerSearch(delay = 500) {
       phone: null,
       isConsumidorFinal: true
     };
-      setSelectedCustomer(consumidorFinal);
-      setSearchQuery('Consumidor final');
-      setShowResults(false);
-   };
- 
+    setSelectedCustomer(consumidorFinal);
+    setSearchQuery('Consumidor final');
+    setShowResults(false);
+  };
+
   const clearCustomer = () => {
     setSelectedCustomer(null);
     setSearchQuery('');

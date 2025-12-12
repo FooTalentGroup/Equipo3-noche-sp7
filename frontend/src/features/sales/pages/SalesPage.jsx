@@ -7,11 +7,14 @@ import { ProductsSection } from "../components/ProductsSection";
 import { ProductCard } from "../components/CardResult";
 import { SalesSummary } from "../components/SalesSummary";
 import { OrdersListTab } from "../components/OrdersListTab";
+import { ConfirmedOrdersTab } from "../components/ConfirmedOrdersTab";
+import { CancelledOrdersTab } from "../components/CancelledOrdersTab";
 import { OrderCancelModal } from "../components/OrderCancelModal";
 import { useSalesProductSearch } from "../hooks/useSalesProductSearch";
 import { useOrderManagement } from "../hooks/useOrderManagement";
 import { OrderNoteModal } from "../components/OrderNoteModal";
 import { OrderSuccessModal } from "../components/OrderSuccessModal";
+import { PaymentModal } from "../components/PaymentModal";
 import { useCart } from "../hooks/useCart";
 
 
@@ -23,7 +26,7 @@ const SalesPage = () => {
   const [orderNote, setOrderNote] = useState("");
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  
+
 
   const {
     searchQuery: productQuery,
@@ -36,15 +39,18 @@ const SalesPage = () => {
     orders: ordersData,
     selectedOrder,
     showCancelModal,
+    showPaymentModal,
     handleSaveEditedOrder,
     handleCancelOrder,
     handleConfirmCancel,
     handleCollectOrder,
+    handleConfirmPayment,
     handleCloseCancelModal,
+    handleClosePaymentModal,
     handleCreateOrder,
   } = useOrderManagement();
 
-  
+
   const {
     items: cartItems,
     discount,
@@ -62,13 +68,13 @@ const SalesPage = () => {
     setProductQuery("");
   };
 
- const handleSelectProduct = (product) => {
+  const handleSelectProduct = (product) => {
     addItem(product);
   };
   const isCheckoutEnabled = selectedCustomer !== null && cartItems.length > 0;
 
   const handleEditOrder = (order) => {
-   
+
     loadFromOrder(order);
     setSelectedCustomer(order.customer);
     setOrderNote(order.note || "");
@@ -112,7 +118,7 @@ const SalesPage = () => {
       setEditingOrderId(null);
       setActiveTab("pending");
       return;
-    
+
     } else {
       handleCreateOrder(orderData);
     }
@@ -129,18 +135,18 @@ const SalesPage = () => {
   };
 
   const handleCloseSuccessModal = () => {
-  setShowSuccessModal(false);
-}; 
+    setShowSuccessModal(false);
+  };
 
   const handleAddNote = () => {
-  setShowNoteModal(true);
-};
+    setShowNoteModal(true);
+  };
 
-const handleSaveNote = (note) => {
-  setOrderNote(note);
-};
+  const handleSaveNote = (note) => {
+    setOrderNote(note);
+  };
 
-  
+
 
 
   const renderTabContent = () => {
@@ -188,7 +194,7 @@ const handleSaveNote = (note) => {
               <h2 className="text-base font-medium text-foreground mb-4">
                 Resumen de compra
               </h2>
-              
+
               <SalesSummary
                 cartItems={cartItems}
                 subtotal={subtotal}
@@ -212,9 +218,9 @@ const handleSaveNote = (note) => {
                       py-2 px-4 rounded-lg flex items-center space-x-2 shadow-sm text-sm 
                       min-w-[149px] h-[40px]
                       ${isCheckoutEnabled
-                        ? "bg-btn-primary text-white hover:bg-btn-primary/80"
-                        : "bg-stokia-neutral-50 text-foreground cursor-not-allowed"
-                      }
+                      ? "bg-btn-primary text-white hover:bg-btn-primary/80"
+                      : "bg-stokia-neutral-50 text-foreground cursor-not-allowed"
+                    }
                     `}
                   disabled={!selectedCustomer || cartItems.length === 0}
                 >
@@ -238,12 +244,12 @@ const handleSaveNote = (note) => {
 
       case "confirmed":
         return (
-          <OrdersListTab orders={ordersData.confirmed} status="confirmed" />
+          <ConfirmedOrdersTab />
         );
 
       case "cancelled":
         return (
-          <OrdersListTab orders={ordersData.cancelled} status="cancelled" />
+          <CancelledOrdersTab />
         );
 
       default:
@@ -258,10 +264,10 @@ const handleSaveNote = (note) => {
       <div className="bg-background rounded-2xl shadow-sm p-8 border border-border max-w-[1200px] mx-auto w-full">
         {activeTab === "register" && (
           <>
-            <CustomerSection 
-             preSelectedCustomer={isEditing ? selectedCustomer : null}
-             onCustomerChange={setSelectedCustomer}
-             disableRemove={isEditing}
+            <CustomerSection
+              preSelectedCustomer={isEditing ? selectedCustomer : null}
+              onCustomerChange={setSelectedCustomer}
+              disableRemove={isEditing}
             />
             <ProductsSection
               productQuery={productQuery}
@@ -289,13 +295,21 @@ const handleSaveNote = (note) => {
           initialNote={orderNote}
         />
       )}
-    {showSuccessModal && (
-      <OrderSuccessModal
-        isOpen={showSuccessModal}
-        onClose={handleCloseSuccessModal}
-        orderNote={orderNote}
-      />
-    )}
+      {showSuccessModal && (
+        <OrderSuccessModal
+          isOpen={showSuccessModal}
+          onClose={handleCloseSuccessModal}
+          orderNote={orderNote}
+        />
+      )}
+      {showPaymentModal && (
+        <PaymentModal
+          isOpen={showPaymentModal}
+          order={selectedOrder}
+          onClose={handleClosePaymentModal}
+          onConfirm={handleConfirmPayment}
+        />
+      )}
 
     </div>
   );

@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@/shared/components/ui/button";
 
-export const OrderCard = ({ order, status, onCharge, onEdit, onCancel }) => {
+export const OrderCard = ({ order, status, onCollect, onEdit, onCancel }) => {
   const showChargeButton = status === "pending";
   const showEditButton = status === "pending";
   const showCancelButton = status === "pending";
@@ -39,11 +39,11 @@ export const OrderCard = ({ order, status, onCharge, onEdit, onCancel }) => {
         ))}
       </div>
 
-     
+
       <div className="space-y-2 pt-2">
         {showChargeButton && (
           <Button
-            onClick={() => onCharge(order)}
+            onClick={() => onCollect(order)}
             className="w-full bg-btn-primary hover:bg-btn-primary/90 text-white h-10"
           >
             Cobrar
@@ -82,7 +82,7 @@ export const OrderCard = ({ order, status, onCharge, onEdit, onCancel }) => {
           </div>
         )}
       </div>
-   </div>
+    </div>
 
   );
 };
