@@ -62,7 +62,6 @@ export function CustomerSection({ preSelectedCustomer, onCustomerSelected, onCus
 
       return savedCustomer;
     } catch (error) {
-      console.error("Error al guardar el cliente:", error);
       throw error;
     }
   };

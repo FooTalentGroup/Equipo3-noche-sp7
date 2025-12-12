@@ -5,7 +5,7 @@ import { getCategories } from "../services/categoriesService";
 const CategoriesContext = createContext(undefined);
 export function CategoriesProvider({ children }) {
   const { data, isFetching, isLoading, error } = useApiQueryFn(
-    ["categories"], 
+    ["categories"],
     getCategories
   );
   const categories = data && data.content ? data.content : [];
@@ -34,7 +34,6 @@ export function CategoriesProvider({ children }) {
     </CategoriesContext.Provider>
   );
 }
-// eslint-disable-next-line react-refresh/only-export-components
 export function useCategories() {
   const context = useContext(CategoriesContext);
   if (context === undefined) {
@@ -42,6 +41,6 @@ export function useCategories() {
       "useCategories debe usarse dentro de un CategoriesProvider"
     );
   }
-  
+
   return context;
 }

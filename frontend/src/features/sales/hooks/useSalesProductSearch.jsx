@@ -33,7 +33,7 @@ export const useSalesProductSearch = (debounceTime = 300) => {
         const productList = response.data?.content || [];
         setInitialProducts(productList);
       } catch (error) {
-        console.error("Error al cargar productos iniciales:", error);
+        // Silent fail
       } finally {
         setLoading(false);
       }
@@ -68,7 +68,7 @@ export const useSalesProductSearch = (debounceTime = 300) => {
         }
         setProducts(productList);
       } catch (error) {
-        console.error("Error al buscar productos en la venta:", error);
+        // Silent fail
         setProducts([]);
       } finally {
         setLoading(false);

@@ -113,7 +113,6 @@ export function ProductAdjustmentDialog({ open, onOpenChange, product }) {
             };
 
             const result = await createInventoryMovement(movementData);
-            console.log('✅ Inventory movement created successfully:', result);
 
             // Update the product stock in context
             const newStock = activeTab === 'entrada'
