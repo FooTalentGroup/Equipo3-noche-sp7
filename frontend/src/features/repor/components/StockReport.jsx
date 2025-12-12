@@ -19,13 +19,43 @@ const StockReport = () => {
   }, [productName, startDate, endDate, fetch]);
 
   const pageSize = 3;
-  const totalElements = data?.length || 0;
+
+  // build rowsArray depending on whether user selected a date range
+  const buildDateRangeDates = (s, e) => {
+    const start = new Date(s);
+    const end = new Date(e);
+    start.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
+    const arr = [];
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      arr.push(new Date(d));
+    }
+    return arr;
+  };
+
+  let rowsArray = [];
+  if (startDate && endDate) {
+    const dateRangeDates = buildDateRangeDates(startDate, endDate);
+    rowsArray = dateRangeDates.map((d) => {
+      const key = d.toISOString().split('T')[0];
+      const match = data.find(item => (new Date(item.date)).toISOString().split('T')[0] === key);
+      return match
+        ? { ...match }
+        : { date: d.toISOString(), initialStock: '-', entries: '-', exits: '-', currentStock: '-', stockVariationPercent: 0 };
+    });
+  } else {
+    rowsArray = data;
+  }
+
+  const totalElements = rowsArray?.length || 0;
   const totalPages = Math.ceil(totalElements / pageSize);
 
-  const paginatedData = data.slice(
+  const paginatedData = rowsArray.slice(
     currentPage * pageSize,
     (currentPage + 1) * pageSize
   );
+
+  const displayRows = paginatedData.length > 0 ? paginatedData : Array.from({ length: pageSize }, () => null);
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
@@ -42,43 +72,132 @@ const StockReport = () => {
     return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
   };
 
-  const chartLabels = data.map(item => formatDate(item.date));
-  const chartData = data.map(item => item.currentStock);
+  
+  const isSameDayRange = (s, e) => {
+    if (!s || !e) return false;
+    const a = new Date(s); const b = new Date(e);
+    return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  };
+
+  const generatePlaceholderLabels = (refDate) => {
+    // Show hourly placeholders when there is no date selection
+    // or when the selected range is a single day.
+    if (!startDate || !endDate || (startDate && endDate && isSameDayRange(startDate, endDate))) {
+      return Array.from({ length: 11 }, (_, i) => {
+        const hour = 8 + i;
+        return `${String(hour).padStart(2, '0')}:00`;
+      });
+    }
+
+    // For multi-day ranges, build labels for each day between start and end (inclusive)
+    if (startDate && endDate) {
+      const s = new Date(startDate);
+      const e = new Date(endDate);
+      s.setHours(0, 0, 0, 0);
+      e.setHours(0, 0, 0, 0);
+      const labels = [];
+      for (let d = new Date(s); d <= e; d.setDate(d.getDate() + 1)) {
+        labels.push(new Date(d).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }));
+      }
+      return labels;
+    }
+
+    // Fallback: current month's days
+    const ref = refDate ? new Date(refDate) : new Date();
+    ref.setHours(0, 0, 0, 0);
+    const y = ref.getFullYear();
+    const m = ref.getMonth();
+    const dim = new Date(y, m + 1, 0).getDate();
+    return Array.from({ length: dim }, (_, i) => {
+      const d = new Date(y, m, i + 1);
+      return d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+    });
+  };
+
+  // prepare chart labels and data
+  const isSameDay = startDate && endDate && isSameDayRange(startDate, endDate);
+
+  let chartLabels = [];
+  let chartData = [];
+
+  if (isSameDay) {
+    // For a single-day range show hourly labels and map data by hour (08:00-18:00)
+    chartLabels = generatePlaceholderLabels(startDate);
+    const buckets = Array(chartLabels.length).fill(null);
+    if (data && data.length > 0) {
+      data.forEach(item => {
+        const dt = new Date(item.date);
+        const hour = dt.getHours();
+        const idx = hour - 8; // maps 08->0, 09->1, ..., 18->10
+        if (idx >= 0 && idx < buckets.length) {
+          buckets[idx] = Number(item.currentStock) || 0;
+        }
+      });
+    }
+    // If mapping by hour produced no matches but we have data (e.g. timestamps at 00:00),
+    // fill every hour with the last known currentStock so bars render as real data.
+    const hasAnyValue = buckets.some(v => v != null);
+    if (!hasAnyValue && data && data.length > 0) {
+      const lastVal = Number(data[data.length - 1].currentStock) || 0;
+      chartData = buckets.map(() => lastVal);
+    } else {
+      // ensure every slot has a numeric value (default 0)
+      chartData = buckets.map(v => (v == null ? 0 : v));
+    }
+  } else {
+    if (startDate && endDate) {
+      chartLabels = rowsArray.map(r => formatDate(r.date));
+      chartData = rowsArray.map(r => (r.currentStock == null || r.currentStock === '-') ? 0 : r.currentStock);
+    } else {
+      chartLabels = data.length > 0 ? data.map(item => formatDate(item.date)) : generatePlaceholderLabels(startDate);
+      chartData = data.length > 0 ? data.map(item => item.currentStock) : Array(chartLabels.length).fill(0);
+    }
+  }
+
+  const finalChartLabels = chartLabels;
+  const finalChartData = chartData;
 
   useEffect(() => {
-    if (data.length > 0 && productName && startDate && endDate) {
+    if (productName && startDate && endDate) {
       const formattedStartDate = formatDate(startDate.toISOString());
       const formattedEndDate = formatDate(endDate.toISOString());
+
+      // use finalChartLabels/finalChartData for the report preview
+      const sameDayForReport = startDate && endDate && isSameDayRange(startDate, endDate);
+      const showPlaceholder = !!productName || (startDate && endDate);
+
+      const tableRows = rowsArray.map(row => [
+        formatDate(row.date),
+        row.initialStock,
+        row.entries,
+        row.exits,
+        row.currentStock,
+        `${row.stockVariationPercent > 0 ? '+' : ''}${row.stockVariationPercent}%`
+      ]);
 
       setReportData({
         title: 'Reporte de stock',
         dateRange: `${formattedStartDate} - ${formattedEndDate}`,
-        chartComponent: <ChartStock dataPoints={chartData} labels={chartLabels} />,
+        chartComponent: <ChartStock dataPoints={finalChartData} labels={finalChartLabels} forceHourly={(rowsArray.length === 0) && (!(startDate && endDate) || sameDayForReport)} showPlaceholder={showPlaceholder} />,
+        chartPayload: { dataPoints: finalChartData, labels: finalChartLabels },
         tableHeaders: ['Período', 'Stock Inicial', 'Entradas (+)', 'Salidas (-)', 'Stock Actual', 'Var. Stock (%)'],
-        tableRows: data.map(row => [
-          formatDate(row.date),
-          row.initialStock,
-          row.entries,
-          row.exits,
-          row.currentStock,
-          `${row.stockVariationPercent > 0 ? '+' : ''}${row.stockVariationPercent}%`
-        ])
+        tableRows: tableRows
       });
     }
-  }, [data, productName, startDate, endDate, setReportData]);
+  }, [rowsArray, productName, startDate, endDate, setReportData, finalChartLabels, finalChartData]);
+
+  // debug info: useful when the chart still shows days instead of hours
+  useEffect(() => {
+    try {
+      // eslint-disable-next-line no-console
+      console.debug('StockReport debug:', { isSameDay, startDate, endDate, dataLength: data.length, labels: finalChartLabels.slice(0,5) });
+    } catch (e) {}
+  }, [isSameDay, startDate, endDate, data, finalChartLabels]);
 
   return (
     <>
-      <div className="mb-10 mt-4 w-full p-6 bg-white rounded-xl shadow-sm border border-stokia-neutral-200" style={{ height: '350px' }}>
-        {data.length > 0 ? (
-          <ChartStock dataPoints={chartData} labels={chartLabels} />
-        ) : (
-          <div className="flex items-center justify-center h-full text-stokia-neutral-500">
-            {productName && startDate && endDate
-              ? 'No hay datos para mostrar'
-              : 'Selecciona un producto y período para ver el reporte'}
-          </div>
-        )}
+        <div className="mb-10 mt-4 w-full p-6 bg-white rounded-xl shadow-sm border border-stokia-neutral-200" style={{ height: '350px' }}>
+        <ChartStock dataPoints={finalChartData} labels={finalChartLabels} forceHourly={rowsArray.length === 0 && (!(startDate && endDate) || isSameDay)} showPlaceholder={!!productName || (startDate && endDate)} />
       </div>
 
       <section>
@@ -96,20 +215,20 @@ const StockReport = () => {
             </thead>
 
             <tbody className="divide-y divide-stokia-neutral-100 bg-white">
-              {paginatedData.map((row) => (
-                <tr key={row.date} className="hover:bg-stokia-neutral-100 transition-colors [&_td]:text-stokia-neutral-950 [&_td]:text-sm [&_td]:px-6 [&_td]:py-4">
-                  <td className="text-left pl-8 font-medium">{formatDate(row.date)}</td>
+              {displayRows.map((row, idx) => (
+                <tr key={row ? row.date : `empty-${idx}`} className="hover:bg-stokia-neutral-100 transition-colors [&_td]:text-stokia-neutral-950 [&_td]:text-sm [&_td]:px-6 [&_td]:py-4">
+                  <td className="text-left pl-8 font-medium">{row ? formatDate(row.date) : '-'}</td>
 
-                  <td>{row.initialStock}</td>
+                  <td style={{ color: row && row.initialStock < 0 ? '#ef4444' : undefined }}>{row ? row.initialStock : '-'}</td>
 
-                  <td>{row.entries}</td>
+                  <td style={{ color: row && row.entries < 0 ? '#ef4444' : undefined }}>{row ? row.entries : '-'}</td>
 
-                  <td>{row.exits}</td>
+                  <td style={{ color: row && row.exits < 0 ? '#ef4444' : undefined }}>{row ? row.exits : '-'}</td>
 
-                  <td>{row.currentStock}</td>
+                  <td style={{ color: row && row.currentStock < 0 ? '#ef4444' : undefined }}>{row ? row.currentStock : '-'}</td>
 
-                  <td className={`font-medium ${getVarColor(row.stockVariationPercent)}`}>
-                    {row.stockVariationPercent > 0 ? '+' : ''}{row.stockVariationPercent}%
+                  <td className={`font-medium ${getVarColor(row ? row.stockVariationPercent : 0)}`}>
+                    {row ? `${row.stockVariationPercent > 0 ? '+' : ''}${row.stockVariationPercent}%` : '-'}
                   </td>
                 </tr>
               ))}
@@ -124,19 +243,9 @@ const StockReport = () => {
               </span>
             </div>
           )}
-
-          {!isLoading && data.length === 0 && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="px-6 py-6 text-center text-stokia-neutral-600 text-sm">
-                {productName && startDate && endDate
-                  ? 'No hay datos para mostrar con los filtros seleccionados.'
-                  : 'Selecciona un producto y período para ver el reporte.'}
-              </span>
-            </div>
-          )}
         </div>
 
-        {data.length > 0 && (
+        {totalElements > 0 && (
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
