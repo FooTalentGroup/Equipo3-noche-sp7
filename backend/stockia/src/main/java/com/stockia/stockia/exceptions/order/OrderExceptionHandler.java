@@ -1,17 +1,21 @@
 package com.stockia.stockia.exceptions.order;
 
 import com.stockia.stockia.exceptions.ErrorResponse;
+import com.stockia.stockia.exceptions.client.ClientNotFoundException;
 import com.stockia.stockia.exceptions.product.InsufficientStockException;
+import com.stockia.stockia.exceptions.product.ProductNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Manejador de excepciones específico para el módulo de órdenes de venta.
@@ -121,6 +125,74 @@ public class OrderExceptionHandler {
 
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
         }
+
+        @ExceptionHandler(ProductNotFoundException.class)
+        public ResponseEntity<ErrorResponse> handleProductNotFoundException(
+                ProductNotFoundException ex, HttpServletRequest request) {
+                log.warn("Product not found: {}", ex.getMessage());
+
+                ErrorResponse errorResponse = new ErrorResponse(
+                        HttpStatus.NOT_FOUND.value(),
+                        "NOT_FOUND",
+                        ex.getMessage(),
+                        Collections.singletonList("El producto especificado no existe en el sistema"),
+                        request.getRequestURI());
+
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        }
+
+        @ExceptionHandler(ClientNotFoundException.class)
+        public ResponseEntity<ErrorResponse> handleClientNotFoundException(
+                ClientNotFoundException ex, HttpServletRequest request) {
+
+                log.warn("Cliente no encontrado: {}", ex.getMessage());
+
+                ErrorResponse errorResponse = new ErrorResponse(
+                        HttpStatus.NOT_FOUND.value(),
+                        "CLIENT_NOT_FOUND",
+                        "Cliente no encontrado",
+                        Collections.singletonList(ex.getMessage()),
+                        request.getRequestURI());
+
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        }
+
+        @ExceptionHandler(HttpMessageNotReadableException.class)
+        public ResponseEntity<ErrorResponse> handleInvalidFormat(HttpMessageNotReadableException ex,
+                                                                 HttpServletRequest request) {
+
+                Throwable cause = ex.getCause();
+
+                // Caso: UUID mal formado
+                if (cause instanceof com.fasterxml.jackson.databind.exc.InvalidFormatException ife) {
+                        if (ife.getTargetType() == java.util.UUID.class) {
+
+                                String valorInvalido = String.valueOf(ife.getValue());
+
+                                ErrorResponse error = new ErrorResponse(
+                                        HttpStatus.BAD_REQUEST.value(),
+                                        "INVALID_UUID_FORMAT",
+                                        "Formato inválido para un campo UUID",
+                                        List.of("Valor recibido: " + valorInvalido),
+                                        request.getRequestURI()
+                                );
+
+                                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+                        }
+                }
+
+                // Cualquier otro error de parseo
+                ErrorResponse error = new ErrorResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        "MALFORMED_JSON",
+                        "El cuerpo de la solicitud no es válido",
+                        List.of(ex.getMessage()),
+                        request.getRequestURI()
+                );
+
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+
 
         /**
          * Maneja IllegalArgumentException en el contexto de órdenes.

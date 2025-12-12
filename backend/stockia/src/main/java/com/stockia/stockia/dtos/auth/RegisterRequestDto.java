@@ -8,7 +8,7 @@ import jakarta.validation.constraints.*;
 public record RegisterRequestDto(
         @Schema(description = "Email del usuario", example = "juan.perez@example.com")
         @NotBlank(message = "el email es obligatorio")
-        @Size(max = 100, message = "el email no puede superar los 50 caracteres")
+        @Size(max = 100, message = "el email no puede superar los 100 caracteres")
         @Email(message = "el email debe tener un formato válido")
         String email,
 

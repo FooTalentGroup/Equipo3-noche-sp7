@@ -1,7 +1,9 @@
 package com.stockia.stockia.models;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.stockia.stockia.enums.AccountStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,4 +33,18 @@ public class Client {
     @Builder.Default
     @Column(name = "is_frequent", nullable = false)
     private Boolean isFrequent = false;
+
+    @PrePersist
+    protected void onCreate() {
+        if (email != null) {
+            email = email.toLowerCase();
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        if (email != null) {
+            email = email.toLowerCase();
+        }
+    }
 }
