@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Search, Calendar, X, FileText, LoaderCircle } from 'lucide-react';
+import { Search, Calendar, FileText, LoaderCircle } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { Dialog, DialogContent } from '@/shared/components/ui/dialog';
 import ChartSalesDaily from './charts/ChartSalesDaily';
@@ -23,14 +23,13 @@ const ReportSales = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [productName, setProductName] = useState('');
-  const [searchInput, setSearchInput] = useState('');
   const [showCalendar, setShowCalendar] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [reportData, setReportData] = useState(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const { data, isLoading, fetch, reset } = useSalesReport();
-  const { results: searchResults, isSearching, search } = useProductSearch();
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const { query, setQuery, products, isLoading: isSearching, selectedProduct, setSelectedProduct } = useProductSearch();
   const searchRef = useRef(null);
 
   useEffect(() => {
@@ -40,27 +39,32 @@ const ReportSales = () => {
     }
   }, [startDate, endDate, productName, fetch]);
 
-  const handleSearchChange = (e) => {
+  const handleInputChange = (e) => {
     const value = e.target.value;
-    setSearchInput(value);
-    if (value.length > 1) {
-      search(value);
-      setShowSuggestions(true);
-    } else {
-      setShowSuggestions(false);
+    setQuery(value);
+    setIsDropdownOpen(true);
+    if (!value) {
+      setSelectedProduct(null);
+      setProductName('');
     }
   };
 
   const handleProductSelect = (product) => {
+    setSelectedProduct(product);
+    setQuery(product.name);
     setProductName(product.name);
-    setSearchInput(product.name);
-    setShowSuggestions(false);
+    setIsDropdownOpen(false);
   };
 
-  const handleClearProduct = () => {
-    setProductName('');
-    setSearchInput('');
-  };
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleDateSelect = (range) => {
     if (range?.from) {
@@ -136,40 +140,37 @@ const ReportSales = () => {
         <div className="flex-1 max-w-sm">
           <label className="block text-sm font-medium text-stokia-neutral-700 mb-2">Producto</label>
           <div className="relative" ref={searchRef}>
-            {productName ? (
-              <div className="flex items-center gap-2 px-4 py-2 border border-stokia-neutral-300 rounded-lg bg-white">
-                <span className="flex-1 text-sm">{productName}</span>
-                <button onClick={handleClearProduct} className="text-stokia-neutral-400 hover:text-stokia-neutral-600">
-                  <X className="h-4 w-4" />
-                </button>
+            <div className="relative">
+              <input
+                type="text"
+                value={query}
+                onChange={handleInputChange}
+                onFocus={() => setIsDropdownOpen(true)}
+                placeholder="Buscar producto"
+                className="w-full px-4 py-2 pr-10 border border-stokia-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-stokia-primary-600"
+              />
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stokia-neutral-500" />
+            </div>
+
+            {isDropdownOpen && query && products.length > 0 && (
+              <div className="absolute z-50 w-full mt-1 bg-white border border-stokia-neutral-200 rounded-md shadow-lg max-h-60 overflow-auto">
+                {products.map((product) => (
+                  <button
+                    key={product.id}
+                    onClick={() => handleProductSelect(product)}
+                    className="w-full px-4 py-2 text-left hover:bg-stokia-neutral-100 flex flex-col"
+                  >
+                    <span className="font-medium text-sm">{product.name}</span>
+                    <span className="text-xs text-stokia-neutral-500">{product.category?.name}</span>
+                  </button>
+                ))}
               </div>
-            ) : (
-              <>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stokia-neutral-400" />
-                  <input
-                    type="text"
-                    placeholder="Buscar producto"
-                    value={searchInput}
-                    onChange={handleSearchChange}
-                    onFocus={() => searchInput.length > 1 && setShowSuggestions(true)}
-                    className="w-full pl-10 pr-4 py-2 border border-stokia-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-stokia-primary-500"
-                  />
-                </div>
-                {showSuggestions && searchResults.length > 0 && (
-                  <div className="absolute z-50 w-full mt-1 bg-white border border-stokia-neutral-200 rounded-lg shadow-lg max-h-48 overflow-auto">
-                    {searchResults.map((product) => (
-                      <button
-                        key={product.id}
-                        onClick={() => handleProductSelect(product)}
-                        className="w-full px-4 py-2 text-left hover:bg-stokia-neutral-100 text-sm"
-                      >
-                        {product.name}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </>
+            )}
+
+            {isSearching && (
+              <div className="absolute z-50 w-full mt-1 bg-white border border-stokia-neutral-200 rounded-md shadow-lg p-4 text-center text-sm text-stokia-neutral-500">
+                Buscando...
+              </div>
             )}
           </div>
         </div>
