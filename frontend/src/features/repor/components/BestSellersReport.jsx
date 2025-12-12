@@ -23,7 +23,7 @@ const BestSellersReport = () => {
     fetch: fetchMostSold,
   } = useMostSoldProducts();
 
-  const { setReportData, startDate, endDate } = useProductsReport();
+  const { setReportData, startDate, endDate, productName } = useProductsReport();
   const [stableProducts, setStableProducts] = useState([]);
 
   useEffect(() => {
@@ -49,10 +49,12 @@ const BestSellersReport = () => {
         ? `${formatDate(startDate)} - ${formatDate(endDate)}`
         : 'Todos los periodos';
 
+      const showPlaceholder = !!productName || (startDate && endDate);
+
       setReportData({
         title: 'Reporte de más vendidos',
         dateRange: dateRange,
-        chartComponent: <BestSellersChart products={stableProducts} />,
+        chartComponent: <BestSellersChart products={stableProducts} showPlaceholder={showPlaceholder} />,
         tableHeaders: ['Producto', 'Categoría', 'Precio de Venta', 'Cant. Inicial', 'Cant. Vendida', 'Cant. Actual'],
         tableRows: content.map(product => [
           product.productName,
@@ -70,7 +72,7 @@ const BestSellersReport = () => {
     <>
       <div className="mb-10 mt-4 w-full" style={{ height: "300px" }}>
         <h1>Reporte de Ventas</h1>
-        <BestSellersChart products={stableProducts} />
+        <BestSellersChart products={stableProducts} showPlaceholder={!!productName || (startDate && endDate)} />
       </div>
 
       <section>
