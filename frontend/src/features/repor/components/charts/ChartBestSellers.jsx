@@ -71,8 +71,8 @@ const colors = [
   '#D0DAE7',
 ];
 
-export default function BestSellersChart({ products = [] }) {
-  const isEmpty = !products || products.length === 0;
+export default function BestSellersChart({ products = [], showPlaceholder = true }) {
+  const isEmpty = showPlaceholder && (!products || products.length === 0);
 
   const displayProducts = isEmpty
     ? [
@@ -92,13 +92,13 @@ export default function BestSellersChart({ products = [] }) {
   const maxValue = Math.max(...soldQuantities, 0);
   const dynamicMax = Math.ceil(maxValue * 1.2);
 
-  const data = {
+    const data = {
     labels,
     datasets: [
       {
         label: 'Productos vendidos',
         data: soldQuantities,
-        backgroundColor: isEmpty ? Array(5).fill('#CBD5E1') : colors.slice(0, displayProducts.length),
+        backgroundColor: isEmpty ? Array(5).fill('#CBD5E1') : Array(displayProducts.length).fill('#436086'),
         borderColor: 'rgba(0, 0, 0, 0)',
         borderWidth: 1,
         borderRadius: 4,
