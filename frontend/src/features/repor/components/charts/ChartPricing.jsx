@@ -84,21 +84,36 @@ export const options = {
 
 const labels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
-export default function ChartPricing({ dataPoints }) {
+export default function ChartPricing({ dataPoints, showPlaceholder = true }) {
   const validDataPoints = dataPoints && dataPoints.length > 0 ? dataPoints : Array(12).fill(0);
+
+  const isPlaceholder = showPlaceholder && (validDataPoints.length === 0 || validDataPoints.every(v => Number(v) === 0));
+  const placeholderSample = [12.5, 12.0, 11.8, 12.2, 13.0, 12.7, 13.5, 13.2, 12.9, 13.1, 13.4, 13.0];
+  const displayData = isPlaceholder ? placeholderSample : validDataPoints;
+
+  const localOptions = {
+    ...options,
+    plugins: {
+      ...options.plugins,
+      tooltip: {
+        ...options.plugins.tooltip,
+        enabled: !isPlaceholder,
+      }
+    }
+  };
 
   const data = {
     labels,
     datasets: [
       {
         label: 'Precio',
-        data: validDataPoints,
-        borderColor: '#5F7B99',
-        backgroundColor: 'rgba(95, 123, 153, 0.5)',
+        data: displayData,
+        borderColor: '#436086',
+        backgroundColor: 'rgba(67,96,134,0.08)',
         borderWidth: 2,
       },
     ],
   };
 
-  return <Line key={JSON.stringify(validDataPoints)} options={options} data={data} />;
+  return <Line key={JSON.stringify(displayData)} options={localOptions} data={data} />;
 }

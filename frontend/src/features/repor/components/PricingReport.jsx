@@ -46,7 +46,7 @@ const PricingReport = () => {
       setReportData({
         title: 'Reporte de costos',
         dateRange: `${productName} - ${year}`,
-        chartComponent: <ChartPricing dataPoints={chartValues} />,
+        chartComponent: <ChartPricing dataPoints={chartValues} showPlaceholder={!!productName && !!year} />,
         tableHeaders: ['Mes', 'Unid. Vend.', 'Precio Unit. Prom.', 'Costo Unit. Prom.', 'Costo Total Prom.', 'Var. Costos (%) Prom.'],
         tableRows: data.map(row => [
           row.monthName,
@@ -65,7 +65,7 @@ const PricingReport = () => {
   return (
     <>
       <div className="mb-10 mt-4 w-full p-6 bg-white rounded-xl shadow-sm border border-stokia-neutral-200" style={{ height: '350px' }}>
-        <ChartPricing dataPoints={chartData} />
+        <ChartPricing dataPoints={chartData} showPlaceholder={!!productName && !!year} />
       </div>
       <section>
         <div className={`relative overflow-x-auto ${isLoading ? 'h-[400px] overflow-hidden' : ''} flex-1`}>

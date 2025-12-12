@@ -15,6 +15,10 @@ export function ReportExportModal({ isOpen, onClose, reportData }) {
     }
 
     const handleExport = async () => {
+        if (!reportData) {
+            return;
+        }
+
         if (!modalContentRef.current) {
             console.error('Modal content ref is not available');
             alert('Error: No se puede acceder al contenido del modal');
@@ -28,9 +32,7 @@ export function ReportExportModal({ isOpen, onClose, reportData }) {
 
             console.log('Starting PDF export with dom-to-image...');
             const footer = modalContentRef.current.querySelector('.export-footer');
-            if (footer) {
-                footer.style.display = 'none';
-            }
+            if (footer) footer.style.display = 'none';
 
             const container = modalContentRef.current;
             const originalBoxShadow = container.style.boxShadow;
@@ -60,9 +62,7 @@ export function ReportExportModal({ isOpen, onClose, reportData }) {
                 height: container.scrollHeight
             });
 
-            if (footer) {
-                footer.style.display = 'flex';
-            }
+            if (footer) footer.style.display = 'flex';
             container.style.boxShadow = originalBoxShadow;
             container.style.border = originalBorder;
 
