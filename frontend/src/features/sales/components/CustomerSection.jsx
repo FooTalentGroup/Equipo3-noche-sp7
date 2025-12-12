@@ -7,8 +7,9 @@ import { createCustomer } from '@/features/customers/services/customerService';
 import { useSalesCustomerSearch } from '../hooks/useSalesCustomerSearch';
 import { useEffect, useState } from 'react';
 
-export function CustomerSection({ preSelectedCustomer, onCustomerChange }) {
+export function CustomerSection({ preSelectedCustomer, onCustomerChange,disableRemove = false }) {
   const [showRegisterPopup, setShowRegisterPopup] = useState(false);
+  const [isLocked, setIsLocked] = useState(false)
   
   const {
     searchQuery: customerQuery,
@@ -23,11 +24,12 @@ export function CustomerSection({ preSelectedCustomer, onCustomerChange }) {
   } = useSalesCustomerSearch();
 
   useEffect(() => {
-    if (preSelectedCustomer && !selectedCustomer) {
+    if (preSelectedCustomer) {
       selectCustomer(preSelectedCustomer);
       setCustomerQuery(preSelectedCustomer.name || '');
+      setIsLocked(disableRemove);
     }
-  }, [preSelectedCustomer]);
+  }, [preSelectedCustomer, disableRemove]);
 
   useEffect(() => {
     if (onCustomerChange) {
@@ -59,6 +61,18 @@ export function CustomerSection({ preSelectedCustomer, onCustomerChange }) {
   const handleConsumidorFinal = () => {
     selectConsumidorFinal();
   };
+  const handleClearCustomer = () => {
+   if (!isLocked && !disableRemove) {
+      clearCustomer();
+      setIsLocked(false);
+    }
+   };
+  const handleChangeQuery = (value) => {
+    if (!isLocked && !disableRemove) {
+      setCustomerQuery(value);
+    }
+    };
+
 
   return (
     <section className="mb-6">
@@ -68,17 +82,18 @@ export function CustomerSection({ preSelectedCustomer, onCustomerChange }) {
         <div className="relative">
           <CustomerSearchInput
             value={customerQuery}
-            onChange={setCustomerQuery}
-            onClear={clearCustomer}
+            onChange={handleChangeQuery}
+            onClear={handleClearCustomer}
             placeholder="Buscar clientes"
             className="w-[432px] h-[36px]"
+            disableClear={isLocked || disableRemove}
           />
           
           <CustomerSearchResults
             customers={customers}
             loading={loadingCustomers}
             onSelect={selectCustomer}
-            show={showCustomerResults && !selectedCustomer}
+            show={showCustomerResults && !selectedCustomer && !isLocked}
           />
         </div>
 
@@ -86,7 +101,7 @@ export function CustomerSection({ preSelectedCustomer, onCustomerChange }) {
           <Button
             onClick={handleConsumidorFinal}
             className="btn-standard bg-btn-primary hover:bg-btn-primary/90 text-white disabled:text-muted-foreground disabled:bg-secondary disabled:cursor-not-allowed disabled:shadow-none"
-            disabled={selectedCustomer !== null}
+            disabled={selectedCustomer !== null || isLocked}
           >
             <UserCheck className="h-4 w-4" />
             <span>Consumidor final</span>
@@ -95,7 +110,7 @@ export function CustomerSection({ preSelectedCustomer, onCustomerChange }) {
           <Button
             onClick={() => setShowRegisterPopup(true)} 
             className="btn-standard bg-btn-primary hover:bg-btn-primary/90 text-white disabled:text-muted-foreground disabled:bg-secondary disabled:cursor-not-allowed disabled:shadow-none"
-            disabled={selectedCustomer !== null}
+            disabled={selectedCustomer !== null || isLocked}
           >
             <UserPlus className="h-4 w-4" />
             <span>Nuevo cliente</span>

@@ -2,19 +2,18 @@ import { useState, useMemo } from "react";
 
 export const useCart = () => {
   const [items, setItems] = useState([]);
+  const [discount, setDiscount] = useState(null);
 
   const addItem = (productToAdd) => {
-    const quantityToAdd = productToAdd.quantity || 1;
-
+    const quantityToAdd = Number(productToAdd.quantity) || 1;
     setItems((prevItems) => {
       const existingItemIndex = prevItems.findIndex(
         (item) => item.id === productToAdd.id
       );
-
       if (existingItemIndex > -1) {
         return prevItems.map((item, index) =>
           index === existingItemIndex
-            ? { ...item, quantity: item.quantity + quantityToAdd }
+            ? { ...item, quantity: Number(item.quantity) + quantityToAdd }
             : item
         );
       } else {
@@ -33,7 +32,7 @@ export const useCart = () => {
     setItems((prevItems) => prevItems.filter((item) => item.id !== productId));
   };
 
-  const decrementItemQuantity = (productId) => {
+    const decrementItemQuantity = (productId) => {
     setItems((prevItems) => {
       return prevItems
         .map((item) => {
@@ -50,18 +49,77 @@ export const useCart = () => {
     });
   };
 
+  const updateItemQuantity = (productId, newQuantity) => {
+    if (newQuantity <= 0) {
+      removeItem(productId);
+      return;
+    }
+    setItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === productId ? { ...item, quantity: newQuantity } : item
+      )
+    );
+  };
+  const clearCart = () => {
+    setItems([]);
+    setDiscount(null);
+  };
+   const applyDiscount = (discountData) => {
+    setDiscount(discountData);
+  };
+  const removeDiscount = () => {
+    setDiscount(null);
+  };
+
+
   const subtotal = useMemo(() => {
     return items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   }, [items]);
 
-  const total = subtotal;
+  const discountAmount = useMemo(() => {
+    if (!discount || subtotal === 0) return 0;
+
+    let amount = 0;
+    if (discount.type === "percentage") {
+      amount = (subtotal * discount.value) / 100;
+    } else if (discount.type === "fixed") {
+      amount = discount.value;
+    }
+
+    return Math.min(amount, subtotal);
+  }, [discount, subtotal]);
+
+  const total = useMemo(() => {
+    return subtotal - discountAmount;
+  }, [subtotal, discountAmount]);
+
+  const loadFromOrder = (order) => {
+    setItems(order.products || []);
+    
+    if (order.discount > 0 && order.discountType && order.discountValue) {
+      setDiscount({
+        type: order.discountType,
+        value: order.discountValue
+      });
+    } else {
+      setDiscount(null);
+    }
+  };
+
 
   return {
     items,
+    discount,
     addItem,
     removeItem,
     decrementItemQuantity,
+    updateItemQuantity,
+    clearCart,
+    applyDiscount,
+    removeDiscount,
+    loadFromOrder,
     subtotal,
+    discountAmount,
     total,
   };
 };

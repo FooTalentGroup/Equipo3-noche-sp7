@@ -5,9 +5,14 @@ export function CustomerSearchInput({
   onChange, 
   onClear,
   placeholder = "Buscar clientes",
-  className = ""
+  className = "",
+  disableClear = false
 }) {
     const handleClear = () => {
+
+     if (disableClear) {
+      return;
+    } 
     if (onClear) {
       onClear(); 
     } else {
@@ -20,14 +25,26 @@ export function CustomerSearchInput({
       <input
         type="text"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => {
+          if (!disableClear) {
+            onChange(e.target.value);
+          }
+          }}
         placeholder={placeholder}
-        className="w-full border border border-border bg-background rounded-md pl-10 pr-10 py-2 text-sm transition"
+        className={`w-full border border border-border bg-background rounded-md pl-10 pr-10 py-2 text-sm transition ${
+           disableClear ? 'cursor-not-allowed opacity-60 bg-gray-50' : ''
+        }`}
+        disabled={disableClear}
+        readOnly={disableClear}
       />
       {value && (
         <button
           onClick={handleClear}
-          className="absolute right-3 top-1/2 -translate-y-1/2"
+          className={`absolute right-3 top-1/2 -translate-y-1/2 transition-opacity ${
+            disableClear 
+              ? 'opacity-30 cursor-not-allowed pointer-events-none' 
+              : 'hover:opacity-70 cursor-pointer'
+          }`}
         >
           <X className="h-5 w-5" />
         </button>

@@ -9,20 +9,20 @@ import { OrdersListTab } from "../components/OrdersListTab";
 import { OrderCancelModal } from "../components/OrderCancelModal";
 import { useSalesProductSearch } from "../hooks/useSalesProductSearch";
 import { useOrderManagement } from "../hooks/useOrderManagement";
+import { OrderNoteModal } from "../components/OrderNoteModal";
+import { OrderSuccessModal } from "../components/OrderSuccessModal";
+import { useCart } from "../hooks/useCart";
 
 
 const SalesPage = () => {
   const [activeTab, setActiveTab] = useState("register");
   const [isEditing, setIsEditing] = useState(false);
-
-  const [currentOrder, setCurrentOrder] = useState({
-    customer: null,
-    products: [],
-    note: "",
-    subtotal: 0,
-    discount: 0,
-    total: 0,
-  });
+  const [editingOrderId, setEditingOrderId] = useState(null);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [orderNote, setOrderNote] = useState("");
+  const [showNoteModal, setShowNoteModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  
 
   const {
     searchQuery: productQuery,
@@ -43,66 +43,104 @@ const SalesPage = () => {
     handleCreateOrder,
   } = useOrderManagement();
 
+  
+  const {
+    items: cartItems,
+    discount,
+    addItem,
+    removeItem,
+    applyDiscount,
+    clearCart,
+    loadFromOrder,
+    subtotal,
+    discountAmount,
+    total,
+  } = useCart();
+
   const handleClearSearch = () => {
     setProductQuery("");
   };
 
-  const handleSelectProduct = (product) => {
-    setCurrentOrder((prev) => {
-      const existingProduct = prev.products.find((p) => p.id === product.id);
-
-      if (existingProduct) {
-        return {
-          ...prev,
-          products: prev.products.map((p) =>
-            p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p
-          ),
-        };
-      } else {
-        return {
-          ...prev,
-          products: [...prev.products, { ...product, quantity: 1 }],
-        };
-      }
-    });
+ const handleSelectProduct = (product) => {
+    addItem(product);
   };
+  const isCheckoutEnabled = selectedCustomer !== null && cartItems.length > 0;
 
   const handleEditOrder = (order) => {
-    setCurrentOrder({
-      ...order,
-      products: [...order.products], 
-    });
+   
+    loadFromOrder(order);
+    setSelectedCustomer(order.customer);
+    setOrderNote(order.note || "");
+    setEditingOrderId(order.id);
     setIsEditing(true);
     setActiveTab("register");
   };
 
   const handleFinishOrder = () => {
-    if (isEditing) {
-      handleSaveEditedOrder(currentOrder);
-      
-    } else {
-      const newOrder = handleCreateOrder(currentOrder);
-      alert(`Pedido #${newOrder.id} creado exitosamente`);
+    if (!selectedCustomer) {
+      alert("Por favor selecciona un cliente");
+      return;
     }
 
-    setCurrentOrder({
-      customer: null,
-      products: [],
-      note: "",
-      subtotal: 0,
-      discount: 0,
-      total: 0,
-    });
+    if (cartItems.length === 0) {
+      alert("Por favor agrega al menos un producto");
+      return;
+    }
+
+    const orderData = {
+      customer: selectedCustomer,
+      products: cartItems,
+      note: orderNote,
+      subtotal: subtotal,
+      discount: discountAmount,
+      discountType: discount?.type || null,
+      discountValue: discount?.value || null,
+      total: total,
+    };
+
+    if (isEditing) {
+      handleSaveEditedOrder({
+        ...orderData,
+        id: editingOrderId,
+      });
+
+      clearCart();
+      setSelectedCustomer(null);
+      setOrderNote("");
+      setIsEditing(false);
+      setEditingOrderId(null);
+      setActiveTab("pending");
+      return;
+    
+    } else {
+      handleCreateOrder(orderData);
+    }
+
+    clearCart();
+    setSelectedCustomer(null);
+    setOrderNote("");
     setIsEditing(false);
+    setEditingOrderId(null);
     setActiveTab("pending");
+    setTimeout(() => {
+      setShowSuccessModal(true);
+    }, 200);
   };
+
+  const handleCloseSuccessModal = () => {
+  setShowSuccessModal(false);
+}; 
 
   const handleAddNote = () => {
-    const note = prompt("Ingrese una nota para el pedido:", currentOrder.note);
-    if (note !== null) {
-      setCurrentOrder({ ...currentOrder, note });
-    }
-  };
+  setShowNoteModal(true);
+};
+
+const handleSaveNote = (note) => {
+  setOrderNote(note);
+};
+
+  
+
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -151,36 +189,33 @@ const SalesPage = () => {
               </h2>
               
               <SalesSummary
-                cartItems={currentOrder.products}
-                subtotal={currentOrder.subtotal}
-                total={currentOrder.total}
-                onAddItem={(product) => handleSelectProduct(product)}
-                onDecrementItem={(productId) => {
-                  setCurrentOrder(prev => ({
-                    ...prev,
-                    products: prev.products.map(p =>
-                      p.id === productId ? { ...p, quantity: Math.max(1, p.quantity - 1) } : p
-                    )
-                  }));
-                }}
-                onRemoveItem={(productId) => {
-                  setCurrentOrder(prev => ({
-                    ...prev,
-                    products: prev.products.filter(p => p.id !== productId)
-                  }));
-                }}
+                cartItems={cartItems}
+                subtotal={subtotal}
+                total={total}
+                discount={discount}
+                onRemoveItem={removeItem}
+                onApplyDiscount={applyDiscount}
+                onRemoveDiscount={() => applyDiscount(null)}
               />
 
               <div className="flex space-x-4">
                 <Button
                   onClick={handleAddNote}
-                  className="bg-stokia-neutral-50 text-foreground py-2 px-4 rounded-lg flex items-center space-x-2 shadow-sm text-sm min-w-[131px] h-[40px]"
+                  className="bg-stokia-neutral-50 text-foreground py-2 px-4 rounded-lg flex items-center space-x-2 shadow-sm text-sm min-w-[131px] h-[40px] hover:bg-stokia-neutral-50"
                 >
-                  <span>{isEditing ? "Editar nota" : "Agregar nota"}</span>
+                  <span>{isEditing || orderNote ? "Editar nota" : "Agregar nota"}</span>
                 </Button>
                 <Button
                   onClick={handleFinishOrder}
-                  className="bg-stokia-neutral-50 text-foreground py-2 px-4 rounded-lg flex items-center space-x-2 shadow-sm text-sm min-w-[149px] h-[40px]"
+                  className={`
+                      py-2 px-4 rounded-lg flex items-center space-x-2 shadow-sm text-sm 
+                      min-w-[149px] h-[40px]
+                      ${isCheckoutEnabled
+                        ? "bg-btn-primary text-white hover:bg-btn-primary/80"
+                        : "bg-stokia-neutral-50 text-foreground cursor-not-allowed"
+                      }
+                    `}
+                  disabled={!selectedCustomer || cartItems.length === 0}
                 >
                   <span>{isEditing ? "Guardar cambios" : "Finalizar pedido"}</span>
                 </Button>
@@ -223,8 +258,9 @@ const SalesPage = () => {
         {activeTab === "register" && (
           <>
             <CustomerSection 
-             preSelectedCustomer={isEditing ? currentOrder.customer : null}
-             onCustomerChange={(customer) => setCurrentOrder({...currentOrder, customer})}
+             preSelectedCustomer={isEditing ? selectedCustomer : null}
+             onCustomerChange={setSelectedCustomer}
+             disableRemove={isEditing}
             />
             <ProductsSection
               productQuery={productQuery}
@@ -244,6 +280,22 @@ const SalesPage = () => {
           onCancel={handleCloseCancelModal}
         />
       )}
+      {showNoteModal && (
+        <OrderNoteModal
+          isOpen={showNoteModal}
+          onClose={() => setShowNoteModal(false)}
+          onSave={handleSaveNote}
+          initialNote={orderNote}
+        />
+      )}
+    {showSuccessModal && (
+      <OrderSuccessModal
+        isOpen={showSuccessModal}
+        onClose={handleCloseSuccessModal}
+        orderNote={orderNote}
+      />
+    )}
+
     </div>
   );
 };

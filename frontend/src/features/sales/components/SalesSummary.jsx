@@ -36,49 +36,31 @@ const CartItem = ({ item, onRemove }) => {
 
 export const SalesSummary = ({
   cartItems = [],
-  subtotal: subtotalProp = 0,
-  total: totalProp = 0,
+  subtotal = 0,
+  total = 0,
+  discount = null,
   onRemoveItem,
   onApplyDiscount,
+  onRemoveDiscount,
 }) => {
-  const formatCurrency = (amount) => `$${amount.toFixed(2)}`;
+   const formatCurrency = (amount) => `$${amount.toFixed(2)}`;
 
   const [isDiscountModalOpen, setIsDiscountModalOpen] = useState(false);
 
-  const [discount, setDiscount] = useState(null);
-
-  const calculatedSubtotal = useMemo(() => {
-    if (subtotalProp > 0) return subtotalProp;
-    return cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  }, [cartItems, subtotalProp]);
-
-  const discountAmount = useMemo(() => {
-    if (!discount || calculatedSubtotal === 0) return 0;
-
-    let amount = 0;
-    if (discount.type === "percentage") {
-      amount = (calculatedSubtotal * discount.value) / 100;
-    } else if (discount.type === "fixed") {
-      amount = discount.value;
-    }
-
-    return Math.min(amount, calculatedSubtotal);
-  }, [discount, calculatedSubtotal]);
-
-  const finalTotal = calculatedSubtotal - discountAmount;
+  const discountAmount = subtotal - total;
 
   const handleOpenModal = () => setIsDiscountModalOpen(true);
   const handleCloseModal = () => setIsDiscountModalOpen(false);
 
   const handleApplyDiscount = (newDiscount) => {
-    setDiscount(newDiscount);
     onApplyDiscount(newDiscount);
     handleCloseModal();
   };
 
   const handleRemoveDiscount = () => {
-    setDiscount(null);
-    onApplyDiscount(null);
+    if (onRemoveDiscount) {
+      onRemoveDiscount();
+    }
   };
 
   return (
@@ -105,10 +87,10 @@ export const SalesSummary = ({
         <div className="mt-6 space-y-3 flex-shrink-0">
           <div className="flex justify-between text-gray-700">
             <span>Subtotal</span>
-            <span>{formatCurrency(calculatedSubtotal)}</span>
+            <span>{formatCurrency(subtotal)}</span>
           </div>
 
-          {discount ? (
+          {discount && discountAmount > 0 ? (
             <div className="flex justify-between items-center text-red-600 font-medium">
               <span className="flex items-center space-x-2">
                 <span>Descuento aplicado </span>
@@ -119,14 +101,16 @@ export const SalesSummary = ({
                     : formatCurrency(discount.value)}
                   )
                 </span>
-                <Button
-                  variant="ghost"
-                  onClick={handleRemoveDiscount}
-                  className="p-0 h-auto w-auto text-red-600 hover:text-red-800"
-                  title="Eliminar descuento"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
+                {onRemoveDiscount && (
+                  <Button
+                    variant="ghost"
+                    onClick={handleRemoveDiscount}
+                    className="p-0 h-auto w-auto text-red-600 hover:text-red-800"
+                    title="Eliminar descuento"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
               </span>
 
               <span>- {formatCurrency(discountAmount)}</span>
@@ -140,6 +124,7 @@ export const SalesSummary = ({
                 variant="outline"
                 onClick={handleOpenModal}
                 className="w-full text-sm text-[#436086] border-[#436086] hover:bg-gray-50 flex items-center justify-center space-x-2"
+                disabled={subtotal === 0}
               >
                 <Plus className="h-4 w-4" />
                 <span>Agregar descuento</span>
@@ -149,7 +134,7 @@ export const SalesSummary = ({
 
           <div className="pt-2 border-t border-gray-200 flex justify-between text-[16px] font-bold text-gray-800">
             <span>Total</span>
-            <span>{formatCurrency(finalTotal)}</span>
+            <span>{formatCurrency(total)}</span>
           </div>
         </div>
       </div>
@@ -158,7 +143,7 @@ export const SalesSummary = ({
         isOpen={isDiscountModalOpen}
         onClose={handleCloseModal}
         onApplyDiscount={handleApplyDiscount}
-        saleTotalValue={calculatedSubtotal}
+        saleTotalValue={subtotal}
       />
     </>
   );
