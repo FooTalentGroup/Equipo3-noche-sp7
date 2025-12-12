@@ -51,10 +51,18 @@ public class User {
         deleted = false;
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
+
+        if (email != null) {
+            email = email.toLowerCase();
+        }
     }
 
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+
+        if (email != null) {
+            email = email.toLowerCase();
+        }
     }
 }
