@@ -33,7 +33,7 @@ export async function createUser(payload) {
     role: payload.role,
     accountStatus: payload.accountStatus ?? 'ACTIVE',
   };
-  const res = await apiClient.post('/api/users', body);
+  const res = await apiClient.post('/api/auth/register', body);
   return unwrap(res);
 }
 
