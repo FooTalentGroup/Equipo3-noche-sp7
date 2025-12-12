@@ -5,6 +5,7 @@ import BestSellersChart from "./charts/ChartBestSellers";
 import { Pagination } from "@/shared/components/ui/pagination";
 import { useTopFiveProducts } from "../hooks/useTopFiveSellers";
 import { useMostSoldProducts } from "../hooks/useMostSold";
+import { useProductsReport } from "../contexts/ProductsReportContext";
 
 const BestSellersReport = () => {
   const {
@@ -22,6 +23,7 @@ const BestSellersReport = () => {
     fetch: fetchMostSold,
   } = useMostSoldProducts();
 
+  const { setReportData, startDate, endDate } = useProductsReport();
   const [stableProducts, setStableProducts] = useState([]);
 
   useEffect(() => {
@@ -35,6 +37,34 @@ const BestSellersReport = () => {
       setStableProducts([]);
     }
   }, [topFive]);
+
+  // Prepare export data
+  useEffect(() => {
+    if (content.length > 0) {
+      const formatDate = (date) => {
+        if (!date) return '';
+        return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+      };
+      const dateRange = startDate && endDate
+        ? `${formatDate(startDate)} - ${formatDate(endDate)}`
+        : 'Todos los periodos';
+
+      setReportData({
+        title: 'Reporte de más vendidos',
+        dateRange: dateRange,
+        chartComponent: <BestSellersChart products={stableProducts} />,
+        tableHeaders: ['Producto', 'Categoría', 'Precio de Venta', 'Cant. Inicial', 'Cant. Vendida', 'Cant. Actual'],
+        tableRows: content.map(product => [
+          product.productName,
+          product.categoryName,
+          `$${product.salePrice.toFixed(2)}`,
+          product.initialQuantity,
+          product.quantitySold,
+          product.currentQuantity
+        ])
+      });
+    }
+  }, [content, stableProducts, startDate, endDate, setReportData]);
 
   return (
     <>
