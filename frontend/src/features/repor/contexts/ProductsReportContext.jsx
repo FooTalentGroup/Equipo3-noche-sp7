@@ -3,8 +3,8 @@ import { createContext, useContext, useState } from "react";
 const ProductsReportContext = createContext();
 
 export function ProductsReportProvider({ children }) {
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
 
   return (

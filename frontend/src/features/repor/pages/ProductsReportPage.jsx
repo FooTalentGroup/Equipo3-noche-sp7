@@ -4,14 +4,8 @@ import { Dialog, DialogContent, DialogTitle } from "@/shared/components/ui/dialo
 import { Label } from "@/shared/components/ui/label";
 import { NativeSelect } from "@/shared/components/ui/native-select";
 import { Description } from "@radix-ui/react-dialog";
-import { Calendar1, SearchIcon, X } from "lucide-react";
+import { Calendar1 } from "lucide-react";
 import { useState } from "react";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-} from "@/shared/components/ui/input-group";
 import { Outlet, useNavigate, useLocation } from "react-router";
 import { useProductsReport } from "../contexts/ProductsReportContext";
 import { useMostSoldProducts } from "../hooks/useMostSold";
@@ -22,7 +16,7 @@ const SUB_TITLE =
   "Consulta de un vistazo tus productos más vendidos, costos y stock con reportes simples de filtrar por día, semana o mes.";
 
 const REPORT_TYPES = [
-  { label: "Productos más vendidos", value: "best_sellers" },
+  { label: "Más vendidos", value: "best_sellers" },
   { label: "Costos", value: "pricing" },
   { label: "Stock", value: "stock" },
 ];
@@ -88,26 +82,10 @@ function ProductsReport() {
               onClick={() => setIsModalOpen(true)}
             >
               <Calendar1 size={12} />
-              {formatDateArg(startDate)} - {formatDateArg(endDate)}
+              {startDate && endDate
+                ? `${formatDateArg(startDate)} - ${formatDateArg(endDate)}`
+                : 'Seleccionar período'}
             </Button>
-          </Label>
-
-          <Label className="flex flex-col gap-3 items-start">
-            Producto
-            <InputGroup>
-              <InputGroupInput placeholder="Buscar producto" />
-              <InputGroupAddon>
-                <SearchIcon />
-              </InputGroupAddon>
-              <InputGroupButton
-                onClick={() => setSearch("")}
-                size="icon-xs"
-                variant="ghost"
-                className="shadow-none!"
-              >
-                <X />
-              </InputGroupButton>
-            </InputGroup>
           </Label>
         </section>
       </div>
@@ -124,14 +102,16 @@ function ProductsReport() {
 
             <p className="flex items-center gap-1.5 text-sm">
               <Calendar1 size={14} />
-              {formatDateArg(startDate)} - {formatDateArg(endDate)}
+              {startDate && endDate
+                ? `${formatDateArg(startDate)} - ${formatDateArg(endDate)}`
+                : 'Sin período seleccionado'}
             </p>
           </div>
 
           <Calendar
             mode="range"
             className="[&_table]:border! [&_table]:border-separate [&_table]:border-stokia-neutral-300 [&_table]:p-4! [&_table]:rounded-lg!"
-            defaultMonth={startDate}
+            defaultMonth={startDate || new Date()}
             selected={{ from: startDate, to: endDate }}
             onSelect={(range) => {
               if (!range) return;
