@@ -34,19 +34,14 @@ export default function CustomersPage() {
         setIsLoading(true);
         try {
             const data = await getCustomers({ page, size: PAGE_SIZE, name });
-            console.log("Data from customer page:\n", data);
 
             const mapped = (data.customers.content || []).map(mapCustomer);
-
-            console.log("Mapped:\n", customers);
-
             setCustomers(mapped);
             setPagination({
                 totalPages: data.totalPages,
                 totalElements: data.totalElements,
                 pageSize: data.pageSize
             });
-            console.log('Pagination set to:', { totalPages: data.totalPages, totalElements: data.totalElements, pageSize: data.pageSize });
         } catch {
             setCustomers([]);
         } finally {
@@ -128,7 +123,6 @@ export default function CustomersPage() {
         URL.revokeObjectURL(url);
     };
 
-    console.log("Mapped:\n", customers);
     return (
         <div className="p-6 w-full">
             <CustomersFiltersBar

@@ -1,4 +1,3 @@
-// src/features/customers/hooks/useCustomersFilter.js
 import { useEffect, useState } from 'react';
 
 export function useCustomersFilter(delay = 500) {

@@ -36,14 +36,11 @@ export const connectNotificationsSocket = async (onNotification) => {
 
   try {
     stompClient.connect(headers, async () => {
-      console.log('Connected to WebSocket (notifications)');
       try {
         stompClient.subscribe('/topic/notifications', (message) => {
           try {
             const notification = JSON.parse(message.body);
-            // callback for direct consumer
             onNotification?.(notification);
-            // update shared unread and emit
             unreadCount = Number(unreadCount || 0) + 1;
             emit('unread', unreadCount);
             emit('message', notification);
@@ -55,7 +52,6 @@ export const connectNotificationsSocket = async (onNotification) => {
         console.error('Subscribe error:', subErr);
       }
 
-      // fetch initial unread count via REST and emit
       try {
         const c = await apiGetUnreadCount();
         const count = typeof c === 'number' ? c : c?.data ?? c ?? 0;
@@ -76,12 +72,10 @@ export const disconnectNotificationsSocket = () => {
   try {
     if (stompClient) {
       stompClient.disconnect(() => {
-        console.log('Disconnected STOMP');
       });
       stompClient = null;
     }
   } catch (e) {
-    console.error('Error while disconnecting STOMP', e);
   }
 };
 

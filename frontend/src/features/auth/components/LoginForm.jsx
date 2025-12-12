@@ -22,7 +22,7 @@ import { AuthLayout } from "@/shared/components/layout/AuthLayout.jsx";
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
-  
+
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -36,11 +36,8 @@ export function LoginForm() {
 
   const login = useLogin({
     onSuccess: (data) => {
-      console.log("Login success - Data recibida:", data);
       if (data && data.success && data.data && data.data.token) {
-        console.log("Token encontrado, guardando...");
         setAuthToken(data.data.token);
-        console.log("Token guardado, navegando a:", from);
         navigate(from, { replace: true });
       } else {
         console.warn("No se recibió token en la respuesta:", data);
@@ -64,8 +61,8 @@ export function LoginForm() {
   }
 
   return (
-    <AuthLayout>    
-    
+    <AuthLayout>
+
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -93,11 +90,11 @@ export function LoginForm() {
                             w-[384px] h-[36px] text-[13px] font-normal p-2 border rounded-[8px] placeholder:text-gray-400 placeholder:text-xs
                             focus:outline-none 
                     ${fieldState.invalid
-                            ? "border border-red-500 "   
-                            : "border border-gray-200 " 
-                    }
+                        ? "border border-red-500 "
+                        : "border border-gray-200 "
+                      }
                   `}
-                   placeholder="Introducir correo electrónico"
+                    placeholder="Introducir correo electrónico"
                   />
                 </FormControl>
                 <FormMessage />
@@ -108,31 +105,31 @@ export function LoginForm() {
           <FormField
             control={form.control}
             name="password"
-            render={({ field,fieldState }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <div className="flex justify-between items-center">
-                <FormLabel  className="text-[14px] font-normal font-roboto text-[#0A0A0A]">
-                  Contraseña
-                </FormLabel>
-                 <Link
-                  to="/forgot-password"
-                  className="text-xs text-[#E5E5E5] hover:text-gray-400 transition font-roboto underline underline-offset-2"
-                >
-                  Olvidé mi contraseña
-                </Link>
+                  <FormLabel className="text-[14px] font-normal font-roboto text-[#0A0A0A]">
+                    Contraseña
+                  </FormLabel>
+                  <Link
+                    to="/forgot-password"
+                    className="text-xs text-[#E5E5E5] hover:text-gray-400 transition font-roboto underline underline-offset-2"
+                  >
+                    Olvidé mi contraseña
+                  </Link>
                 </div>
                 <FormControl>
                   <div className="relative">
                     <input
                       type={showPassword ? "text" : "password"}
-                       {...field}
+                      {...field}
                       className={`
                           w-[384px] h-[36px] p-2 border rounded-[8px] placeholder:text-gray-400 placeholder:text-xs
                             focus:outline-none 
                     ${fieldState.invalid
                           ? "border border-red-500"
                           : "border border-gray-200 "
-                     }
+                        }
                   `}
                       placeholder="Introducir contraseña"
                       style={{ "--tw-ring-color": "#436086" }}
@@ -147,7 +144,7 @@ export function LoginForm() {
                       ) : (
                         <Eye className="h-4 w-4" />
                       )}
-                      
+
                     </button>
                   </div>
                 </FormControl>
@@ -168,40 +165,40 @@ export function LoginForm() {
             className={`
               w-[384px] h-[36px] border rounded-[8px] flex items-center justify-center gap-2 text-sm font-medium
               border rounded-md transition-all
-              ${login.isPending 
-                ? "bg-white text-gray-500 border-gray-300 cursor-not-allowed" 
+              ${login.isPending
+                ? "bg-white text-gray-500 border-gray-300 cursor-not-allowed"
                 : "text-white"
               }
             `}
             style={!login.isPending ? { backgroundColor: "#436086" } : {}}
           >
-            {login.isPending &&  
-            <svg
-              className="animate-spin h-5 w-5 text-gray-500"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              ></circle>
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-              ></path>
-            </svg>
+            {login.isPending &&
+              <svg
+                className="animate-spin h-5 w-5 text-gray-500"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                ></path>
+              </svg>
             }
 
-          {login.isPending ? "Iniciando sesión" : "Iniciar sesión"}
+            {login.isPending ? "Iniciando sesión" : "Iniciar sesión"}
           </Button>
         </form>
       </Form>
- </AuthLayout>
+    </AuthLayout>
   );
 }

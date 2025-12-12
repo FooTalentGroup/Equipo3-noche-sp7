@@ -21,7 +21,46 @@ export async function getPendingSales() {
   return data;
 }
 
+export async function getConfirmedSales() {
+  const { data } = await apiClient.get('/api/orders?status=CONFIRMED');
+  return data;
+}
+
+export async function getCancelledSales() {
+  const { data } = await apiClient.get('/api/orders?status=CANCELLED');
+  return data;
+}
+
 export async function createSale(orderData) {
   const { data } = await apiClient.post('/api/orders', orderData);
   return data;
+}
+
+export async function getSaleById(id) {
+  const { data } = await apiClient.get(`/api/orders/${id}`);
+  return data;
+}
+
+export async function confirmSale(id) {
+  const { data } = await apiClient.patch(`/api/orders/${id}/confirm`);
+  return data;
+}
+
+export async function cancelOrder(id) {
+  const { data } = await apiClient.patch(`/api/orders/${id}/cancel`);
+  return data;
+}
+
+export async function getSaleTicket(id) {
+  try {
+    const response = await apiClient.get(`/api/orders/${id}/pdf`, {
+      responseType: 'blob',
+    });
+    return response.data;
+
+  } catch (error) {
+    if (error.response && error.response.data instanceof Blob) {
+    }
+    throw error;
+  }
 }

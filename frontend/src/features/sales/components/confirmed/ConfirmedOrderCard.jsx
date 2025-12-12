@@ -1,0 +1,17 @@
+import { Button } from "@/shared/components/ui/button";
+import { useDownloadSaleReceipt } from "../../hooks/useSaleTicket";
+
+function ConfirmedOrderCard({ order }) {
+  const { downloadReceipt } = useDownloadSaleReceipt();
+  return (
+    <div className="flex flex-col p-4 border border-border rounded-lg max-w-60 max-h-36 gap-4 bg-stokia-neutral-50 shadow-md">
+      <div className="flex flex-col gap-2">
+        <h3 className="text-xl self-center">{order.orderNumber}</h3>
+        <p className="text-sm text-stokia-neutral-600">{order.paymentNote}</p>
+      </div>
+      <Button variant={"ghost"} onClick={() => downloadReceipt(order.id)}>Ver comprobante</Button>
+    </div>
+  );
+}
+
+export default ConfirmedOrderCard;

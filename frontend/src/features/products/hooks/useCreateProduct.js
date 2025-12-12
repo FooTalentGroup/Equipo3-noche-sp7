@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useQueryClient } from "@tanstack/react-query";
 import { createProductSchema } from "../validators/createProductValidator";
 import { toast } from "sonner";
 import { useApiPost } from "@/shared/hooks/useApi";
@@ -26,8 +25,6 @@ export function useCreateProduct() {
   const { id } = useParams();
   const isEditing = !!id;
 
-  // eslint-disable-next-line no-unused-vars
-  const queryClient = useQueryClient();
   const form = useForm({
     resolver: zodResolver(createProductSchema),
     defaultValues: initialProductValue,
@@ -43,7 +40,6 @@ export function useCreateProduct() {
     },
     onSuccess: (newProduct) => {
       addProduct(newProduct.data);
-      // queryClient.invalidateQueries(["products"]);
       toast.success("Producto creado exitosamente");
       setIsSuccess(true);
       form.reset();
@@ -87,7 +83,6 @@ export function useCreateProduct() {
   };
 
   const handleError = (errors) => {
-    console.log("Errores de validación:", errors);
     toast.error("Por favor, corrige los errores en el formulario");
   };
 
@@ -98,13 +93,13 @@ export function useCreateProduct() {
   const isPending = createMutation.isPending || updateMutation.isPending;
   const isError = createMutation.isError || updateMutation.isError;
 
-  return { 
-    form, 
-    handlePost, 
-    handleError, 
-    isPending, 
-    isSuccess, 
+  return {
+    form,
+    handlePost,
+    handleError,
+    isPending,
+    isSuccess,
     isError,
-    resetSuccess 
+    resetSuccess
   };
 }

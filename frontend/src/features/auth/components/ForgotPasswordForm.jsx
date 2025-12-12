@@ -22,7 +22,7 @@ export function ForgotPasswordForm() {
 
   const form = useForm({
     resolver: zodResolver(forgotPasswordSchema),
-    mode: "onChange", 
+    mode: "onChange",
     defaultValues: {
       email: "",
     },
@@ -30,7 +30,6 @@ export function ForgotPasswordForm() {
 
   const forgotPassword = useForgotPassword({
     onSuccess: (data) => {
-      console.log("Email enviado exitosamente:", data);
       setIsSubmitted(true);
     },
     onError: (error) => {
@@ -43,7 +42,6 @@ export function ForgotPasswordForm() {
 
   function onSubmit(data) {
     forgotPassword.mutate(data.email);
-      // setIsSubmitted(true);
   }
 
   if (isSubmitted) {
@@ -58,7 +56,7 @@ export function ForgotPasswordForm() {
               ¡Correo enviado!
             </h1>
             <p className="text-muted-foreground text-sm text-left mb-2">
-              Enviamos las instrucciones a tu correo. 
+              Enviamos las instrucciones a tu correo.
               Por favor, revisa tu bandeja de entrada y la carpeta de spam.
             </p>
           </div>
@@ -105,9 +103,8 @@ export function ForgotPasswordForm() {
                     {...field}
                     type="email"
                     placeholder="Introducir correo electrónico"
-                    className={`w-full max-w-[384px] h-[36px] text-xs ${
-                      fieldState.invalid ? "border-destructive" : ""
-                    }`}
+                    className={`w-full max-w-[384px] h-[36px] text-xs ${fieldState.invalid ? "border-destructive" : ""
+                      }`}
                   />
                 </FormControl>
                 <FormMessage />
@@ -135,14 +132,14 @@ export function ForgotPasswordForm() {
 
           <div className="text-center w-full max-w-[384px] h-[36px]">
             <Button
-            asChild
-            variant="stokia"
-            className={
+              asChild
+              variant="stokia"
+              className={
                 `w-full max-w-[384px] h-[36px] bg-secondary text-foreground font-normal hover:bg-secondary
                 ${forgotPassword.isPending ? "pointer-events-none opacity-50" : ""}`}
-          >
-            <Link to="/login">Volver al inicio de sesión</Link>
-          </Button>
+            >
+              <Link to="/login">Volver al inicio de sesión</Link>
+            </Button>
           </div>
         </form>
       </Form>

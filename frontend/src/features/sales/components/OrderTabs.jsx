@@ -1,30 +1,60 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 
-export const OrderTabs = ({ activeTab, onTabChange }) => {
-  const tabs = [
-    { id: "register", label: "Registrar pedido" },
-    { id: "pending", label: "Pendiente de cobro" },
-    { id: "confirmed", label: "Confirmado" },
-    { id: "cancelled", label: "Cancelado" }
-  ];
+const tabs = [
+  { name: 'Registrar pedido', path: 'new' },
+  { name: 'Pendiente de cobro', path: 'pending' },
+  { name: 'Confirmado', path: 'confirmed' },
+  { name: 'Cancelado', path: 'cancelled' },
+];
+
+export const OrderTabs = () => {
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+  const tabsRef = useRef([]);
+  const location = useLocation();
+
+  useEffect(() => {
+    const pathSegments = location.pathname.split('/');
+    const activeIndex = tabs.findIndex(tab => pathSegments.includes(tab.path));
+    const indexToUse = activeIndex !== -1 ? activeIndex : 0;
+
+    const activeTab = tabsRef.current[indexToUse];
+    if (activeTab) {
+      const barWidth = activeTab.offsetWidth * 0.7;
+      const centeredLeft = activeTab.offsetLeft + (activeTab.offsetWidth - barWidth) / 2;
+
+      setIndicatorStyle({
+        left: centeredLeft,
+        width: barWidth,
+      });
+    }
+  }, [location.pathname]);
 
   return (
-    <div className="w-full flex justify-center mb-6">
-      <div className="h-[45px] bg-secondary  rounded-lg border border-gray-200 px-6 flex items-center gap-[75px]">
-      {tabs.map((tab) => (
-        <button
-          key={tab.id}
-          onClick={() => onTabChange(tab.id)}
-          className={`px-4 py-2 text-sm font-medium transition-colors  ${
-            activeTab === tab.id
-              ? "border-b-2 border-primary text-btn-primary"
-              : "text-foreground hover:text-btn-primary"
-          }`}
-        >
-          {tab.label}
-        </button>
-      ))}
-    </div>
+    <div className="flex justify-center w-full mb-8">
+      <div className="relative flex bg-stokia-primary-50 rounded-lg px-16">
+        <div
+          className="absolute bottom-0 h-1 bg-stokia-primary-600 rounded-t-full transition-all duration-300 ease-in-out z-10"
+          style={{
+            left: indicatorStyle.left,
+            width: indicatorStyle.width,
+          }}
+        />
+
+        {tabs.map((tab, index) => (
+          <NavLink
+            key={tab.path}
+            to={tab.path}
+            ref={el => (tabsRef.current[index] = el)}
+            className={({ isActive }) =>
+              `relative z-0 px-8 py-4 text-xl/6 font-medium transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${isActive ? 'text-stokia-neutral-950' : 'text-stokia-neutral-400 hover:text-slate-700'
+              }`
+            }
+          >
+            {tab.name}
+          </NavLink>
+        ))}
+      </div>
     </div>
   );
 };
