@@ -105,13 +105,6 @@ export const SidebarFooter = () => {
   return (
     <div className="flex flex-col border-t border-[#E4E8E9]">
       
-      <SidebarItem 
-        icon={HelpCircle} 
-        label="Preguntas frecuentes"
-        onClick={navigateToFAQ}
-        className="text-[#525252]" 
-      />
-      
       <SidebarItem
         icon={LogOut} 
         label="Cerrar sesión"
