@@ -1,3 +1,39 @@
+# Base Repository
+
+Configuración base para proyectos con CI/CD, plantillas de GitHub y estructura de ramas.
+
+## 🚀 Inicio Rápido
+
+### Ramas Principales
+
+- `main` - Producción
+- `staging` - QA
+- `dev-frontend` - Desarrollo frontend
+- `dev-backend` - Desarrollo backend
+
+> Recomendación: mantener `staging` como entorno de QA estable para validar PRs antes de promover a `main`.
+
+## 📚 Documentación
+
+- [Estrategia de Ramas](./docs/BRANCH_STRATEGY.md)
+- [Configuración de Vercel](./docs/VERCEL_CONFIG.md)
+
+## 🔧 Configuración Mínima
+
+1. Clonar el repositorio
+2. Configurar variables de entorno (ver sección `Entornos y despliegues` más abajo)
+3. Personalizar CI/CD y secret keys en el proveedor de hosting (Vercel / Netlify / GitHub Actions)
+
+## 📝 Convenciones (Opcionales)
+
+- **Ramas**: `tipo/equipo/nombre` (ej: `feature/frontend/login`)
+- **Equipos**: `frontend`, `backend`
+- **Tipos**: `feature`, `bugfix`, `refactor`, `hotfix`, `release`
+
+**Nota:** Estas son recomendaciones. El equipo puede ajustarlas según sus necesidades.
+
+---
+
 # Stokia — Frontend
 
 Este documento complementa y amplía la información existente en el proyecto frontend de Stokia. Está escrito en español y contiene:
@@ -187,3 +223,62 @@ Los tests localizan componentes y hooks dentro de cada feature (p. ej. `useAuth.
 - Añadir Snackbar/Toasts globales para feedback de éxito/error (usar `sonner` ya incluido en deps).
 - Implementar paginación en modales que cargan muchos elementos (p.ej. historial de usuarios) y usar React Query para caching/invalidation.
 - Estandarizar shapes de respuesta usando un pequeño adapter `apiAdapters/*` si la API cambia de forma entre endpoints.
+
+---
+
+## Entornos y despliegues
+
+Es importante tener un flujo claro de despliegue y entornos para que QA pueda validar cambios antes de producción. A continuación se describen los entornos habituales y recomendaciones para usarlos en este proyecto:
+
+- `development` - Desarrollo local
+  - Uso: desarrollo diario. Ejecuta `npm run dev` y apunta `VITE_API_BASE_URL` al backend de desarrollo.
+  - Objetivo: desarrollo rápido, hot-reload, debugging.
+
+- `staging` - QA
+  - Uso: ambiente de preproducción dedicado a pruebas de QA (control de calidad).
+  - Objetivo: desplegar cambios que el equipo QA deberá validar antes de promoverlos a producción.
+  - Recomendaciones:
+    - Mantener una rama dedicada (por ejemplo `staging` o `qa`) que active despliegues automáticos al entorno `staging` (Vercel, Netlify o CI/CD del equipo).
+    - Configurar variables de entorno de `staging` (ej.: `VITE_API_BASE_URL=https://staging-api.example.com`) en el proveedor de hosting o en el pipeline.
+    - Asegurar que las credenciales y servicios externos en `staging` sean de prueba y no afecten datos reales.
+    - Ejecutar la batería de pruebas de QA (smoke tests, flujos críticos: registro, login, CRUD de usuarios/clientes, pagos si aplica).
+
+- `production` - Producción
+  - Uso: entorno en vivo con datos reales.
+  - Objetivo: servir la aplicación a usuarios finales.
+  - Recomendaciones:
+    - Despliegues a producción desde la rama `main` o `master` mediante pipeline/CICD.
+    - Revisar que `VITE_API_BASE_URL` apunte al backend de producción y que las keys/servicios externos sean correctos.
+
+### Cómo probar en `staging` localmente
+
+Si necesitas simular `staging` en tu máquina local:
+- Crea un archivo `.env.staging` (Vite detecta variables que comiencen con `VITE_`) con:
+
+```bash
+VITE_API_BASE_URL=https://staging-api.example.com
+# otras variables necesarias para staging
+```
+
+- Ejecuta `npm run dev` y asegúrate que tu código lea `import.meta.env.VITE_API_BASE_URL` o tu `constants/config.js` use la variable apropiada.
+- Alternativamente, exporta la variable en la sesión del terminal:
+
+```powershell
+$env:VITE_API_BASE_URL = 'https://staging-api.example.com'; npm run dev
+```
+
+### Checklist de QA (staging)
+
+Antes de promover a producción, QA típicamente valida:
+- Flujos de alta prioridad: login/registro, gestión de usuarios (crear/editar/eliminar/restaurar), gestión de clientes, ventas (si aplica).
+- Validación de endpoints críticos y formatos (status codes, payloads).
+- Validación UI en varios navegadores y tamaños de pantalla.
+- Pruebas de seguridad básicas (acceso sin token, roles/privilegios).
+
+---
+
+Si quieres, puedo:
+- Añadir un ejemplo de `workflow` para GitHub Actions / Vercel con ramas `staging` y `main`.
+- Crear una plantilla `.env.example` que incluya `VITE_API_BASE_URL` y otras variables necesarias.
+
+¿Quieres que añada el `workflow` y la plantilla `.env.example` ahora?
