@@ -1,6 +1,7 @@
 package com.stockia.stockia.exceptions.order;
 
 import com.stockia.stockia.exceptions.ErrorResponse;
+import com.stockia.stockia.exceptions.client.ClientInactiveException;
 import com.stockia.stockia.exceptions.client.ClientNotFoundException;
 import com.stockia.stockia.exceptions.product.InsufficientStockException;
 import com.stockia.stockia.exceptions.product.ProductNotFoundException;
@@ -155,6 +156,26 @@ public class OrderExceptionHandler {
                         request.getRequestURI());
 
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        }
+
+        @ExceptionHandler(ClientInactiveException.class)
+        public ResponseEntity<ErrorResponse> handleClientInactiveException(
+                ClientInactiveException ex,
+                HttpServletRequest request) {
+
+                log.warn("El cliente ingresado fue dado de baja: {}", ex.getMessage());
+
+                ErrorResponse errorResponse = new ErrorResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        "CLIENT_INACTIVE",
+                        "Cliente inactivo",
+                        Collections.singletonList(ex.getMessage()),
+                        request.getRequestURI()
+                );
+
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(errorResponse);
         }
 
         @ExceptionHandler(HttpMessageNotReadableException.class)

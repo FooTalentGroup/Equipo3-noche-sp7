@@ -1,10 +1,6 @@
 package com.stockia.stockia.controllers;
 
-import com.stockia.stockia.documentation.client.GetAllClientsWithFiltersDoc;
-import com.stockia.stockia.documentation.client.GetClientByIdEndpointDoc;
-import com.stockia.stockia.documentation.client.GetClientPurchaseHistoryDoc;
-import com.stockia.stockia.documentation.client.RegisterClientEndpointDoc;
-import com.stockia.stockia.documentation.client.UpdateClientEndpointDoc;
+import com.stockia.stockia.documentation.client.*;
 import com.stockia.stockia.dtos.client.ClientRequestDto;
 import com.stockia.stockia.dtos.client.ClientSearchRequestDto;
 import com.stockia.stockia.exceptions.client.ClientNotFoundException;
@@ -139,6 +135,15 @@ public class ClientController {
         Client client = clientService.getClientById(id)
                 .orElseThrow(() -> new ClientNotFoundException(id));
         return ResponseEntity.ok(ApiResult.success(client, "Cliente encontrado"));
+    }
+
+
+    @DeleteClientEndpointDoc
+    @PreAuthorize(ADMIN_OR_MANAGER)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResult<?>> deleteClient(@PathVariable UUID id) {
+        clientService.deleteClientById(id);
+        return ResponseEntity.ok(ApiResult.success("Cliente dado de baja correctamente"));
     }
 
     /**

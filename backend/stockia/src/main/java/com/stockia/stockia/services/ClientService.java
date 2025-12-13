@@ -15,6 +15,8 @@ package com.stockia.stockia.services;
  */
 
 import com.stockia.stockia.dtos.client.ClientSearchRequestDto;
+import com.stockia.stockia.enums.ClientStatus;
+import com.stockia.stockia.exceptions.client.ClientNotFoundException;
 import com.stockia.stockia.models.Client;
 import com.stockia.stockia.repositories.ClientRepository;
 import com.stockia.stockia.exceptions.client.ClientDuplicatedException;
@@ -138,6 +140,7 @@ public class ClientService {
                 params.email(),
                 params.phone(),
                 params.isFrequent(),
+                params.clientStatus(),
                 pageable);
     }
 
@@ -190,6 +193,14 @@ public class ClientService {
         existingClient.setIsFrequent(updatedData.getIsFrequent());
 
         return clientRepository.save(existingClient);
+    }
+
+    public void deleteClientById(UUID id) {
+        Client client = clientRepository.findById(id)
+                .orElseThrow(() -> new ClientNotFoundException(id));
+
+        client.setClientStatus(ClientStatus.INACTIVE);
+        clientRepository.save(client);
     }
 
     /**
