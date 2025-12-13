@@ -47,7 +47,9 @@ export async function confirmSale(id) {
 }
 
 export async function cancelOrder(id) {
-  const { data } = await apiClient.patch(`/api/orders/${id}/cancel`);
+  const { data } = await apiClient.patch(`/api/orders/${id}/cancel`, {
+    cancelReason: "Cancelado por el cliente"
+  });
   return data;
 }
 
