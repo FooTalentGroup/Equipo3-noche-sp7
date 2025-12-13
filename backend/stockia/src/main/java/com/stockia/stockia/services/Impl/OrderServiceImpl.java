@@ -5,9 +5,11 @@ import com.stockia.stockia.dtos.order.OrderItemRequestDto;
 import com.stockia.stockia.dtos.order.OrderRequestDto;
 import com.stockia.stockia.dtos.order.OrderResponseDto;
 import com.stockia.stockia.dtos.order.OrderSearchRequestDto;
+import com.stockia.stockia.enums.ClientStatus;
 import com.stockia.stockia.enums.MovementType;
 import com.stockia.stockia.enums.OrderStatus;
 import com.stockia.stockia.exceptions.UnauthorizedException;
+import com.stockia.stockia.exceptions.client.ClientInactiveException;
 import com.stockia.stockia.exceptions.client.ClientNotFoundException;
 import com.stockia.stockia.exceptions.order.InvalidOrderStatusException;
 import com.stockia.stockia.exceptions.order.OrderNotFoundException;
@@ -77,6 +79,10 @@ public class OrderServiceImpl implements OrderService {
         // Validar que el cliente existe
         Client customer = clientRepository.findById(dto.getCustomerId())
                 .orElseThrow(() -> new ClientNotFoundException(dto.getCustomerId()));
+
+        if (customer.getClientStatus() == ClientStatus.INACTIVE) {
+            throw new ClientInactiveException("Cliente inactivo: " + customer.getName() + ".");
+        }
 
         // RN-01: Validar que hay al menos un producto
         if (dto.getItems() == null || dto.getItems().isEmpty()) {

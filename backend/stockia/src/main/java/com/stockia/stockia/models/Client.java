@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.stockia.stockia.enums.AccountStatus;
+import com.stockia.stockia.enums.ClientStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,8 +35,13 @@ public class Client {
     @Column(name = "is_frequent", nullable = false)
     private Boolean isFrequent = false;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true, name = "client_status")
+    private ClientStatus clientStatus;
+
     @PrePersist
     protected void onCreate() {
+        clientStatus = ClientStatus.ACTIVE;
         if (email != null) {
             email = email.toLowerCase();
         }

@@ -1,5 +1,6 @@
 package com.stockia.stockia.dtos.client;
 
+import com.stockia.stockia.enums.ClientStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
@@ -20,7 +21,9 @@ public record ClientSearchRequestDto(
 
                 @Schema(description = "Teléfono del cliente (búsqueda exacta)", example = "+1234567890", requiredMode = Schema.RequiredMode.NOT_REQUIRED) String phone,
 
-                @Schema(description = "Filtrar por clientes frecuentes (true=frecuentes, false=no frecuentes, null=todos)", example = "true", requiredMode = Schema.RequiredMode.NOT_REQUIRED) Boolean isFrequent
+                @Schema(description = "Filtrar por clientes frecuentes (true=frecuentes, false=no frecuentes, null=todos)", example = "true", requiredMode = Schema.RequiredMode.NOT_REQUIRED) Boolean isFrequent,
+
+                @Schema(description = "Estado del cliente (ACTIVE, INACTIVE, BLOCKED, etc)", example = "ACTIVE", requiredMode = Schema.RequiredMode.NOT_REQUIRED) ClientStatus clientStatus
 
 ) {
 }

@@ -9,6 +9,7 @@ package com.stockia.stockia.repositories;
  * - Filtrado de clientes frecuentes
  * - Búsqueda combinada email OR teléfono (existente)
 */
+import com.stockia.stockia.enums.ClientStatus;
 import com.stockia.stockia.models.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -99,12 +100,14 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
                         "(:name IS NULL OR :name = '' OR LOWER(c.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
                         "(:email IS NULL OR :email = '' OR c.email = :email) AND " +
                         "(:phone IS NULL OR :phone = '' OR c.phone = :phone) AND " +
-                        "(:isFrequent IS NULL OR c.isFrequent = :isFrequent)")
+                        "(:isFrequent IS NULL OR c.isFrequent = :isFrequent) AND " +
+                        "(:clientStatus IS NULL OR c.clientStatus = :clientStatus)")
         Page<Client> searchClients(
                         @Param("name") String name,
                         @Param("email") String email,
                         @Param("phone") String phone,
                         @Param("isFrequent") Boolean isFrequent,
+                        @Param("clientStatus") ClientStatus clientStatus,
                         Pageable pageable);
 
         /**
