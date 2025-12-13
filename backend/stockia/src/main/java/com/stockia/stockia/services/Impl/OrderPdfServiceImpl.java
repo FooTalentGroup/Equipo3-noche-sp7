@@ -6,6 +6,7 @@ import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.Border;
+import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
@@ -21,20 +22,27 @@ import java.io.ByteArrayOutputStream;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Implementación mejorada del servicio de generación de PDFs usando iText 7.
- * Genera comprobantes de venta profesionales en formato PDF.
+ * Implementación del servicio de generación de PDFs usando iText 7.
+ * Genera comprobantes de venta con diseño inspirado en Pro Eat Fit Bar.
  */
 @Service
 @Slf4j
 public class OrderPdfServiceImpl implements OrderPdfService {
 
-        private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        private static final DeviceRgb PRIMARY_COLOR = new DeviceRgb(41, 128, 185); // Azul profesional
-        private static final DeviceRgb SECONDARY_COLOR = new DeviceRgb(52, 73, 94); // Gris oscuro
+        // Datos estáticos del negocio
+        private static final String BUSINESS_NAME = "PRO EAT";
+        private static final String BUSINESS_SUBTITLE = "FIT BAR";
+        private static final String BUSINESS_ADDRESS = "Calle Ejemplo 123, Ciudad, Provincia";
+        private static final String BUSINESS_PHONE = "+54 11 1234-5678";
+        private static final String DEFAULT_TAX_CONDITION = "Consumidor final";
+        private static final String DEFAULT_DNI_CUIT = "N/A";
+
+        private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        private static final DeviceRgb BORDER_COLOR = new DeviceRgb(200, 200, 200); // Gris claro para bordes
 
         @Override
         public byte[] generatePdf(Order order) {
-                log.info("Generating professional PDF for order: {}", order.getOrderNumber());
+                log.info("Generating PDF for order: {}", order.getOrderNumber());
 
                 try {
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -45,31 +53,28 @@ public class OrderPdfServiceImpl implements OrderPdfService {
                         // Configurar márgenes
                         document.setMargins(40, 40, 40, 40);
 
-                        // Encabezado con logo y título
-                        addHeader(document, order);
+                        // Encabezado
+                        addHeader(document);
 
-                        // Información de la orden
-                        addOrderInfo(document, order);
+                        // Información del negocio y orden
+                        addBusinessAndOrderInfo(document, order);
 
-                        // Información del cliente
+                        // Datos del cliente
                         addCustomerInfo(document, order);
 
                         // Tabla de productos
                         addItemsTable(document, order);
 
-                        // Totales
-                        addTotalsSection(document, order);
-
-                        // Información de pago
-                        addPaymentInfo(document, order);
+                        // Total
+                        addTotal(document, order);
 
                         // Footer
-                        addFooter(document, order);
+                        addFooter(document);
 
                         document.close();
 
                         byte[] pdfBytes = baos.toByteArray();
-                        log.info("Professional PDF generated successfully for order: {}", order.getOrderNumber());
+                        log.info("PDF generated successfully for order: {}", order.getOrderNumber());
                         return pdfBytes;
 
                 } catch (Exception e) {
@@ -78,182 +83,207 @@ public class OrderPdfServiceImpl implements OrderPdfService {
                 }
         }
 
-        private void addHeader(Document document, Order order) {
-                // Título principal
-                Paragraph title = new Paragraph("COMPROBANTE DE VENTA")
-                                .setFontSize(24)
-                                .setBold()
-                                .setFontColor(PRIMARY_COLOR)
-                                .setTextAlignment(TextAlignment.CENTER)
-                                .setMarginBottom(5);
-                document.add(title);
+        private void addHeader(Document document) {
+                // Tabla para header: Nombre del negocio (izq) | Título del documento (der)
+                Table headerTable = new Table(UnitValue.createPercentArray(new float[] { 1, 1 }))
+                                .useAllAvailableWidth()
+                                .setMarginBottom(10);
 
-                // Subtítulo
-                Paragraph subtitle = new Paragraph("STOCKIA SYSTEM")
-                                .setFontSize(12)
-                                .setFontColor(SECONDARY_COLOR)
-                                .setTextAlignment(TextAlignment.CENTER)
-                                .setMarginBottom(20);
-                document.add(subtitle);
+                // Columna izquierda: Nombre del negocio
+                Paragraph businessName = new Paragraph()
+                                .add(new com.itextpdf.layout.element.Text(BUSINESS_NAME + "\n")
+                                                .setFontSize(22)
+                                                .setBold())
+                                .add(new com.itextpdf.layout.element.Text(BUSINESS_SUBTITLE)
+                                                .setFontSize(11));
+
+                Cell leftCell = new Cell()
+                                .add(businessName)
+                                .setBorder(Border.NO_BORDER)
+                                .setTextAlignment(TextAlignment.LEFT);
+
+                // Columna derecha: Título del documento
+                Paragraph title = new Paragraph("Comprobante de pago")
+                                .setFontSize(16)
+                                .setTextAlignment(TextAlignment.RIGHT);
+
+                Cell rightCell = new Cell()
+                                .add(title)
+                                .setBorder(Border.NO_BORDER)
+                                .setTextAlignment(TextAlignment.RIGHT);
+
+                headerTable.addCell(leftCell);
+                headerTable.addCell(rightCell);
+
+                document.add(headerTable);
 
                 // Línea separadora
                 document.add(new Paragraph()
-                                .setBorderTop(new com.itextpdf.layout.borders.SolidBorder(PRIMARY_COLOR, 2))
-                                .setMarginBottom(20));
+                                .setBorderBottom(new SolidBorder(BORDER_COLOR, 1))
+                                .setMarginBottom(15));
         }
 
-        private void addOrderInfo(Document document, Order order) {
+        private void addBusinessAndOrderInfo(Document document, Order order) {
                 Table infoTable = new Table(UnitValue.createPercentArray(new float[] { 1, 1 }))
                                 .useAllAvailableWidth()
                                 .setMarginBottom(15);
 
-                // Columna izquierda
-                infoTable.addCell(createInfoCell("Orden Nº:", order.getOrderNumber(), true));
-                infoTable.addCell(createInfoCell("Fecha:", order.getOrderDate().format(DATE_FORMAT), false));
+                // Primera fila: Dirección comercial | Número de contacto
+                infoTable.addCell(createInfoCell("Dirección comercial:", BUSINESS_ADDRESS));
+                infoTable.addCell(createInfoCell("Número de contacto:", BUSINESS_PHONE));
 
-                // Columna derecha
-                infoTable.addCell(createInfoCell("Estado:", order.getStatus().toString(), true));
-                infoTable.addCell(createInfoCell("Pago:", order.getPaymentStatus().toString(), false));
+                // Segunda fila: N° de comprobante | Fecha y hora
+                infoTable.addCell(createInfoCell("N° de comprobante:", order.getOrderNumber()));
+                infoTable.addCell(createInfoCell("Fecha y hora:", order.getOrderDate().format(DATE_FORMAT)));
 
                 document.add(infoTable);
+
+                // Línea separadora
+                document.add(new Paragraph()
+                                .setBorderBottom(new SolidBorder(BORDER_COLOR, 1))
+                                .setMarginBottom(15));
         }
 
         private void addCustomerInfo(Document document, Order order) {
-                Paragraph sectionTitle = new Paragraph("DATOS DEL CLIENTE")
+                // Título de sección
+                Paragraph sectionTitle = new Paragraph("Datos del cliente")
                                 .setFontSize(12)
                                 .setBold()
-                                .setFontColor(PRIMARY_COLOR)
-                                .setMarginTop(10)
-                                .setMarginBottom(10);
+                                .setMarginBottom(8);
                 document.add(sectionTitle);
 
-                Table customerTable = new Table(UnitValue.createPercentArray(new float[] { 1, 2 }))
+                // Tabla con 3 columnas para los datos del cliente en una línea
+                Table customerTable = new Table(UnitValue.createPercentArray(new float[] { 1, 1, 1 }))
                                 .useAllAvailableWidth()
                                 .setMarginBottom(15);
 
-                customerTable.addCell(createLabelCell("Nombre:"));
-                customerTable.addCell(createValueCell(order.getCustomer().getName()));
-
-                customerTable.addCell(createLabelCell("Email:"));
-                customerTable.addCell(createValueCell(order.getCustomer().getEmail()));
-
-                customerTable.addCell(createLabelCell("Teléfono:"));
-                customerTable.addCell(createValueCell(order.getCustomer().getPhone()));
+                customerTable.addCell(createInfoCell("Nombre completo:", order.getCustomer().getName()));
+                customerTable.addCell(createInfoCell("DNI/CUIT:", DEFAULT_DNI_CUIT));
+                customerTable.addCell(createInfoCell("Condición fiscal:", DEFAULT_TAX_CONDITION));
 
                 document.add(customerTable);
+
+                // Línea separadora
+                document.add(new Paragraph()
+                                .setBorderBottom(new SolidBorder(BORDER_COLOR, 1))
+                                .setMarginBottom(15));
         }
 
         private void addItemsTable(Document document, Order order) {
-                Paragraph sectionTitle = new Paragraph("DETALLE DE PRODUCTOS")
+                // Título de sección
+                Paragraph sectionTitle = new Paragraph("Productos vendidos")
                                 .setFontSize(12)
                                 .setBold()
-                                .setFontColor(PRIMARY_COLOR)
-                                .setMarginTop(10)
-                                .setMarginBottom(10);
+                                .setMarginBottom(8);
                 document.add(sectionTitle);
 
+                // Tabla de productos
                 Table itemsTable = new Table(UnitValue.createPercentArray(new float[] { 3, 1, 1.5f, 1.5f }))
-                                .useAllAvailableWidth();
+                                .useAllAvailableWidth()
+                                .setMarginBottom(10);
 
                 // Encabezados
-                itemsTable.addHeaderCell(createHeaderCell("Producto"));
-                itemsTable.addHeaderCell(createHeaderCell("Cant."));
-                itemsTable.addHeaderCell(createHeaderCell("Precio Unit."));
-                itemsTable.addHeaderCell(createHeaderCell("Total"));
+                itemsTable.addCell(createTableHeaderCell("Producto"));
+                itemsTable.addCell(createTableHeaderCell("Cantidad"));
+                itemsTable.addCell(createTableHeaderCell("Precio unitario"));
+                itemsTable.addCell(createTableHeaderCell("Subtotal"));
 
                 // Items
                 for (OrderItem item : order.getItems()) {
-                        itemsTable.addCell(createItemCell(item.getProduct().getName()));
-                        itemsTable.addCell(createItemCell(String.valueOf(item.getQuantity())));
-                        itemsTable.addCell(createItemCell(String.format("$%.2f", item.getUnitPrice())));
-                        itemsTable.addCell(createItemCell(String.format("$%.2f", item.getItemTotal())));
+                        itemsTable.addCell(createProductCell(item.getProduct().getName()));
+                        itemsTable.addCell(createQuantityCell(String.valueOf(item.getQuantity())));
+                        itemsTable.addCell(createPriceCell(String.format("AR$ %.3f", item.getUnitPrice())));
+                        itemsTable.addCell(createPriceCell(String.format("AR$ %.3f", item.getItemTotal())));
                 }
 
                 document.add(itemsTable);
-        }
 
-        private void addTotalsSection(Document document, Order order) {
+                // Subtotal y descuento dentro de la misma tabla
                 Table totalsTable = new Table(UnitValue.createPercentArray(new float[] { 3, 1 }))
                                 .useAllAvailableWidth()
-                                .setMarginTop(15)
                                 .setMarginBottom(15);
 
                 // Subtotal
-                totalsTable.addCell(createTotalLabelCell("Subtotal:"));
-                totalsTable.addCell(createTotalValueCell(String.format("$%.2f", order.getSubtotal())));
+                totalsTable.addCell(createLabelCell("Subtotal"));
+                totalsTable.addCell(createTotalValueCell(String.format("AR$ %.3f", order.getSubtotal())));
 
-                // Descuento
+                // Descuento (si aplica)
                 if (order.getDiscountAmount().compareTo(java.math.BigDecimal.ZERO) > 0) {
-                        totalsTable.addCell(createTotalLabelCell("Descuento:"));
-                        totalsTable.addCell(createTotalValueCell(String.format("- $%.2f", order.getDiscountAmount())));
-                }
+                        // Calcular porcentaje de descuento
+                        double discountPercentage = order.getDiscountAmount()
+                                        .divide(order.getSubtotal(), 4, java.math.RoundingMode.HALF_UP)
+                                        .multiply(java.math.BigDecimal.valueOf(100))
+                                        .doubleValue();
 
-                // Total
-                totalsTable.addCell(createTotalLabelCell("TOTAL:").setBold().setFontSize(14));
-                totalsTable.addCell(createTotalValueCell(String.format("$%.2f", order.getTotalAmount()))
-                                .setBold()
-                                .setFontSize(14)
-                                .setFontColor(PRIMARY_COLOR));
+                        String discountLabel = String.format("Descuento (%.0f%%)", discountPercentage);
+                        totalsTable.addCell(createLabelCell(discountLabel));
+                        totalsTable.addCell(
+                                        createTotalValueCell(String.format("-AR$ %.3f", order.getDiscountAmount())));
+                }
 
                 document.add(totalsTable);
+
+                // Línea separadora
+                document.add(new Paragraph()
+                                .setBorderBottom(new SolidBorder(BORDER_COLOR, 1))
+                                .setMarginBottom(15));
         }
 
-        private void addPaymentInfo(Document document, Order order) {
-                Paragraph sectionTitle = new Paragraph("INFORMACIÓN DE PAGO")
-                                .setFontSize(12)
-                                .setBold()
-                                .setFontColor(PRIMARY_COLOR)
-                                .setMarginTop(10)
-                                .setMarginBottom(10);
-                document.add(sectionTitle);
-
-                Table paymentTable = new Table(UnitValue.createPercentArray(new float[] { 1, 2 }))
+        private void addTotal(Document document, Order order) {
+                // Total grande y destacado
+                Table totalTable = new Table(UnitValue.createPercentArray(new float[] { 1, 1 }))
                                 .useAllAvailableWidth()
-                                .setMarginBottom(15);
+                                .setMarginBottom(30);
 
-                paymentTable.addCell(createLabelCell("Método de pago:"));
-                paymentTable.addCell(createValueCell(order.getPaymentMethod().toString()));
+                Cell labelCell = new Cell()
+                                .add(new Paragraph("Total")
+                                                .setFontSize(18)
+                                                .setBold())
+                                .setBorder(Border.NO_BORDER)
+                                .setTextAlignment(TextAlignment.LEFT);
 
-                if (order.getPaymentNote() != null && !order.getPaymentNote().isEmpty()) {
-                        paymentTable.addCell(createLabelCell("Nota:"));
-                        paymentTable.addCell(createValueCell(order.getPaymentNote()));
-                }
+                Cell valueCell = new Cell()
+                                .add(new Paragraph(String.format("AR$ %.3f", order.getTotalAmount()))
+                                                .setFontSize(18)
+                                                .setBold())
+                                .setBorder(Border.NO_BORDER)
+                                .setTextAlignment(TextAlignment.RIGHT);
 
-                document.add(paymentTable);
+                totalTable.addCell(labelCell);
+                totalTable.addCell(valueCell);
+
+                document.add(totalTable);
         }
 
-        private void addFooter(Document document, Order order) {
-                // Información del vendedor
-                Paragraph vendorInfo = new Paragraph(String.format("Atendido por: %s", order.getUser().getName()))
-                                .setFontSize(10)
-                                .setFontColor(SECONDARY_COLOR)
-                                .setMarginTop(20);
-                document.add(vendorInfo);
+        private void addFooter(Document document) {
+                // Footer: "Powered by" en primera línea
+                Paragraph poweredBy = new Paragraph("Powered by")
+                                .setFontSize(9)
+                                .setFontColor(ColorConstants.GRAY)
+                                .setTextAlignment(TextAlignment.RIGHT)
+                                .setMarginTop(20)
+                                .setMarginBottom(2);
+                document.add(poweredBy);
 
-                if (order.getDeliveredDate() != null) {
-                        Paragraph deliveryInfo = new Paragraph(
-                                        String.format("Entregado: %s", order.getDeliveredDate().format(DATE_FORMAT)))
-                                        .setFontSize(10)
-                                        .setFontColor(SECONDARY_COLOR);
-                        document.add(deliveryInfo);
-                }
-
-                // Mensaje de agradecimiento
-                Paragraph thanks = new Paragraph("¡Gracias por su compra!")
-                                .setFontSize(12)
+                // "stockia" en línea separada con fuente más grande
+                Paragraph stockia = new Paragraph("stockia")
+                                .setFontSize(24)
                                 .setBold()
-                                .setFontColor(PRIMARY_COLOR)
-                                .setTextAlignment(TextAlignment.CENTER)
-                                .setMarginTop(30);
-                document.add(thanks);
+                                .setFontColor(ColorConstants.BLACK)
+                                .setTextAlignment(TextAlignment.RIGHT)
+                                .setMarginTop(0);
+                document.add(stockia);
         }
 
-        // Helper methods para crear celdas con estilos consistentes
+        // ==================== Helper Methods ====================
 
-        private Cell createInfoCell(String label, String value, boolean isLeft) {
+        private Cell createInfoCell(String label, String value) {
                 Paragraph content = new Paragraph()
-                                .add(new com.itextpdf.layout.element.Text(label + " ").setBold())
-                                .add(value);
+                                .add(new com.itextpdf.layout.element.Text(label + " ")
+                                                .setFontSize(9)
+                                                .setBold())
+                                .add(new com.itextpdf.layout.element.Text(value)
+                                                .setFontSize(9));
 
                 return new Cell()
                                 .add(content)
@@ -261,47 +291,64 @@ public class OrderPdfServiceImpl implements OrderPdfService {
                                 .setPaddingBottom(5);
         }
 
-        private Cell createHeaderCell(String text) {
+        private Cell createTableHeaderCell(String text) {
                 return new Cell()
-                                .add(new Paragraph(text).setBold().setFontColor(ColorConstants.WHITE))
-                                .setBackgroundColor(PRIMARY_COLOR)
-                                .setTextAlignment(TextAlignment.CENTER)
-                                .setPadding(8);
-        }
-
-        private Cell createItemCell(String text) {
-                return new Cell()
-                                .add(new Paragraph(text).setFontSize(10))
+                                .add(new Paragraph(text)
+                                                .setFontSize(10)
+                                                .setBold())
+                                .setBorder(Border.NO_BORDER)
+                                .setBorderBottom(new SolidBorder(BORDER_COLOR, 1))
                                 .setPadding(5)
                                 .setTextAlignment(TextAlignment.LEFT);
         }
 
+        private Cell createProductCell(String text) {
+                return new Cell()
+                                .add(new Paragraph(text)
+                                                .setFontSize(9))
+                                .setBorder(Border.NO_BORDER)
+                                .setPaddingTop(5)
+                                .setPaddingBottom(5)
+                                .setTextAlignment(TextAlignment.LEFT);
+        }
+
+        private Cell createQuantityCell(String text) {
+                return new Cell()
+                                .add(new Paragraph(text)
+                                                .setFontSize(9))
+                                .setBorder(Border.NO_BORDER)
+                                .setPaddingTop(5)
+                                .setPaddingBottom(5)
+                                .setTextAlignment(TextAlignment.CENTER);
+        }
+
+        private Cell createPriceCell(String text) {
+                return new Cell()
+                                .add(new Paragraph(text)
+                                                .setFontSize(9))
+                                .setBorder(Border.NO_BORDER)
+                                .setPaddingTop(5)
+                                .setPaddingBottom(5)
+                                .setTextAlignment(TextAlignment.RIGHT);
+        }
+
         private Cell createLabelCell(String text) {
                 return new Cell()
-                                .add(new Paragraph(text).setBold().setFontSize(10))
+                                .add(new Paragraph(text)
+                                                .setFontSize(10))
                                 .setBorder(Border.NO_BORDER)
-                                .setPaddingBottom(5);
-        }
-
-        private Cell createValueCell(String text) {
-                return new Cell()
-                                .add(new Paragraph(text).setFontSize(10))
-                                .setBorder(Border.NO_BORDER)
-                                .setPaddingBottom(5);
-        }
-
-        private Cell createTotalLabelCell(String text) {
-                return new Cell()
-                                .add(new Paragraph(text))
-                                .setBorder(Border.NO_BORDER)
-                                .setTextAlignment(TextAlignment.RIGHT)
-                                .setPaddingRight(10);
+                                .setPaddingTop(5)
+                                .setPaddingBottom(5)
+                                .setTextAlignment(TextAlignment.RIGHT);
         }
 
         private Cell createTotalValueCell(String text) {
                 return new Cell()
-                                .add(new Paragraph(text))
+                                .add(new Paragraph(text)
+                                                .setFontSize(10))
                                 .setBorder(Border.NO_BORDER)
+                                .setPaddingTop(5)
+                                .setPaddingBottom(5)
                                 .setTextAlignment(TextAlignment.RIGHT);
         }
 }
