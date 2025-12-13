@@ -11,7 +11,7 @@ export async function getUsers({ page = 0, size = 20, name = '' } = {}) {
   // data expected shape: { content: [...], totalElements, totalPages, pageable, ... }
   const content = data?.content ?? data?.users ?? (Array.isArray(data) ? data : []);
 
-  return {
+     return {
     users: content,
     totalPages: data?.totalPages ?? data?.page?.totalPages ?? 1,
     totalElements: data?.totalElements ?? data?.page?.totalElements ?? (content.length ?? 0),
@@ -37,8 +37,11 @@ export async function createUser(payload) {
   return unwrap(res);
 }
 
-export async function updateUser(id, payload) {
-  const body = {
+export async function updateUser(id, payload, activateUser = false) {
+  const body = activateUser ? {
+    accountStatus: 'ACTIVE',
+  } :
+      {
     name: payload.nombre ?? payload.name,
     email: payload.email,
     // send password only if present

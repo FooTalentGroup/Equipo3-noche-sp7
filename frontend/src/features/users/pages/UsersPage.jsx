@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import UsersTable from '../components/UsersTable';
- import RegisterUserPopup from '../components/RegisterUserPopup';
+import UsersHistoryModal from '../components/UsersHistoryModal';
+import RegisterUserPopup from '../components/RegisterUserPopup';
 import { Plus } from 'lucide-react';
 import { getUsers, deleteUser, createUser, updateUser } from '../services/usersService';
 import { ConfirmDialog } from '@/features/products/components/ConfirmDialog';
@@ -14,6 +15,7 @@ const UsersPage = () => {
   const [toDeleteId, setToDeleteId] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   const handleEdit = (user) => {
     // pass raw fields into editingUser to prefill the form with role code and accountStatus
@@ -30,6 +32,10 @@ const UsersPage = () => {
   const openRegister = () => {
     setEditingUser(null);
     setIsRegisterOpen(true);
+  };
+
+  const openHistory = () => {
+    setIsHistoryOpen(true);
   };
 
   const closeRegister = () => {
@@ -82,13 +88,14 @@ const UsersPage = () => {
       const res = await getUsers({ page, size: 20 });
       const content = res.users || [];
 
-      // Filter out deleted or non-active accounts
-      const filtered = content.filter(u => !u.deleted && (!u.accountStatus || u.accountStatus === 'ACTIVE'));
-
-      const mapped = filtered.map(u => ({
+      // Map users and normalize accountStatus for consistent filtering
+      const mappedAll = content.map(u => ({
         id: u.id ?? u._id ?? u.userId,
         nombre: u.name ?? u.nombre ?? '',
         email: u.email ?? '',
+        // normalize accountStatus to uppercase and trim for consistent logic
+        accountStatus: String(u.accountStatus ?? 'ACTIVE').trim().toUpperCase(),
+        deleted: !!u.deleted,
         // UI label
         role: roleMap[u.role] ?? (u.role ?? 'ENCARGADO'),
         // keep raw fields for edit payload
@@ -96,6 +103,17 @@ const UsersPage = () => {
           roleCode: u.role,
           accountStatus: u.accountStatus,
         }
+      }));
+
+      // Filter only by normalized accountStatus === 'ACTIVE' so all active users are shown
+      const filtered = mappedAll.filter(u => u.accountStatus === 'ACTIVE');
+
+      const mapped = filtered.map(u => ({
+        id: u.id,
+        nombre: u.nombre,
+        email: u.email,
+        role: u.role,
+        __raw: u.__raw
       }));
 
       setUsers(mapped);
@@ -111,7 +129,7 @@ const UsersPage = () => {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <div className="w-[570px] justify-center text-Stockia-Primary-950 text-3xl font-semibold">Registro de usuarios y asignación de roles</div>
+        <div className="w-[600px] justify-center text-Stockia-Primary-950 text-3xl font-semibold">Registro de usuarios y asignación de roles</div>
         <div className="mt-2 w-[1039px] justify-center text-Stockia-Neutral-500---Hover text-base font-medium">Registra un nuevo usuario y asígnale un rol en el sistema.</div>
       </div>
 
@@ -120,7 +138,7 @@ const UsersPage = () => {
             <Plus className="h-4 w-4" />
             Registrar usuario
         </button>
-        <button className="cursor-pointer py-2 rounded-[8px] bg-general-secondary text-general-secondary-foreground flex justify-center items-center gap-2 shadow-md bg-[#F5F5F5] w-[199px]">
+        <button onClick={openHistory} className="cursor-pointer py-2 rounded-[8px] bg-general-secondary text-general-secondary-foreground flex justify-center items-center gap-2 shadow-md bg-[#F5F5F5] w-[199px]">
             Historial de usuarios</button>
       </div>
 
@@ -135,6 +153,7 @@ const UsersPage = () => {
       )}
 
       <RegisterUserPopup open={isRegisterOpen} onClose={closeRegister} onSave={handleSave} initialData={editingUser} />
+      <UsersHistoryModal open={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} onRestore={() => fetchUsers(currentPage)} />
 
       <ConfirmDialog
         isOpen={isConfirmOpen}
