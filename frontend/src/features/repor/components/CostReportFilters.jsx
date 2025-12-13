@@ -21,6 +21,12 @@ export function CostReportFilters({ year, onYearChange, productName, onProductCh
     const dropdownRef = useRef(null);
 
     useEffect(() => {
+        if (productName && productName !== query) {
+            setQuery(productName);
+        }
+    }, [productName]);
+
+    useEffect(() => {
         function handleClickOutside(event) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setIsOpen(false);

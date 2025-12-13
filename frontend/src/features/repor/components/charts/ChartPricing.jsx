@@ -71,11 +71,11 @@ export const options = {
   },
   elements: {
     line: {
-      tension: 0.4, // Smooth curve
+      tension: 0.4,
     },
     point: {
-      radius: 0, // Hide points by default
-      hitRadius: 15, // Larger hit area for tooltip
+      radius: 0,
+      hitRadius: 15,
       hoverRadius: 6,
       hoverBackgroundColor: '#5F7B99',
     }
@@ -88,7 +88,7 @@ export default function ChartPricing({ dataPoints, showPlaceholder = true }) {
   const validDataPoints = dataPoints && dataPoints.length > 0 ? dataPoints : Array(12).fill(0);
 
   const isPlaceholder = showPlaceholder && (validDataPoints.length === 0 || validDataPoints.every(v => Number(v) === 0));
-  const placeholderSample = [12.5, 12.0, 11.8, 12.2, 13.0, 12.7, 13.5, 13.2, 12.9, 13.1, 13.4, 13.0];
+  const placeholderSample = Array(12).fill(0);
   const displayData = isPlaceholder ? placeholderSample : validDataPoints;
 
   const localOptions = {
