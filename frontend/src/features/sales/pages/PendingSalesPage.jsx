@@ -72,7 +72,7 @@ export const PendingSalesPage = () => {
       />
 
       <Dialog open={isPaymentModalOpen} onOpenChange={handleModalChange}>
-        <DialogContent className="max-w-2xl h-8/12 p-0! bg-stokia-neutral-50">
+        <DialogContent className="max-w-2xl p-0! bg-stokia-neutral-50">
           <SalePayment onExternalClose={handleModalChange} />
         </DialogContent>
       </Dialog>
