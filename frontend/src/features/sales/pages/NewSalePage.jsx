@@ -42,6 +42,7 @@ const NewSalePage = () => {
     discount,
     addItem,
     removeItem,
+    updateItemQuantity,
     applyDiscount,
     clearCart,
     loadFromOrder,
@@ -180,17 +181,22 @@ const NewSalePage = () => {
 
               {products.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 min-w-[773px]">
-                  {products.map((product) => (
-                    <ProductCard
-                      key={product.id || product.name}
-                      id={product.id}
-                      name={product.name}
-                      stock={product.currentStock}
-                      price={product.price}
-                      imageUrl={product.photoUrl}
-                      onAddToCart={() => handleSelectProduct(product)}
-                    />
-                  ))}
+                  {products.map((product) => {
+                    const cartItem = cartItems.find(item => item.id === product.id);
+                    return (
+                      <ProductCard
+                        key={product.id || product.name}
+                        id={product.id}
+                        name={product.name}
+                        stock={product.currentStock}
+                        price={product.price}
+                        imageUrl={product.photoUrl}
+                        onAddToCart={() => handleSelectProduct(product)}
+                        cartItem={cartItem}
+                        onUpdateQuantity={updateItemQuantity}
+                      />
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -207,6 +213,7 @@ const NewSalePage = () => {
               total={total}
               discount={discount}
               onRemoveItem={removeItem}
+              onUpdateQuantity={updateItemQuantity}
               onApplyDiscount={applyDiscount}
               onRemoveDiscount={() => applyDiscount(null)}
             />

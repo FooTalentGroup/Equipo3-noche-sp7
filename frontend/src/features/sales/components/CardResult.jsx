@@ -10,18 +10,34 @@ export const ProductCard = ({
   price,
   imageUrl,
   onAddToCart,
+  cartItem,
+  onUpdateQuantity,
 }) => {
   const [quantity, setQuantity] = useState(1);
+  const isInCart = !!cartItem;
+  const currentQuantity = isInCart ? cartItem.quantity : quantity;
 
   const handleIncrement = () => {
-    if (quantity < stock) {
-      setQuantity((q) => q + 1);
+    if (isInCart) {
+      if (currentQuantity < stock) {
+        onUpdateQuantity(id, currentQuantity + 1);
+      }
+    } else {
+      if (quantity < stock) {
+        setQuantity((q) => q + 1);
+      }
     }
   };
 
   const handleDecrement = () => {
-    if (quantity > 1) {
-      setQuantity((q) => q - 1);
+    if (isInCart) {
+      if (currentQuantity > 1) {
+        onUpdateQuantity(id, currentQuantity - 1);
+      }
+    } else {
+      if (quantity > 1) {
+        setQuantity((q) => q - 1);
+      }
     }
   };
 
@@ -40,6 +56,8 @@ export const ProductCard = ({
   };
 
   const isOutOfStock = stock === 0;
+  const totalInCart = isInCart ? cartItem.quantity : 0;
+  const canAddMore = totalInCart + quantity <= stock;
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden flex flex-col">
@@ -70,20 +88,20 @@ export const ProductCard = ({
             <Button
               variant="ghost"
               onClick={handleDecrement}
-              disabled={quantity <= 1 || isOutOfStock}
+              disabled={currentQuantity <= 1 || isOutOfStock}
               className="p-1 h-8 w-8 text-gray-600 hover:bg-gray-100"
             >
               <Minus className="h-4 w-4" />
             </Button>
             <Input
-              value={quantity.toString()}
+              value={currentQuantity.toString()}
               readOnly
               className="w-10 text-center p-0 h-8 border-y-0 border-x border-gray-300 focus:outline-none focus:ring-0 text-sm"
             />
             <Button
               variant="ghost"
               onClick={handleIncrement}
-              disabled={quantity >= stock || isOutOfStock}
+              disabled={currentQuantity >= stock || isOutOfStock}
               className="p-1 h-8 w-8 text-gray-600 hover:bg-gray-100"
             >
               <Plus className="h-4 w-4" />
@@ -92,10 +110,10 @@ export const ProductCard = ({
 
           <Button
             onClick={handleAddToCart}
-            disabled={isOutOfStock}
-            className="bg-[#436086] hover:bg-[#384d6b] text-white py-1 h-8 px-18 rounded-md shadow-sm text-sm"
+            disabled={isOutOfStock || !canAddMore}
+            className="bg-[#436086] hover:bg-[#384d6b] text-white py-1 h-8 px-18 rounded-md shadow-sm text-sm disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
-            {isOutOfStock ? "Sin Stock" : `Agregar`}
+            {isOutOfStock ? "Sin Stock" : !canAddMore ? "Stock excedido" : `Agregar`}
           </Button>
         </div>
       </div>
