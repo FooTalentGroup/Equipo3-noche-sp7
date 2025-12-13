@@ -4,7 +4,6 @@ import { NavLink, useLocation } from 'react-router-dom';
 const tabs = [
   { name: 'Ventas', path: 'sales' },
   { name: 'Productos', path: 'products' },
-  { name: 'Usuarios', path: 'users' },
 ];
 
 const ReportsNav = () => {
