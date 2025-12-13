@@ -2,9 +2,10 @@ import { NavLink } from 'react-router';
 import { Package, ShoppingBag, UsersRound, ChartLine, House, UserRoundIcon } from 'lucide-react';
 import { SidebarFooter } from './UserMenu';
 import stokialogo from "@/assets/stockia.svg";
+import { getUserRole } from "@/features/auth/utils/authStorage";
 
 
-const navLinks = [
+const adminNavLinks = [
     {
         to: '/',
         icon: House,
@@ -35,9 +36,32 @@ const navLinks = [
         icon: UserRoundIcon,
         label: 'Gestión de Usuarios'
     }
-
-
 ];
+    const encargadoNavLinks = [
+    {
+        to: '/',
+        icon: House,
+        label: 'Inicio'
+    },
+    {
+        to: '/sales',
+        icon: ShoppingBag,
+        label: 'Ventas'
+    },
+    {
+        to: '/products',
+        icon: Package,
+        label: 'Productos'
+    },
+    {
+        to: '/customers',
+        icon: UsersRound,
+        label: 'Clientes'
+    }
+];
+
+
+
 
 const NavLinkItem = ({ to, icon: Icon, arrowIcon: Arrow, label }) => (
     <div>
@@ -61,6 +85,11 @@ const NavLinkItem = ({ to, icon: Icon, arrowIcon: Arrow, label }) => (
 );
 
 const SideMenu = () => {
+
+    const userRole = getUserRole()?.toLowerCase(); 
+    const isAdmin = userRole === 'admin';
+    const navLinks = isAdmin ? adminNavLinks : encargadoNavLinks;
+   
     return (
         <aside className='hidden md:flex md:flex-col border-r bg-sidebar min-w-[16rem] justify-between h-full'>
             <div className="flex-1 overflow-y-auto">

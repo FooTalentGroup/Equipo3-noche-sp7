@@ -41,7 +41,7 @@ export function LoginForm() {
         console.log("Token encontrado, guardando...");
         setAuthToken(data.data.token);
         console.log("Token guardado, navegando a:", from);
-        navigate(from, { replace: true });
+        window.location.href = from;
       } else {
         console.warn("No se recibió token en la respuesta:", data);
         clearAuthData();
