@@ -30,7 +30,6 @@ export function ReportExportModal({ isOpen, onClose, reportData }) {
         try {
             await new Promise(resolve => setTimeout(resolve, 1000));
 
-            console.log('Starting PDF export with dom-to-image...');
             const footer = modalContentRef.current.querySelector('.export-footer');
             if (footer) footer.style.display = 'none';
 
@@ -75,8 +74,6 @@ export function ReportExportModal({ isOpen, onClose, reportData }) {
                 }
             });
 
-            console.log('Image created successfully');
-
             const img = new Image();
             img.src = dataUrl;
 
@@ -87,8 +84,6 @@ export function ReportExportModal({ isOpen, onClose, reportData }) {
             const imgWidth = 210;
             const pageHeight = 297;
             const imgHeight = (img.height * imgWidth) / img.width;
-
-            console.log('Creating PDF... Image height:', imgHeight, 'Page height:', pageHeight);
 
             const pdf = new jsPDF('p', 'mm', 'a4');
 
@@ -105,10 +100,7 @@ export function ReportExportModal({ isOpen, onClose, reportData }) {
             const filename = `${reportData.title.replace(/ /g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
             pdf.save(filename);
 
-            console.log('PDF saved successfully');
         } catch (error) {
-            console.error('Error generating PDF:', error);
-            console.error('Error stack:', error.stack);
             alert(`Error al generar el PDF: ${error.message}`);
 
             const footer = modalContentRef.current?.querySelector('.export-footer');

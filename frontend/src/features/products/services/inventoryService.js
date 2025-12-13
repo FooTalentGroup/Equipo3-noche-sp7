@@ -23,14 +23,11 @@ export async function getInventoryMovements({ page = 0, size = 10, productId = '
     if (endDate) params.endDate = endDate;
 
     const response = await apiClient.get('/api/inventory-movements', { params });
-    console.log("Inventory response:\n", response);
-    
+
     const data = unwrap(response);
-    console.log("Unwrapped data:\n", data);
-    
-    // Handle both paginated and array responses
+
     const movements = data?.content ?? (Array.isArray(data) ? data : []);
-    
+
     return {
       movements: movements,
       totalPages: data?.totalPages ?? 1,
@@ -45,8 +42,8 @@ export async function getInventoryMovements({ page = 0, size = 10, productId = '
 
 export async function getInventoryMovementsByProduct(productId) {
   try {
-    const response = await apiClient.get('/api/inventory-movements', { 
-      params: { productId } 
+    const response = await apiClient.get('/api/inventory-movements', {
+      params: { productId }
     });
     return unwrap(response);
   } catch (error) {

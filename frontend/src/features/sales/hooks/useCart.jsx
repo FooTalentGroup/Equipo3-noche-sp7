@@ -32,7 +32,7 @@ export const useCart = () => {
     setItems((prevItems) => prevItems.filter((item) => item.id !== productId));
   };
 
-    const decrementItemQuantity = (productId) => {
+  const decrementItemQuantity = (productId) => {
     setItems((prevItems) => {
       return prevItems
         .map((item) => {
@@ -64,7 +64,7 @@ export const useCart = () => {
     setItems([]);
     setDiscount(null);
   };
-   const applyDiscount = (discountData) => {
+  const applyDiscount = (discountData) => {
     setDiscount(discountData);
   };
   const removeDiscount = () => {
@@ -94,17 +94,18 @@ export const useCart = () => {
   }, [subtotal, discountAmount]);
 
   const loadFromOrder = (order) => {
-    setItems(order.products || []);
-    
-    if (order.discount > 0 && order.discountType && order.discountValue) {
+    setItems(order.items || []);
+
+    if (order.discountAmount && order.discountAmount > 0) {
       setDiscount({
-        type: order.discountType,
-        value: order.discountValue
+        type: "AMOUNT",
+        value: order.discountAmount
       });
     } else {
       setDiscount(null);
     }
   };
+
 
 
   return {

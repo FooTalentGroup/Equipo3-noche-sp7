@@ -1,26 +1,24 @@
 import React, { useState, useEffect } from 'react';
 
 export function CreateClientPopup({
-                                         open,
-                                         onClose,
-                                         filters,
-                                         onChange,
-                                         sort,
-                                         onSortChange,
-                                         onApply,
-                                         onClear,
-                                     }) {
+    open,
+    onClose,
+    filters,
+    onChange,
+    sort,
+    onSortChange,
+    onApply,
+    onClear,
+}) {
     const initialLocal = {
         category: filters?.category ?? 'all',
         minPrice: filters?.minPrice ?? '',
         maxPrice: filters?.maxPrice ?? '',
-        // NUEVO: stockLevel → 'all' | 'high' | 'medium' | 'low'
         stockLevel: filters?.stockLevel ?? 'all',
     };
 
     const [local, setLocal] = useState(initialLocal);
 
-    // Sync cuando cambian los filtros externos o se abre el popup
     useEffect(() => {
         setLocal({
             category: filters?.category ?? 'all',
@@ -37,7 +35,7 @@ export function CreateClientPopup({
     }
 
     function applyAll() {
-        onChange(local);           // enviamos stockLevel directamente
+        onChange(local);
         if (onApply) onApply();
     }
 
@@ -60,7 +58,6 @@ export function CreateClientPopup({
                 <h3 className="text-lg font-semibold mb-4">Filtros y orden</h3>
 
                 <div className="space-y-4">
-                    {/* Categoría */}
                     <label className="block">
                         <span className="text-sm font-medium text-gray-700">Categoría</span>
                         <select
@@ -80,7 +77,6 @@ export function CreateClientPopup({
                         </select>
                     </label>
 
-                    {/* Precio mínimo */}
                     <label className="block">
                         <span className="text-sm font-medium text-gray-700">Precio mínimo</span>
                         <input
@@ -93,7 +89,6 @@ export function CreateClientPopup({
                         />
                     </label>
 
-                    {/* Precio máximo */}
                     <label className="block">
                         <span className="text-sm font-medium text-gray-700">Precio máximo</span>
                         <input

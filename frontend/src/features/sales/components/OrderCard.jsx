@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@/shared/components/ui/button";
 
-export const OrderCard = ({ order, status, onCharge, onEdit, onCancel }) => {
+export const OrderCard = ({ order, status, onCharge, onEdit, onCancel, onConfirm }) => {
   const showChargeButton = status === "pending";
   const showEditButton = status === "pending";
   const showCancelButton = status === "pending";
@@ -10,7 +10,7 @@ export const OrderCard = ({ order, status, onCharge, onEdit, onCancel }) => {
     <div className="bg-stokia-neutral-50 border border-border rounded-lg p-4 shadow-sm flex flex-col space-y-4">
       <div className="border-b border-muted pb-3">
         <h3 className="text-lg font-semibold text-foreground text-center">
-          Pedido #{order.id}
+          Pedido #{order.orderNumber}
         </h3>
         {order.note && (
           <p className="text-sm text-muted-foreground mt-1">
@@ -24,26 +24,26 @@ export const OrderCard = ({ order, status, onCharge, onEdit, onCancel }) => {
           <span className="text-foreground">Producto</span>
           <span className="text-foreground">Cant.</span>
         </div>
-        {order.products.map((product, index) => (
+        {order.items?.map((item, index) => (
           <div
             key={index}
             className="flex justify-between items-center text-sm"
           >
             <span className="text-muted-foreground truncate flex-1 pr-2">
-              {product.name}
+              {item.product?.name}
             </span>
             <span className="text-foreground font-medium min-w-[30px] text-right">
-              {product.quantity}
+              {item.quantity}
             </span>
           </div>
         ))}
       </div>
 
-     
+
       <div className="space-y-2 pt-2">
         {showChargeButton && (
           <Button
-            onClick={() => onCharge(order)}
+            onClick={() => onConfirm(order.id)}
             className="w-full bg-btn-primary hover:bg-btn-primary/90 text-white h-10"
           >
             Cobrar
@@ -82,7 +82,7 @@ export const OrderCard = ({ order, status, onCharge, onEdit, onCancel }) => {
           </div>
         )}
       </div>
-   </div>
+    </div>
 
   );
 };

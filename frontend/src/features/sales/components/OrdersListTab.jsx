@@ -1,7 +1,7 @@
 import React from "react";
 import { OrderCard } from "./OrderCard";
 
-export const OrdersListTab = ({ orders, status, onEdit, onCancel }) => {
+export const OrdersListTab = ({ orders, status, onEdit, onCancel, onConfirm }) => {
   const getEmptyMessage = () => {
     switch (status) {
       case "pending":
@@ -31,6 +31,7 @@ export const OrdersListTab = ({ orders, status, onEdit, onCancel }) => {
           order={order}
           status={status}
           onEdit={onEdit}
+          onConfirm={onConfirm}
           onCancel={onCancel}
         />
       ))}

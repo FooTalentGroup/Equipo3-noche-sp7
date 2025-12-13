@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { CustomersFiltersBar } from '@/features/customers/components/CustomersFiltersBar.jsx';
 import { CustomersTable } from '@/features/customers/components/CustomersTable.jsx';
 import RegisterCustomerPopup from '../components/RegisterCustomerPopup.jsx';
-import { SuccessModal } from '@/shared/components/ui/SuccessModal.jsx';
 import { getCustomers, createCustomer, updateCustomer } from '../services/customerService.js';
 import { getAuthToken } from '@/features/auth/utils/authStorage.js';
 import { useCustomersFilter } from '../hooks/useCustomersFilter';
@@ -23,7 +22,6 @@ export default function CustomersPage() {
     const [isRegisterOpen, setIsRegisterOpen] = useState(false);
     const [editingCustomer, setEditingCustomer] = useState(null);
     const [customers, setCustomers] = useState([]);
-    const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
     const [pagination, setPagination] = useState({ totalPages: 0, totalElements: 0, pageSize: PAGE_SIZE });
@@ -34,19 +32,14 @@ export default function CustomersPage() {
         setIsLoading(true);
         try {
             const data = await getCustomers({ page, size: PAGE_SIZE, name });
-            console.log("Data from customer page:\n", data);
 
             const mapped = (data.customers.content || []).map(mapCustomer);
-
-            console.log("Mapped:\n", customers);
-
             setCustomers(mapped);
             setPagination({
                 totalPages: data.totalPages,
                 totalElements: data.totalElements,
                 pageSize: data.pageSize
             });
-            console.log('Pagination set to:', { totalPages: data.totalPages, totalElements: data.totalElements, pageSize: data.pageSize });
         } catch {
             setCustomers([]);
         } finally {
@@ -92,6 +85,8 @@ export default function CustomersPage() {
                     phone: payload.telefono.trim(),
                     isFrequent: payload.esFrecuente
                 });
+                // For edits close the popup so the popup can unmount
+                closePopup();
             } else {
                 await createCustomer({
                     name: payload.nombre.trim(),
@@ -99,12 +94,36 @@ export default function CustomersPage() {
                     phone: payload.telefono.trim(),
                     isFrequent: payload.esFrecuente
                 });
-                setShowSuccessModal(true);
+                // For creation, do NOT close the popup here — the popup will show its SuccessModal
             }
-            closePopup();
+
+            // Refresh customers after successful save
             await fetchCustomers(0, debouncedSearch);
         } catch (error) {
-            console.error('Error saving customer:', error);
+            // Prefer the backend details message from error.data.details[0] when available
+            const detailMsg = error?.data?.details?.[0] || error?.response?.data?.details?.[0] || error?.message || String(error);
+            console.error('Error saving customer:', detailMsg);
+
+            // Map the detail message to a field-specific error using simple keyword checks
+            const msgStr = String(detailMsg).toLowerCase();
+            const fieldErrors = {};
+            if (msgStr.includes('teléfono') || msgStr.includes('telefono') || msgStr.includes('phone')) {
+                fieldErrors.telefono = detailMsg;
+            }
+            if (msgStr.includes('email') || msgStr.includes('correo') || msgStr.includes('e-mail')) {
+                fieldErrors.email = detailMsg;
+            }
+            if (msgStr.includes('nombre') || msgStr.includes('name')) {
+                fieldErrors.nombre = detailMsg;
+            }
+
+            if (Object.keys(fieldErrors).length > 0) {
+                const customError = new Error(detailMsg);
+                customError.response = { data: { fieldErrors } };
+                throw customError;
+            }
+
+            // No field matched — rethrow original error so the popup can show a fallback message
             throw error;
         }
     };
@@ -128,7 +147,6 @@ export default function CustomersPage() {
         URL.revokeObjectURL(url);
     };
 
-    console.log("Mapped:\n", customers);
     return (
         <div className="p-6 w-full">
             <CustomersFiltersBar

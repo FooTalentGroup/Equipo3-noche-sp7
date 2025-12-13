@@ -71,6 +71,17 @@ export default function RegisterCustomerPopup({ open, onClose, onSave, initialDa
             }
         } catch (error) {
             setIsSubmitting(false);
+
+            // Prefer structured fieldErrors returned by the caller (CustomersPage transforms backend details into this shape)
+            const fieldErrors = error?.response?.data?.fieldErrors || error?.data?.fieldErrors;
+            if (fieldErrors && Object.keys(fieldErrors).length > 0) {
+                // Ensure values are strings and merge with existing errors
+                const normalized = Object.fromEntries(Object.entries(fieldErrors).map(([k, v]) => [k, String(v)]));
+                setErrors(prev => ({ ...prev, ...normalized }));
+                return;
+            }
+
+            // Fallbacks for other common backend shapes (e.g., duplicate email)
             if (error.response?.status === 500) {
                 setErrors(prev => ({
                     ...prev,
@@ -79,7 +90,7 @@ export default function RegisterCustomerPopup({ open, onClose, onSave, initialDa
             } else {
                 setErrors(prev => ({
                     ...prev,
-                    email: error.response?.data?.message || "Cliente ya existente"
+                    email: error.response?.data?.message || error.message || "Cliente ya existente"
                 }));
             }
         }
@@ -156,7 +167,7 @@ export default function RegisterCustomerPopup({ open, onClose, onSave, initialDa
 
                         <div className="flex justify-between items-start mt-8 pt-6">
                             <div className="flex-1 pr-8">
-                                <div className="text-sm font-medium text-gray-700">Unirse a la comunidad Pro-eat</div>
+                                <div className="text-sm font-medium text-gray-700">Unirse a la comunidad Stockia</div>
                                 <p className="text-xs text-gray-500 mt-1">
                                     El cliente recibirá promociones y descuentos en su correo electrónico
                                 </p>
