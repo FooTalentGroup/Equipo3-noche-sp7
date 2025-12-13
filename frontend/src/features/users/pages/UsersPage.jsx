@@ -56,7 +56,8 @@ const UsersPage = () => {
     if (!toDeleteId) return;
     try {
       await deleteUser(toDeleteId);
-      setUsers(prev => prev.filter(u => u.id !== toDeleteId));
+      // Refresh the users list to keep pagination/counts consistent
+      await fetchUsers(currentPage);
     } catch (err) {
       console.error('Error deleting user', err);
     } finally {
@@ -143,6 +144,7 @@ const UsersPage = () => {
         cancelTitle="Cancelar"
         acceptTitle="Sí, eliminar"
         onAccept={handleConfirmDelete}
+        variant="destructive"
       />
     </div>
   );
