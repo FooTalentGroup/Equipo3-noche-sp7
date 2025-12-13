@@ -40,6 +40,7 @@ export function CustomersTable({
         );
     }
 
+
     return (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1086px]">
             <div className="overflow-visible">

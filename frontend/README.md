@@ -1,85 +1,189 @@
 # Stokia — Frontend
 
-¡Bienvenido al frontend de **Stokia**! Esta es la interfaz de usuario de la plataforma.
+Este documento complementa y amplía la información existente en el proyecto frontend de Stokia. Está escrito en español y contiene:
+- Descripción general del proyecto
+- Arquitectura por features
+- Estructura de carpetas y responsabilidades
+- Módulos y componentes principales
+- Servicios y llamadas a API
+- Flujo de desarrollo local, pruebas y despliegue
+- Consejos de debugging y preguntas frecuentes
 
-## 🧰 Tecnologías utilizadas
+> Nota: este README está pensado para desarrolladores que trabajan sobre el código en `frontend/`.
 
-| Logo | Tecnología     | Descripción                                                                 |
-|------|----------------|-----------------------------------------------------------------------------|
-| <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg" width="30"/> | **React**         | Libreria principal del frontend.           |
-| <img src="https://vitejs.dev/logo.svg" width="30"/> | **Vite**          | Herramienta de compilación y entorno de desarrollo para frontend.                               |
-| <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" width="30"/> | **JavaScript**    | Lenguaje Base.                                     |
-|<img src="https://upload.wikimedia.org/wikipedia/commons/d/d5/Tailwind_CSS_Logo.svg" width="30"/> | **Tailwind CSS**  | Framework de CSS para estilos.       |
-|<img src="https://reactrouter.com/splash/hero-3d-logo.dark.webp" width="30"/> | **React Router**  | Manejo de rutas.       |
-|<img src="https://raw.githubusercontent.com/TanStack/query/main/media/repo-dark.png" width="30"/> | **React Query**  | Manejo de estados asincronos y manejo de API.       |
+---
 
+## Resumen rápido
 
-## 🗂 Estructura del Proyecto
+- Stack principal: React + Vite + Tailwind CSS.
+- Estado remoto / sincronización: Axios a través del wrapper `apiClient` (con interceptor para Authorization).
+- Manejo de datos asincrónicos: @tanstack/react-query (consultar `lib/query-client.js`).
+- Estilo: Tailwind CSS + utilidades propias y componentes en `shared/components/ui`.
+- Arquitectura: `features/` (feature folders) — cada feature contiene componentes, servicios, hooks y páginas relacionadas.
 
-El proyecto Stokia esta organizado bajo una arquitectura por features, agrupando el codigo segun las funcionalidades del sistema, ademas el proyecto incluye carpetas para manejar utilidades compartidas y configuración global, manteniendo un orden claro entre logica de negocio y los componentes reutilizables. A continuación se describe la estructura de carpetas dentro de la carpeta `frontend`:
+---
 
-### 📁 `frontend/`
-La carpeta principal donde se encuentra el código fuente del frontend de la aplicación.
+## Estructura de alto nivel (carpeta `src/`)
 
-#### 📁 `src/`
-Contiene todos los archivos de código fuente necesarios para la aplicación.
+- `assets/` — imágenes, logos y gráficos estáticos.
+- `features/` — carpetas por funcionalidad (auth, users, customers, products, sales, etc.). Cada feature suele contener:
+  - `components/` — componentes UI específicos de la feature
+  - `pages/` — páginas (rutas) que usan estos componentes
+  - `services/` — llamadas HTTP relacionadas con la feature
+  - `hooks/` — hooks reutilizables aplicados a la feature
+  - `validators/` — reglas de validación (opcional)
+- `infrastructure/` — configuración global de la aplicación:
+  - `api/axios.config.js` — instancia de axios con interceptor de Authorization
+  - `constants/config.js` — constantes como `API_BASE_URL`
+  - `router/` — definición de rutas y protecciones (ProtectedRoute, PublicRoute)
+- `lib/` — utilidades y configuración de librerías (ej. `query-client.js` para React Query)
+- `shared/` — componentes, hooks y servicios reutilizables (UI primitives, buttons, inputs, modals)
 
-- **📁 `assets/`**: 
-  - Recursos estáticos.
+---
 
-- **📁 `features/`**: 
-  - Contiene los modulos.
+## Mapa de carpetas (detallado)
 
-- **📁 `infrastructure/`**:
-  - Dentro de esta carpeta se encuentran las configuraciones de API, rutas, constantes.
+frontend/
+- package.json — scripts y dependencias (dev, build, test)
+- vite.config.js — configuración de Vite
+- src/
+  - main.jsx — punto de entrada React
+  - App.jsx — wrapper de app y proveedor(es) (React Query, Router)
+  - assets/ — imágenes y recursos estáticos
+  - features/
+    - auth/ — login/register/reset + servicios de autenticación
+    - users/ — gestión de usuarios (tabla, roles, historial, eliminar, restaurar)
+    - customers/ — gestión de clientes (tabla, registro, historial, export)
+    - products/ — gestión de productos
+    - sales/ — páginas y componentes relacionados a ventas
+    - ...otras features...
+  - infrastructure/
+    - api/axios.config.js — instancia axios y manejo de token
+    - constants/config.js — variables de entorno y defaults
+    - router/ — rutas, redirect y protecciones
+  - lib/
+    - query-client.js — configuración de React Query
+  - shared/
+    - components/ui/ — primitives (Button, Input, Dialog, ConfirmDialog, SuccessModal, etc.)
+    - services/apiClient.js — wrapper de axios con manejo uniforme de errores
 
-- **📁 `lib/`**:
-  - Dentro de esta carpeta se encuentran las utiliddades y configuración de React Query.
+---
 
-- **📁 `shared/`**:
-  - Dentro de esta carpeta se encuentran componentes, hooks y servicios reutilizables.
+## Principales módulos y responsabilidades
 
-- **📁 `test/`**:
-  - Pruebas.
+- `apiClient` (shared/services/apiClient.js)
+  - Encapsula axios y normaliza la respuesta.
+  - Centraliza el manejo de errores a través de `infrastructure/api/errorHandler.js`.
 
-Esta organización facilita mantener un código modular y facil de entender.
+- `infrastructure/api/axios.config.js`
+  - Crea `axiosInstance` con `baseURL`, `timeout` y un interceptor de petición que añade `Authorization` cuando existe token en `localStorage`.
 
-## 🚀 Comenzando
+- Features
+  - `auth` — login, registro y gestión de tokens. `authStorage` (utils) lee/guarda token y metadatos en `localStorage`.
+  - `users` — tabla de usuarios, modal de historial, eliminar/restore, roles. Usa `usersService.js` para llamadas a `/api/users`.
+  - `customers` — listado de clientes, registro (popup), export CSV, historial de compras. Usa `customerService.js` para `/api/clients`.
 
-Sigue estos pasos para levantar el servidor de desarrollo:
+- UI compartida (`shared/components/ui`)
+  - Button, Input, ConfirmDialog, SuccessModal y otros componentes de formulario y layout que se reutilizan.
 
-### 1️⃣ Clona el repositorio
+---
+
+## Documentación de endpoints (front-consumer)
+
+Las llamadas a la API usan los servicios de cada feature. Aquí algunos ejemplos relevantes:
+
+- Users
+  - GET /api/users?page&size — lista paginada
+  - PUT /api/users/{id} — actualizar (usado para restaurar con { accountStatus: 'ACTIVE' })
+  - DELETE /api/users/{id} — eliminar (server behavior: permanent or soft, check backend)
+
+- Clients (Customers)
+  - GET /api/clients?page&size — lista paginada
+  - POST /api/clients — crear cliente
+  - PUT /api/clients/{id} — actualizar cliente
+  - DELETE /api/clients/{id} — soft-delete (server marks clientStatus: INACTIVE) — frontend treats as inactive
+  - GET /api/clients/{id}/purchase-history — historial de compras
+
+Nota: siempre revisa el servicio `features/*/services/*Service.js` para conocer el shape exacto de request/response.
+
+---
+
+## Cómo ejecutar el frontend localmente
+
+Requisitos: Node.js (v18+ recomendado), npm
+
+1) Instala dependencias
+
 ```bash
-git clone URL repositorio
-```
-### 2️⃣ Accede a la carpeta del frontend
-```bash
-cd Equipo3-noche-SP7/frontend
-```
-### 3️⃣ Instala las dependencias
-```bash
+cd frontend
 npm install
 ```
-### 4️⃣ Inicia el servidor de desarrollo
+
+2) Ejecuta en modo desarrollo
+
 ```bash
 npm run dev
 ```
 
-## Despliegue del Frontend en Vercel
+El servidor correrá por defecto en http://localhost:5173 (Vite). Abre la consola para ver logs y errores.
 
-Este proyecto está desplegado en [Vercel](https://vercel.com).
-- [Configuración de Vercel](./docs/VERCEL_CONFIG.md)
+3) Construcción para producción
 
-  
-### Enlances Imnportantes
+```bash
+npm run build
+```
 
-- 🚀 **Despliegue del Frontend**
-  El frontend está desplegado y disponible en [Vercel]().
+4) Previsualizar artefacto de build
 
+```bash
+npm run preview
+```
 
+---
 
+## Tests
 
+El proyecto usa Vitest. Comandos útiles:
 
+- Ejecutar tests una sola vez:
+  npm run test
+- Ejecutar tests en modo watch:
+  npm run test:watch
+- UI de tests:
+  npm run test:ui
+- Reporte de coverage:
+  npm run test:coverage
 
+Los tests localizan componentes y hooks dentro de cada feature (p. ej. `useAuth.test.jsx`).
 
+---
 
+## Buenas prácticas y recomendaciones de desarrollo
+
+- Sigue la convención de `features/` para agregar nueva funcionalidad: crea subcarpetas `components/`, `pages/`, `services/`, `hooks/`.
+- Usa `shared/components/ui` para componentes visuales reutilizables. Evita replicar estilos.
+- Para llamadas a la API usa siempre el servicio de feature (ej. `customers/services/customerService.js`) para evitar duplicar lógica de serialización.
+- Normaliza los campos esperados del backend (p. ej. `accountStatus` o `clientStatus`) usando `.trim().toUpperCase()` si el backend no es estricto con el case.
+- Maneja estados de carga y errores (isLoading, disabled buttons) para evitar peticiones duplicadas.
+
+---
+
+## Common troubleshooting
+
+- Si el listado aparece vacío:
+  - Revisa la consola para ver el objeto retornado por `getCustomers` (se imprimirá en desarrollo).
+  - Verifica que `localStorage.token` exista si el backend exige autenticación.
+  - Revisa la ruta y parámetros de la petición en Network (GET /api/clients).
+
+- Si una petición PUT/DELETE no parece surtir efecto:
+  - Comprueba en Postman que el endpoint funciona como esperas.
+  - Verifica que el frontend envíe exactamente el payload que el backend espera (ej. `{ accountStatus: 'ACTIVE' }` para restaurar un usuario).
+
+---
+
+## Sugerencias de mejoras (próximos pasos)
+
+- Extraer componentes visuales comunes (`RoleChip`, `ActionButton`) en `shared/components`.
+- Añadir Snackbar/Toasts globales para feedback de éxito/error (usar `sonner` ya incluido en deps).
+- Implementar paginación en modales que cargan muchos elementos (p.ej. historial de usuarios) y usar React Query para caching/invalidation.
+- Estandarizar shapes de respuesta usando un pequeño adapter `apiAdapters/*` si la API cambia de forma entre endpoints.
