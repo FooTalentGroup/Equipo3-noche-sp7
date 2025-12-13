@@ -3,6 +3,7 @@ import { Pencil } from 'lucide-react';
 
 export default function UsersTable({ users = [], onEdit, onDelete, isLoading = false }) {
   if (isLoading) {
+
     return (
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1116px] max-h-[673px] flex items-center justify-center">
         <div className="flex flex-col items-center justify-center gap-3 my-4">
