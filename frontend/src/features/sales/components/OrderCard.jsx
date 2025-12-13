@@ -60,7 +60,7 @@ export const OrderCard = ({ order, status, onCharge, onEdit, onCancel, onConfirm
         )}
         {showCancelButton && (
           <Button
-            onClick={() => onCancel(order.id)}
+            onClick={() => onCancel(order)}
             variant="destructive"
             className="w-full h-10"
           >

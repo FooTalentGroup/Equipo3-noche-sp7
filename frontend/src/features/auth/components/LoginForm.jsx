@@ -114,7 +114,7 @@ export function LoginForm() {
                   </FormLabel>
                   <Link
                     to="/forgot-password"
-                    className="text-xs text-[#E5E5E5] hover:text-gray-400 transition font-roboto underline underline-offset-2"
+                    className="text-xs text-stokia-neutral-600 hover:text-stokia-neutral-950 transition font-roboto underline underline-offset-2"
                   >
                     Olvidé mi contraseña
                   </Link>

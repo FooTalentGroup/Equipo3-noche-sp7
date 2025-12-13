@@ -120,7 +120,7 @@ export function CreateProductComponent() {
                             <UnifiedImageField form={form} />
                         </section>
                     </div>
-                    <section id="footer" className="flex justify-start gap-3">
+                    <section id="footer" className="flex justify-end gap-3">
                         <Button type="button" onClick={handleClicCancel} variant="outline">
                             Cancelar
                         </Button>

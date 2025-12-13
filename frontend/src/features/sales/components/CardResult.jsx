@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Plus, Minus } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
+import { useCart } from "../hooks/useCart";
 
 export const ProductCard = ({
   id,
@@ -10,36 +11,40 @@ export const ProductCard = ({
   price,
   imageUrl,
   onAddToCart,
+  cartItem,
 }) => {
   const [quantity, setQuantity] = useState(1);
 
+  const totalInCart = cartItem ? cartItem.quantity : 0;
+  const availableToAdd = stock - totalInCart;
+
   const handleIncrement = () => {
-    if (quantity < stock) {
-      setQuantity((q) => q + 1);
+    if (quantity < availableToAdd) {
+      setQuantity(prev => prev + 1);
     }
   };
 
   const handleDecrement = () => {
     if (quantity > 1) {
-      setQuantity((q) => q - 1);
+      setQuantity(prev => prev - 1);
     }
   };
 
   const handleAddToCart = () => {
-    if (stock > 0 && quantity > 0) {
+    if (availableToAdd > 0 && quantity > 0 && quantity <= availableToAdd) {
       onAddToCart({
         id,
         name,
         price,
         currentStock: stock,
         photoUrl: imageUrl,
-        quantity,
+        quantity: quantity,
       });
       setQuantity(1);
     }
   };
 
-  const isOutOfStock = stock === 0;
+  const isOutOfStock = stock === 0 || availableToAdd === 0;
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden flex flex-col">
@@ -76,14 +81,14 @@ export const ProductCard = ({
               <Minus className="h-4 w-4" />
             </Button>
             <Input
-              value={quantity.toString()}
+              value={quantity}
               readOnly
               className="w-10 text-center p-0 h-8 border-y-0 border-x border-gray-300 focus:outline-none focus:ring-0 text-sm"
             />
             <Button
               variant="ghost"
               onClick={handleIncrement}
-              disabled={quantity >= stock || isOutOfStock}
+              disabled={quantity >= availableToAdd || isOutOfStock}
               className="p-1 h-8 w-8 text-gray-600 hover:bg-gray-100"
             >
               <Plus className="h-4 w-4" />
@@ -93,7 +98,7 @@ export const ProductCard = ({
           <Button
             onClick={handleAddToCart}
             disabled={isOutOfStock}
-            className="bg-[#436086] hover:bg-[#384d6b] text-white py-1 h-8 px-18 rounded-md shadow-sm text-sm"
+            className="bg-[#436086] hover:bg-[#384d6b] text-white py-1 h-8 px-18 rounded-md shadow-sm text-sm disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             {isOutOfStock ? "Sin Stock" : `Agregar`}
           </Button>

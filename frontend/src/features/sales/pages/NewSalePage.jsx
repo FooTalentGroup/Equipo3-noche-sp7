@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { CustomerSection } from "../components/CustomerSection";
 import { ProductsSection } from "../components/ProductsSection";
-import { ProductCard } from "../components/CardResult";
 import { SalesSummary } from "../components/SalesSummary";
 import { useSalesProductSearch } from "../hooks/useSalesProductSearch";
 import { useOrderManagement } from "../hooks/useOrderManagement";
@@ -11,6 +10,7 @@ import { OrderSuccessModal } from "../components/OrderSuccessModal";
 import { useCart } from "../hooks/useCart";
 import { useParams } from "react-router";
 import { useGetOrder } from "../hooks/useGetOrder";
+import { ProductCard } from "../components/CardResult";
 
 const NewSalePage = () => {
   const { orderId } = useParams();
@@ -35,13 +35,14 @@ const NewSalePage = () => {
     loading: loadingProducts,
   } = useSalesProductSearch();
 
-  const { handleCreateOrder } = useOrderManagement();
+  const { handleCreateOrder, isPending } = useOrderManagement();
 
   const {
     items: cartItems,
     discount,
     addItem,
     removeItem,
+    updateItemQuantity,
     applyDiscount,
     clearCart,
     loadFromOrder,
@@ -90,6 +91,7 @@ const NewSalePage = () => {
   };
 
   const handleSelectProduct = (product) => {
+    console.log(product);
     addItem(product);
   };
 
@@ -180,17 +182,21 @@ const NewSalePage = () => {
 
               {products.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 min-w-[773px]">
-                  {products.map((product) => (
-                    <ProductCard
-                      key={product.id || product.name}
-                      id={product.id}
-                      name={product.name}
-                      stock={product.currentStock}
-                      price={product.price}
-                      imageUrl={product.photoUrl}
-                      onAddToCart={() => handleSelectProduct(product)}
-                    />
-                  ))}
+                  {products.map((product) => {
+                    const cartItem = cartItems.find(item => item.id === product.id);
+                    return (
+                      <ProductCard
+                        key={product.id || product.name}
+                        id={product.id}
+                        name={product.name}
+                        stock={product.currentStock}
+                        price={product.price}
+                        imageUrl={product.photoUrl}
+                        onAddToCart={handleSelectProduct}
+                        cartItem={cartItem}
+                      />
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -207,6 +213,7 @@ const NewSalePage = () => {
               total={total}
               discount={discount}
               onRemoveItem={removeItem}
+              onUpdateQuantity={updateItemQuantity}
               onApplyDiscount={applyDiscount}
               onRemoveDiscount={() => applyDiscount(null)}
             />
@@ -223,7 +230,7 @@ const NewSalePage = () => {
 
               <Button
                 onClick={handleFinishOrder}
-                disabled={!isCheckoutEnabled}
+                disabled={!isCheckoutEnabled || isPending}
                 className={`py-2 px-4 rounded-lg flex items-center space-x-2 shadow-sm text-sm min-w-[149px] h-[40px]
                   ${isCheckoutEnabled
                     ? "bg-btn-primary text-white hover:bg-btn-primary/80"
