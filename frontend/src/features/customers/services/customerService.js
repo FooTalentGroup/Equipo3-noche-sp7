@@ -9,10 +9,13 @@ export async function getCustomers({ page = 0, size = 10, name = "" } = {}) {
 
   const data = unwrap(res);
 
+  // Safely compute the content array. Use parentheses so the ternary applies to Array.isArray check.
+  const content = data?.content ?? data?.customers ?? (Array.isArray(data) ? data : []);
+
   return {
-    customers: data?.content ?? data?.customers ?? Array.isArray(data) ? data : [],
+    customers: content,
     totalPages: data?.totalPages ?? data?.page?.totalPages ?? 1,
-    totalElements: data?.totalElements ?? data?.page?.totalElements ?? (data?.content?.length ?? 0),
+    totalElements: data?.totalElements ?? data?.page?.totalElements ?? (content.length ?? 0),
     pageSize: size,
   };
 }
@@ -52,4 +55,9 @@ export async function getPurchaseHistory(id, { page = 0, size = 10 } = {}) {
     totalElements: res.data?.totalElements ?? purchases.length,
     pageSize: size,
   };
+}
+
+export async function deleteCustomer(id) {
+  const res = await apiClient.delete(`/api/clients/${id}`);
+  return unwrap(res);
 }

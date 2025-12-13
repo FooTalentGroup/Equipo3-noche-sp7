@@ -3,9 +3,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { CustomersFiltersBar } from '@/features/customers/components/CustomersFiltersBar.jsx';
 import { CustomersTable } from '@/features/customers/components/CustomersTable.jsx';
 import RegisterCustomerPopup from '../components/RegisterCustomerPopup.jsx';
-import { getCustomers, createCustomer, updateCustomer } from '../services/customerService.js';
+import { getCustomers, createCustomer, updateCustomer, deleteCustomer } from '../services/customerService.js';
 import { getAuthToken } from '@/features/auth/utils/authStorage.js';
 import { useCustomersFilter } from '../hooks/useCustomersFilter';
+import { ConfirmDialog } from '@/features/products/components/ConfirmDialog';
 
 const PAGE_SIZE = 10;
 
@@ -25,27 +26,72 @@ export default function CustomersPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
     const [pagination, setPagination] = useState({ totalPages: 0, totalElements: 0, pageSize: PAGE_SIZE });
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [toDeleteId, setToDeleteId] = useState(null);
 
     const fetchCustomers = useCallback(async (page = 0, name = '') => {
         const token = getAuthToken();
-        if (!token) return;
+        if (!token) {
+            console.warn('[CustomersPage] No auth token found; attempting to fetch customers anyway.');
+        }
         setIsLoading(true);
         try {
             const data = await getCustomers({ page, size: PAGE_SIZE, name });
 
-            const mapped = (data.customers.content || []).map(mapCustomer);
+            // Helpful debug log — remove or guard in production if noisy
+            console.debug('[CustomersPage] getCustomers response:', data);
+
+            // Some responses may be wrapped (e.g., { data: { content: [...] } }) depending on unwrap behavior.
+            // Normalize to a payload object that actually contains content/clients array.
+            const payload = data?.data ?? data;
+
+            // Normalize several possible response shapes and compute clientStatus
+            const customersArray = Array.isArray(payload?.customers)
+                ? payload.customers
+                : Array.isArray(payload?.customers?.content)
+                    ? payload.customers.content
+                    : Array.isArray(payload?.content)
+                        ? payload.content
+                        : Array.isArray(payload)
+                            ? payload
+                            : [];
+
+            // Map server objects to a normalized shape including clientStatus (trim + uppercase)
+            const mappedAll = customersArray.map((u) => ({
+                raw: u,
+                id: u.id,
+                name: u.name ?? u.nombre ?? '',
+                email: u.email ?? '',
+                phone: u.phone ?? u.telefono ?? '',
+                isFrequent: u.isFrequent ?? u.esFrecuente ?? false,
+                clientStatus: String(u.clientStatus ?? u.status ?? 'ACTIVE').trim().toUpperCase(),
+            }));
+
+            // Filter out soft-deleted / inactive clients: show only ACTIVE
+            const activeClients = mappedAll.filter((c) => c.clientStatus === 'ACTIVE');
+
+            const mapped = activeClients.map((c) => ({
+                id: c.id,
+                nombre: c.name,
+                email: c.email,
+                telefono: c.phone,
+                esFrecuente: c.isFrequent
+            }));
+
             setCustomers(mapped);
             setPagination({
-                totalPages: data.totalPages,
-                totalElements: data.totalElements,
-                pageSize: data.pageSize
+                totalPages: payload?.totalPages ?? payload?.page?.totalPages ?? payload?.customers?.totalPages ?? 1,
+                totalElements: payload?.totalElements ?? payload?.page?.totalElements ?? (activeClients.length ?? 0),
+                pageSize: payload?.pageSize ?? PAGE_SIZE
             });
-        } catch {
+         } catch (err) {
+            console.error('[CustomersPage] fetchCustomers error:', err);
+            // show empty state on error
             setCustomers([]);
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
+         } finally {
+             setIsLoading(false);
+         }
+     }, []);
 
     useEffect(() => {
         setCurrentPage(0);
@@ -129,7 +175,23 @@ export default function CustomersPage() {
     };
 
     const handleDelete = (id) => {
-        setCustomers(prev => prev.filter(c => c.id !== id));
+        // open confirmation dialog
+        setToDeleteId(id);
+        setIsConfirmOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!toDeleteId) return;
+        try {
+            await deleteCustomer(toDeleteId);
+            // refresh list after delete
+            await fetchCustomers(currentPage, debouncedSearch);
+        } catch (err) {
+            console.error('Error deleting customer', err);
+        } finally {
+            setIsConfirmOpen(false);
+            setToDeleteId(null);
+        }
     };
 
     const handleExport = () => {
@@ -171,6 +233,16 @@ export default function CustomersPage() {
                 onClose={closePopup}
                 onSave={handleSave}
                 initialData={editingCustomer}
+            />
+            <ConfirmDialog
+                isOpen={isConfirmOpen}
+                handleOpenChange={setIsConfirmOpen}
+                dialogTitle="¿Desea eliminar el cliente?"
+                dialogDescription="Esta acción eliminará al cliente de forma permanente."
+                cancelTitle="Cancelar"
+                acceptTitle="Sí, eliminar"
+                onAccept={confirmDelete}
+                variant="destructive"
             />
         </div>
     );

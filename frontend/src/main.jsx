@@ -12,6 +12,17 @@ import { queryClient } from '@/lib/query-client';
 import './index.css';
 import { Toaster } from '@/shared/components/ui/sonner.jsx';
 
+// Silence specific React DevTools suggestion in development to reduce console noise
+if (import.meta.env && import.meta.env.MODE === 'development') {
+  const originalInfo = console.info.bind(console);
+  console.info = (...args) => {
+    try {
+      if (typeof args[0] === 'string' && args[0].includes('Download the React DevTools')) return;
+    } catch (e) { /* ignore */ }
+    originalInfo(...args);
+  };
+}
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
