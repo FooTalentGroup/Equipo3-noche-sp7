@@ -15,7 +15,7 @@ const downloadBlob = (blob, filename) => {
 export const useDownloadSaleReceipt = () => {
   const {
     mutateAsync: downloadReceipt,
-    isLoading: isDownloading,
+    isPending: isDownloading,
     error: downloadError
   } = useApiMutation(async (orderId) => {
     const pdfBlob = await getSaleTicket(orderId);
