@@ -38,7 +38,8 @@ export function LoginForm() {
     onSuccess: (data) => {
       if (data && data.success && data.data && data.data.token) {
         setAuthToken(data.data.token);
-        navigate(from, { replace: true });
+        console.log("Token guardado, navegando a:", from);
+        window.location.href = from;
       } else {
         console.warn("No se recibió token en la respuesta:", data);
         clearAuthData();
@@ -113,7 +114,7 @@ export function LoginForm() {
                   </FormLabel>
                   <Link
                     to="/forgot-password"
-                    className="text-xs text-[#E5E5E5] hover:text-gray-400 transition font-roboto underline underline-offset-2"
+                    className="text-xs text-stokia-neutral-600 hover:text-stokia-neutral-950 transition font-roboto underline underline-offset-2"
                   >
                     Olvidé mi contraseña
                   </Link>

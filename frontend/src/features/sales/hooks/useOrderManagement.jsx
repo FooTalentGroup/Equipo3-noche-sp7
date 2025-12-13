@@ -19,5 +19,6 @@ export const useOrderManagement = () => {
 
   return {
     handleCreateOrder,
+    isPending: createOrderMutation.isPending
   };
 };

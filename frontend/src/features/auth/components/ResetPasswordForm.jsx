@@ -56,7 +56,7 @@ export function ResetPasswordForm() {
   return (
       <AuthLayout>
       <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50 p-4">
-        <div className="relative bg-secondary rounded-lg p-8  max-w-[760px] shadow-2xl">
+        <div className="relative bg-secondary rounded-lg p-8  max-w-[560px] shadow-2xl">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-2">
