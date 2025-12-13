@@ -38,7 +38,8 @@ export function LoginForm() {
     onSuccess: (data) => {
       if (data && data.success && data.data && data.data.token) {
         setAuthToken(data.data.token);
-        navigate(from, { replace: true });
+        console.log("Token guardado, navegando a:", from);
+        window.location.href = from;
       } else {
         console.warn("No se recibió token en la respuesta:", data);
         clearAuthData();
