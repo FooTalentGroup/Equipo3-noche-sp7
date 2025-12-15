@@ -88,7 +88,6 @@ public class OrderItem {
         if (quantity != null && quantity <= 0) {
             throw new IllegalArgumentException("La cantidad debe ser mayor a 0");
         }
-        // Calcular el total del item automáticamente
         calculateItemTotal();
     }
 

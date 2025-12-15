@@ -33,31 +33,20 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthServiceImpl implements AuthService {
-    // --- Repositories ---
     private final UserRepository userRepository;
-
-    // --- Security & Auth ---
     private final UserDetailsService userDetailsService;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final TokenBlacklistService tokenBlacklistService;
-
-    // --- Services ---
     private final EmailService emailService;
-
-    // --- Mappers ---
     private final UserMapper userMapper;
-
-    // --- Configuration values ---
+    
     @Value("${frontend.baseUrl}")
     private String baseUrl;
     @Value("${frontend.resetPasswordUrl}")
     private String resetPasswordUrl;
 
-    /**
-     * Register a new user.
-     */
     @Override
     @Transactional
     public RegisterResponseDto register(RegisterRequestDto requestDto) {
@@ -81,9 +70,6 @@ public class AuthServiceImpl implements AuthService {
         return userMapper.toDto(savedUser);
     }
 
-    /**
-     * Performs authentication and generates JWT for the user.
-     */
     @Override
     public LoginResponseDto login(LoginRequestDto requestDto) {
         log.info("Login attempt for user: {}", requestDto.email());
@@ -107,9 +93,6 @@ public class AuthServiceImpl implements AuthService {
         return new LoginResponseDto(token);
     }
 
-    /**
-     * Add the token to the blacklist to log out.
-     */
     @Override
     public void logout(String token) {
         try {
@@ -120,10 +103,6 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    /**
-     * Change the password, validating the current password
-     * Generate a new authentication token.
-     */
     @Override
     public void changePassword(ChangePasswordRequestDto requestDto) {
         User currentUser = getAuthenticatedUser()
@@ -139,9 +118,6 @@ public class AuthServiceImpl implements AuthService {
         log.info("Password changed successfully for user: {}", currentUser.getEmail());
     }
 
-    /**
-     * Start the password recovery process by sending an email with a token.
-     */
     @Override
     public void forgotPassword(ForgotPasswordRequestDto requestDto) {
         log.info("Starting password recovery for email: {}", requestDto.email());
@@ -156,9 +132,6 @@ public class AuthServiceImpl implements AuthService {
         log.info("Password recovery email sent successfully for user: {}", user.getEmail());
     }
 
-    /**
-     * Reset the password by verifying the token and update it in the database.
-     */
     @Transactional
     @Override
     public void resetPassword(ResetPasswordRequestDto requestDto) {
@@ -182,9 +155,6 @@ public class AuthServiceImpl implements AuthService {
         tokenBlacklistService.addTokenToBlacklist(requestDto.token(), jwtService.extractExpiration(requestDto.token()));
     }
 
-    /**
-     * Gets the currently authenticated user.
-     */
     public Optional<User> getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -194,13 +164,6 @@ public class AuthServiceImpl implements AuthService {
         return userRepository.findByEmail(username);
     }
 
-    // --------------------------------------------
-    // Métodos privados auxiliares
-    // --------------------------------------------
-
-    /**
-     * Envía email para recuperación de contraseña.
-     */
     private void sendPasswordResetEmail(User user, String token) {
         Map<String, Object> templateModel = Map.of(
                 "name", user.getName(),

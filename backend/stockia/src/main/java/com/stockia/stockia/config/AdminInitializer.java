@@ -22,7 +22,6 @@ public class AdminInitializer implements CommandLineRunner {
     public void run(String... args){
         Optional<User> aux = userRepository.findByEmail("admin@stockia.com");
 
-        // Caso 1: No existe usuario "admin" → crear
         if (aux.isEmpty()) {
             User admin = new User();
             admin.setEmail("admin@stockia.com");
@@ -35,7 +34,6 @@ public class AdminInitializer implements CommandLineRunner {
             return;
         }
 
-        // Caso 2: Existe "admin" pero NO existe ningún user con rol ADMIN → corregir
         User admin = aux.get();
         if (!userRepository.existsByRole(Role.ADMIN)) {
             admin.setRole(Role.ADMIN);

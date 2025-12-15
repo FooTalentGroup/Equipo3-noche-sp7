@@ -26,7 +26,7 @@ public class User {
     private String name;
 
     @Column(nullable = false)
-    private String password; // encriptado (BCrypt)
+    private String password;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

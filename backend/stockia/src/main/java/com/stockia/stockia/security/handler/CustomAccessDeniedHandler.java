@@ -30,12 +30,9 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
                        HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException {
 
-        // Log interno (solo para debugging, no se envía al cliente)
         log.warn("❌ Access denied for user at URI: {} - Reason: {}",
                 request.getRequestURI(),
                 accessDeniedException.getMessage());
-
-        // Respuesta genérica que NO revela información sobre roles
         ErrorResponse error = new ErrorResponse(
                 HttpServletResponse.SC_FORBIDDEN,
                 "FORBIDDEN",

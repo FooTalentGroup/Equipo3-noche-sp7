@@ -31,9 +31,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ProductCategoryExceptionHandler {
 
-    /**
-     * Maneja errores de validación de campos anotados con @Valid.
-     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(
             MethodArgumentNotValidException ex, HttpServletRequest request) {
@@ -56,11 +53,6 @@ public class ProductCategoryExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-    /**
-     * Maneja errores de formato JSON y tipos de datos incorrectos.
-     * Intenta detectar TODOS los errores de formato en el JSON para reportarlos
-     * juntos.
-     */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
             HttpMessageNotReadableException ex, HttpServletRequest request) {
@@ -72,7 +64,6 @@ public class ProductCategoryExceptionHandler {
 
         Throwable cause = ex.getCause();
 
-        // Intentar extraer el JSON raw del request para validar todos los campos
         try {
             String jsonBody = extractJsonFromRequest(request);
             if (jsonBody != null && !jsonBody.isEmpty()) {
@@ -82,7 +73,6 @@ public class ProductCategoryExceptionHandler {
             log.debug("No se pudo extraer el JSON raw, usando detección estándar");
         }
 
-        // Si no se pudieron detectar múltiples errores, usar el error principal
         if (details.isEmpty()) {
             if (cause instanceof InvalidFormatException) {
                 InvalidFormatException ife = (InvalidFormatException) cause;
@@ -123,9 +113,6 @@ public class ProductCategoryExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-    /**
-     * Extrae el JSON raw del HttpServletRequest.
-     */
     private String extractJsonFromRequest(HttpServletRequest request) {
         try {
             return request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
@@ -134,18 +121,13 @@ public class ProductCategoryExceptionHandler {
         }
     }
 
-    /**
-     * Valida todos los campos del JSON y retorna una lista de errores encontrados.
-     */
     private List<String> validateAllJsonFields(String jsonBody) {
         List<String> errors = new ArrayList<>();
 
         try {
-            // Parsear el JSON manualmente para extraer valores
             com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
             com.fasterxml.jackson.databind.JsonNode jsonNode = mapper.readTree(jsonBody);
 
-            // Validar categoryId si está presente
             if (jsonNode.has("categoryId") && !jsonNode.get("categoryId").isNull()) {
                 String categoryIdValue = jsonNode.get("categoryId").asText();
                 if (!isValidUUID(categoryIdValue)) {
@@ -153,7 +135,6 @@ public class ProductCategoryExceptionHandler {
                 }
             }
 
-            // Validar productId si está presente
             if (jsonNode.has("productId") && !jsonNode.get("productId").isNull()) {
                 String productIdValue = jsonNode.get("productId").asText();
                 if (!isValidUUID(productIdValue)) {
@@ -161,7 +142,6 @@ public class ProductCategoryExceptionHandler {
                 }
             }
 
-            // Validar price si está presente
             if (jsonNode.has("price") && !jsonNode.get("price").isNull()) {
                 String priceValue = jsonNode.get("price").asText();
                 if (!isValidDecimal(priceValue)) {
@@ -169,7 +149,6 @@ public class ProductCategoryExceptionHandler {
                 }
             }
 
-            // Validar minStock si está presente
             if (jsonNode.has("minStock") && !jsonNode.get("minStock").isNull()) {
                 String minStockValue = jsonNode.get("minStock").asText();
                 if (!isValidInteger(minStockValue)) {
@@ -177,7 +156,6 @@ public class ProductCategoryExceptionHandler {
                 }
             }
 
-            // Validar currentStock si está presente
             if (jsonNode.has("currentStock") && !jsonNode.get("currentStock").isNull()) {
                 String currentStockValue = jsonNode.get("currentStock").asText();
                 if (!isValidInteger(currentStockValue)) {
@@ -186,7 +164,6 @@ public class ProductCategoryExceptionHandler {
                 }
             }
 
-            // Validar isAvailable si está presente
             if (jsonNode.has("isAvailable") && !jsonNode.get("isAvailable").isNull()) {
                 com.fasterxml.jackson.databind.JsonNode isAvailableNode = jsonNode.get("isAvailable");
                 if (!isAvailableNode.isBoolean()) {
@@ -202,9 +179,6 @@ public class ProductCategoryExceptionHandler {
         return errors;
     }
 
-    /**
-     * Valida si un string es un UUID válido.
-     */
     private boolean isValidUUID(String value) {
         try {
             java.util.UUID.fromString(value);
@@ -214,9 +188,6 @@ public class ProductCategoryExceptionHandler {
         }
     }
 
-    /**
-     * Valida si un string es un número decimal válido.
-     */
     private boolean isValidDecimal(String value) {
         try {
             new java.math.BigDecimal(value);
@@ -226,9 +197,6 @@ public class ProductCategoryExceptionHandler {
         }
     }
 
-    /**
-     * Valida si un string es un número entero válido.
-     */
     private boolean isValidInteger(String value) {
         try {
             Integer.parseInt(value);
@@ -238,10 +206,6 @@ public class ProductCategoryExceptionHandler {
         }
     }
 
-    /**
-     * Maneja errores de tipos de parámetros incorrectos en URL o query params.
-     * Ejemplo: enviar "abc" donde se espera un UUID en /api/products/{id}
-     */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
             MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
@@ -257,7 +221,6 @@ public class ProductCategoryExceptionHandler {
         String message;
         List<String> details = new ArrayList<>();
 
-        // Detectar si es un error de UUID
         if (ex.getRequiredType() != null && ex.getRequiredType().equals(java.util.UUID.class)) {
             message = "ID con formato inválido";
             details.add(String.format("El parámetro '%s' debe ser un UUID válido", paramName));
@@ -278,9 +241,6 @@ public class ProductCategoryExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-    /**
-     * Convierte nombres de tipos Java a términos más amigables en español.
-     */
     private String getSpanishTypeName(String javaType) {
         return switch (javaType) {
             case "Long", "long" -> "número entero";
@@ -296,10 +256,6 @@ public class ProductCategoryExceptionHandler {
         };
     }
 
-    /**
-     * Maneja violaciones de integridad de la base de datos (ej: constraint UNIQUE).
-     * Esto captura duplicados que llegan a la BD si la validación en código falla.
-     */
     @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(
             org.springframework.dao.DataIntegrityViolationException ex, HttpServletRequest request) {
@@ -309,7 +265,6 @@ public class ProductCategoryExceptionHandler {
         String message = "Error de integridad de datos";
         List<String> details = new ArrayList<>();
 
-        // Extraer información más específica del mensaje de error
         String exceptionMessage = ex.getMessage().toLowerCase();
 
         if (exceptionMessage.contains("unique") || exceptionMessage.contains("duplicate")) {

@@ -249,18 +249,14 @@ public class ClientService {
  * 
  */
     public List<OrderResponseDto> getClientPurchaseHistory(UUID clientId) {
-    // Validación de entrada
     if (clientId == null) {
         throw new IllegalArgumentException("El ID del cliente no puede ser null");
     }
-        // Verifica que el cliente existe
         Client client = clientRepository.findById(clientId)
             .orElseThrow(() -> new com.stockia.stockia.exceptions.client.ClientNotFoundException(clientId));
         
-        // Obtiene órdenes del cliente
         List<Order> orders = orderRepository.findByCustomer_IdOrderByOrderDateDesc(clientId);
         
-        // Mapea a DTOs usando el OrderMapper existente
         return orders.stream()
             .map(orderMapper::toResponseDto)
             .collect(Collectors.toList());

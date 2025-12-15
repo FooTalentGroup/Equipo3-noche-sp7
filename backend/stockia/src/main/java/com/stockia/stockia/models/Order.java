@@ -269,7 +269,6 @@ public class Order {
         this.cancelReason = reason;
         this.cancelledBy = cancelledByUser;
 
-        // Si el pago estaba completado, marcarlo como reembolsado
         if (this.paymentStatus == PaymentStatus.PAID) {
             this.paymentStatus = PaymentStatus.REFUNDED;
         }

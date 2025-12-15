@@ -6,7 +6,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.5.7</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
 	<groupId>com.stockia</groupId>
 	<artifactId>stockia</artifactId>
@@ -16,21 +16,11 @@
 	<url/>
 
 	<properties>
-		<!-- Java -->
 		<java.version>17</java.version>
-
-		<!-- Maven -->
 		<maven.version>3.14.0</maven.version>
-
-		<!-- Lombok -->
 		<lombok.version>1.18.32</lombok.version>
-
-		<!-- MapStruct -->
 		<mapstruct.version>1.5.5.Final</mapstruct.version>
-
-		<!-- OpenAPI -->
 		<springdoc.version>2.8.0</springdoc.version>
-
 		<mockito.version>5.17.0</mockito.version>
 	</properties>
 	<dependencies>

@@ -18,12 +18,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Manejador de excepciones específico para el módulo de órdenes de venta.
- * 
- * Tiene prioridad más alta que el GlobalExceptionHandler para proporcionar
- * mensajes de error más específicos en el contexto de órdenes.
- */
 @RestControllerAdvice(assignableTypes = {
                 com.stockia.stockia.controllers.OrderController.class
 })
@@ -31,13 +25,6 @@ import java.util.List;
 @Slf4j
 public class OrderExceptionHandler {
 
-        /**
-         * Maneja InsufficientStockException cuando no hay stock suficiente
-         * para completar una orden de venta.
-         * 
-         * Retorna un error 400 BAD_REQUEST con detalles del producto y stock
-         * disponible.
-         */
         @ExceptionHandler(InsufficientStockException.class)
         public ResponseEntity<ErrorResponse> handleInsufficientStockException(
                         InsufficientStockException ex, HttpServletRequest request) {
@@ -54,12 +41,11 @@ public class OrderExceptionHandler {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
-        /**
-         * Maneja InvalidOrderStatusException cuando se intenta realizar una operación
-         * inválida debido al estado actual de la orden.
-         * 
-         * Ejemplos: confirmar una orden ya confirmada, cancelar una orden entregada,
-         * etc.
+        @ExceptionHandler(InvalidOrderStatusException.class)
+        public ResponseEntity<ErrorResponse> handleInvalidOrderStatusException(
+                        InvalidOrderStatusException ex, HttpServletRequest request) {
+
+                log.warn("Estado de orden inválido: {}", ex.getMessage());
          * 
          * Retorna un error 400 BAD_REQUEST con detalles de la transición inválida.
          */
@@ -79,12 +65,6 @@ public class OrderExceptionHandler {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
-        /**
-         * Maneja OrderNotFoundException cuando no se encuentra una orden.
-         * 
-         * Retorna un error 404 NOT_FOUND con el ID o número de orden que no se
-         * encontró.
-         */
         @ExceptionHandler(OrderNotFoundException.class)
         public ResponseEntity<ErrorResponse> handleOrderNotFoundException(
                         OrderNotFoundException ex, HttpServletRequest request) {
@@ -101,16 +81,6 @@ public class OrderExceptionHandler {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
 
-        /**
-         * Maneja OrderCannotBeDeletedException cuando se intenta eliminar una orden
-         * confirmada.
-         * 
-         * De acuerdo a RN-02, las órdenes confirmadas no pueden eliminarse,
-         * solo pueden cancelarse para mantener el registro histórico.
-         * 
-         * Retorna un error 409 CONFLICT indicando que debe usarse la opción de
-         * cancelar.
-         */
         @ExceptionHandler(OrderCannotBeDeletedException.class)
         public ResponseEntity<ErrorResponse> handleOrderCannotBeDeletedException(
                         OrderCannotBeDeletedException ex, HttpServletRequest request) {
@@ -184,7 +154,6 @@ public class OrderExceptionHandler {
 
                 Throwable cause = ex.getCause();
 
-                // Caso: UUID mal formado
                 if (cause instanceof com.fasterxml.jackson.databind.exc.InvalidFormatException ife) {
                         if (ife.getTargetType() == java.util.UUID.class) {
 
@@ -202,7 +171,6 @@ public class OrderExceptionHandler {
                         }
                 }
 
-                // Cualquier otro error de parseo
                 ErrorResponse error = new ErrorResponse(
                         HttpStatus.BAD_REQUEST.value(),
                         "MALFORMED_JSON",
@@ -214,13 +182,6 @@ public class OrderExceptionHandler {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
 
-
-        /**
-         * Maneja IllegalArgumentException en el contexto de órdenes.
-         * 
-         * Proporciona mensajes de error específicos para validaciones de negocio
-         * como productos no disponibles, precios inválidos, etc.
-         */
         @ExceptionHandler(IllegalArgumentException.class)
         public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
                         IllegalArgumentException ex, HttpServletRequest request) {
@@ -237,12 +198,6 @@ public class OrderExceptionHandler {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
-        /**
-         * Maneja excepciones generales en el contexto de órdenes.
-         * 
-         * Este handler captura cualquier excepción no manejada específicamente,
-         * asegurando un mensaje de error consistente en el módulo de órdenes.
-         */
         @ExceptionHandler(Exception.class)
         public ResponseEntity<ErrorResponse> handleGlobalException(
                         Exception ex, HttpServletRequest request) {

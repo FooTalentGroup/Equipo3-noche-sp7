@@ -30,24 +30,15 @@ public class SalesMetricsDto {
     @Schema(description = "Porcentaje de cambio en ticket promedio vs período anterior", example = "12.2")
     private Double averageTicketChangePercentage;
 
-    /**
-     * Constructor sin parámetros requerido por JPA.
-     */
     public SalesMetricsDto() {
     }
 
-    /**
-     * Constructor para proyecciones JPQL con 3 parámetros básicos.
-     * Usado por las queries de OrderRepository.
-     * Nota: AVG() en JPQL retorna Double, no BigDecimal.
-     */
     public SalesMetricsDto(BigDecimal totalRevenue, Long totalOrders, Double averageTicket) {
         this.totalRevenue = totalRevenue != null ? totalRevenue : BigDecimal.ZERO;
         this.totalOrders = totalOrders != null ? totalOrders : 0L;
         this.averageTicket = averageTicket != null ? BigDecimal.valueOf(averageTicket) : BigDecimal.ZERO;
     }
 
-    // Getters y Setters
     public BigDecimal getTotalRevenue() {
         return totalRevenue;
     }

@@ -30,7 +30,6 @@ public record ProductSearchRequestDto(
      * Constructor con valores por defecto.
      */
     public ProductSearchRequestDto {
-        // Aplicar valores por defecto si son null
         deleted = deleted != null ? deleted : false;
         includeInactive = includeInactive != null ? includeInactive : false;
         lowStock = lowStock != null ? lowStock : false;

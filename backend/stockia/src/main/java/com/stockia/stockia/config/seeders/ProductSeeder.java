@@ -36,7 +36,6 @@ public class ProductSeeder {
 
         List<Product> products = new ArrayList<>();
 
-        // Lista de ejemplos: nombre, categoría, precio, stock, photoUrl
         addProduct(products, "Sándwich de Jamón y Queso", "sándwiches", 350.00, 20, "https://hips.hearstapps.com/hmg-prod/images/panini-sandwiches-royalty-free-image-1588773746.jpg?crop=1xw:0.84355xh;center,top&resize=1200:*");
         addProduct(products, "Omelette de Jamón y Queso", "omelettes", 420.00, 15, "https://static.vecteezy.com/system/resources/thumbnails/071/693/003/small/delicious-omelet-with-ham-and-parsley-on-white-plate-with-transparent-background-png.png");
         addProduct(products, "Roll de Pollo César", "rolls", 480.00, 12, "https://www.shutterstock.com/image-photo/delicious-homemade-fresh-chicken-caesar-600nw-1428871739.jpg");
@@ -49,7 +48,6 @@ public class ProductSeeder {
         addProduct(products, "Budín de Banana (individual)", "budines", 300.00, 14, "https://www.bairesgourmet.com/dobyt/contenido/noticias/original/1743772213.jpeg");
         addProduct(products, "Alfajor Clásico", "alfajores", 120.00, 40, "https://leonardoespinoza.com/cdn/shop/files/AlfajoresMarplatense.jpg?v=1731972145");
         addProduct(products, "Mini Torta Red Velvet", "mini tortas", 700.00, 6, "https://acdn-us.mitiendanube.com/stores/413/750/products/20250719_115710-db0935a6e088f3c85c17539158023076-480-0.jpg");
-        // Si quieres, puedes agregar un producto para "Yoghurt" aquí.
 
         if (products.isEmpty()) {
             log.warn("⚠️ No se crearon productos porque no se encontraron categorías asociadas.");
@@ -70,7 +68,6 @@ public class ProductSeeder {
 
         ProductCategory category = catOpt.get();
 
-        // Normalizar nombre a lowercase para consistencia
         String normalizedName = name.trim().toLowerCase();
 
         Product product = Product.builder()

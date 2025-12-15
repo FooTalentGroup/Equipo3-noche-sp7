@@ -26,7 +26,6 @@ public class DataSeeder implements CommandLineRunner {
      */
     @Override
     public void run(String... args) {
-        // Ejecutar seeders en orden: categorías primero, luego productos
         categorySeeder.seedCategories();
         productSeeder.seedProducts();
     }
