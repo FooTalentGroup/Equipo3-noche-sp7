@@ -36,19 +36,16 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponseDto createCategory(CategoryRequestDto dto) {
         log.info("Creando nueva categoría: {}", dto.getName());
 
-        // Normalizar nombre a lowercase para consistencia
         String normalizedName = dto.getName().trim().toLowerCase();
 
-        // Validar que no exista una categoría con el mismo nombre
         categoryRepository.findByNameIgnoreCase(normalizedName)
                 .ifPresent(existing -> {
                     throw new DuplicateCategoryException(
                             "Ya existe una categoría con el nombre: " + normalizedName);
                 });
 
-        // Crear y guardar la categoría
         ProductCategory category = categoryMapper.toEntity(dto);
-        category.setName(normalizedName); // Establecer el nombre normalizado
+        category.setName(normalizedName);
         ProductCategory savedCategory = categoryRepository.save(category);
 
         log.info("Categoría creada exitosamente con ID: {}", savedCategory.getId());
@@ -75,29 +72,24 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponseDto updateCategory(UUID id, CategoryUpdateDto dto) {
         log.info("Actualizando categoría con ID: {}", id);
 
-        // Buscar la categoría existente
         ProductCategory category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException(
                         "No se encontró la categoría con ID: " + id));
-
-        // Validar y normalizar nombre único si se está cambiando
         if (dto.getName() != null && !dto.getName().trim().isEmpty()) {
             String normalizedName = dto.getName().trim().toLowerCase();
 
-            // Solo validar si el nombre normalizado es diferente al actual
             if (!normalizedName.equals(category.getName())) {
                 categoryRepository.findByNameIgnoreCase(normalizedName)
                         .ifPresent(existing -> {
                             throw new DuplicateCategoryException(
                                     "Ya existe una categoría con el nombre: " + normalizedName);
                         });
-                // Establecer el nombre normalizado
                 category.setName(normalizedName);
             }
         }
 
-        // Actualizar solo los demás campos proporcionados (excepto nombre que ya se
-        // actualizó)
+        if (dto.getDescription() != null) {
+            category.setDescription(dto.getDescription());
         if (dto.getDescription() != null) {
             category.setDescription(dto.getDescription());
         }
@@ -140,7 +132,6 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new CategoryNotFoundException(
                         "No se encontró la categoría con ID: " + id));
 
-        // Validar que esté eliminada antes de restaurar
         SoftDeletableValidator.validateIsDeleted(category.getDeleted(), "categoría", id);
 
         category.restore();

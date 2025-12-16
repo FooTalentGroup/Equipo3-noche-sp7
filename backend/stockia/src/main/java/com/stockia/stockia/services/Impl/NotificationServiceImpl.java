@@ -42,7 +42,6 @@ public class NotificationServiceImpl implements NotificationService {
         @Transactional(readOnly = true)
         public Page<NotificationResponseDto> getUserNotifications(UUID userId, NotificationFilterDto filter,
                         Pageable pageable) {
-                // Obtener notificaciones según filtros
                 Page<Notification> notifications;
 
                 if (filter != null && (filter.type() != null || filter.referenceId() != null)) {
@@ -54,10 +53,8 @@ public class NotificationServiceImpl implements NotificationService {
                         notifications = notificationRepository.findByDeletedFalseOrderByCreatedAtDesc(pageable);
                 }
 
-                // Obtener los IDs de notiplicaciones leídas por el usuario
                 List<UUID> readNotificationIds = readRepository.findReadNotificationIdsByUserId(userId);
 
-                // Filtrar por estado de lectura si se solicita
                 List<Notification> filteredNotifications = notifications.getContent();
                 if (filter != null && filter.isRead() != null) {
                         filteredNotifications = filteredNotifications.stream()
@@ -65,7 +62,6 @@ public class NotificationServiceImpl implements NotificationService {
                                         .toList();
                 }
 
-                // Obtener registros de lectura del usuario para estas notificaciones
                 List<UUID> notificationIds = filteredNotifications.stream()
                                 .map(Notification::getId)
                                 .toList();
@@ -81,7 +77,6 @@ public class NotificationServiceImpl implements NotificationService {
                                                 r -> r.getNotification().getId(),
                                                 Function.identity()));
 
-                // Mapear a DTOs con información de lectura
                 List<NotificationResponseDto> dtos = filteredNotifications.stream()
                                 .map(notification -> {
                                         String photoUrl = null;
@@ -99,19 +94,15 @@ public class NotificationServiceImpl implements NotificationService {
         @Override
         @Transactional
         public NotificationResponseDto markAsRead(UUID notificationId, UUID userId) {
-                // Verificar que la notificación existe
                 Notification notification = notificationRepository.findById(notificationId)
                                 .orElseThrow(
                                                 () -> new NotificationNotFoundException(
                                                                 "Notificación no encontrada con ID: "
                                                                                 + notificationId));
 
-                // Verificar que el usuario existe
                 User user = userRepository.findById(userId)
                                 .orElseThrow(() -> new UserNotFoundException(
                                                 "Usuario no encontrado con ID: " + userId));
-
-                // Verificar si ya está marcada como leída (idempotente)
                 if (readRepository.existsByUserIdAndNotificationId(userId, notificationId)) {
                         log.debug("La notificación {} ya fue marcada como leída por el usuario {}", notificationId,
                                         userId);
@@ -124,7 +115,6 @@ public class NotificationServiceImpl implements NotificationService {
                         );
                 }
 
-                // Crear registro de lectura
                 UserNotificationRead readRecord = UserNotificationRead.builder()
                                 .user(user)
                                 .notification(notification)
@@ -143,19 +133,14 @@ public class NotificationServiceImpl implements NotificationService {
         @Override
         @Transactional
         public void markAllAsRead(UUID userId) {
-                // Verificar que el usuario existe
                 userRepository.findById(userId)
                                 .orElseThrow(() -> new UserNotFoundException(
                                                 "Usuario no encontrado con ID: " + userId));
-
-                // Obtener todas las notificaciones no eliminadas
                 List<Notification> allNotifications = notificationRepository
                                 .findByDeletedFalseOrderByCreatedAtDesc(Pageable.unpaged()).getContent();
 
-                // Obtener las ya leídas
                 List<UUID> readNotificationIds = readRepository.findReadNotificationIdsByUserId(userId);
 
-                // Marcar las no leídas como leídas
                 List<UserNotificationRead> newReadRecords = allNotifications.stream()
                                 .filter(n -> !readNotificationIds.contains(n.getId()))
                                 .map(notification -> UserNotificationRead.builder()
@@ -188,12 +173,9 @@ public class NotificationServiceImpl implements NotificationService {
         @Override
         @Transactional(readOnly = true)
         public Long getUnreadCount(UUID userId) {
-                // Total de notificaciones activas
                 long totalNotifications = notificationRepository
                                 .findByDeletedFalseOrderByCreatedAtDesc(Pageable.unpaged())
                                 .getTotalElements();
-
-                // Notificaciones leídas por el usuario
                 long readNotifications = readRepository.findReadNotificationIdsByUserId(userId).size();
 
                 return totalNotifications - readNotifications;

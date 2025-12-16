@@ -118,7 +118,6 @@ class AuthServiceImplTest {
 
     @Test
     void changePassword_success() {
-        // Simular usuario autenticado
         Authentication auth = mock(Authentication.class);
         when(auth.isAuthenticated()).thenReturn(true);
         when(auth.getName()).thenReturn(testUser.getEmail());

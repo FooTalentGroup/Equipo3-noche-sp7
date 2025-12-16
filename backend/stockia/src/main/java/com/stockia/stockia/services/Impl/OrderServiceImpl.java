@@ -73,10 +73,8 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponseDto createOrder(OrderRequestDto dto) {
         log.info("Creating new order for customer: {}", dto.getCustomerId());
 
-        // RN-03: Obtener usuario autenticado
         User user = getAuthenticatedUser();
 
-        // Validar que el cliente existe
         Client customer = clientRepository.findById(dto.getCustomerId())
                 .orElseThrow(() -> new ClientNotFoundException(dto.getCustomerId()));
 
@@ -84,12 +82,9 @@ public class OrderServiceImpl implements OrderService {
             throw new ClientInactiveException("Cliente inactivo: " + customer.getName() + ".");
         }
 
-        // RN-01: Validar que hay al menos un producto
         if (dto.getItems() == null || dto.getItems().isEmpty()) {
             throw new IllegalArgumentException("La orden debe contener al menos un producto");
         }
-
-        // Crear la orden
         Order order = Order.builder()
                 .orderNumber(generateOrderNumber())
                 .customer(customer)
@@ -101,20 +96,14 @@ public class OrderServiceImpl implements OrderService {
                 .items(new ArrayList<>())
                 .build();
 
-        // Procesar cada item
         for (OrderItemRequestDto itemDto : dto.getItems()) {
             processOrderItem(order, itemDto, user);
         }
-
-        // Calcular totales
         order.calculateTotals();
-
-        // Validar que el descuento no exceda el subtotal
         if (order.getDiscountAmount().compareTo(order.getSubtotal()) > 0) {
             throw new IllegalArgumentException("El descuento no puede exceder el subtotal de la orden");
         }
 
-        // Guardar la orden
         Order savedOrder = orderRepository.save(order);
         log.info("Order created successfully with number: {}", savedOrder.getOrderNumber());
 
@@ -127,29 +116,23 @@ public class OrderServiceImpl implements OrderService {
      * Implementa CA-2 (validación de stock) y RN-05 (transaccionalidad).
      */
     private void processOrderItem(Order order, OrderItemRequestDto itemDto, User user) {
-        // Buscar el producto
         Product product = productRepository.findById(itemDto.getProductId())
                 .orElseThrow(() -> new ProductNotFoundException(itemDto.getProductId()));
 
-        // CA-2: Validar que el producto está disponible
         if (!product.getIsAvailable()) {
             throw new IllegalArgumentException("El producto '" + product.getName() + "' no está disponible para venta");
         }
 
-        // CA-2: Validar stock suficiente
         if (product.getCurrentStock() < itemDto.getQuantity()) {
             throw new InsufficientStockException(
                     String.format("Stock insuficiente para el producto '%s'. Stock actual: %d, cantidad requerida: %d",
                             product.getName(), product.getCurrentStock(), itemDto.getQuantity()));
         }
 
-        // Validar que el descuento no exceda el precio unitario
         if (itemDto.getUnitPrice().compareTo(product.getPrice()) > 0) {
             log.warn("Unit price {} is higher than product price {} for product: {}",
                     itemDto.getUnitPrice(), product.getPrice(), product.getName());
         }
-
-        // Crear el item de orden
         OrderItem orderItem = OrderItem.builder()
                 .product(product)
                 .quantity(itemDto.getQuantity())
@@ -187,9 +170,6 @@ public class OrderServiceImpl implements OrderService {
                 product.getName(), itemDto.getQuantity(), newStock);
     }
 
-    /**
-     * Genera un número de orden único con formato: ORD-YYYYMMDD-XXXX
-     */
     private String generateOrderNumber() {
         String datePrefix = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String baseOrderNumber = "ORD-" + datePrefix + "-";
@@ -204,10 +184,6 @@ public class OrderServiceImpl implements OrderService {
         return orderNumber;
     }
 
-    /**
-     * Obtiene el usuario autenticado del contexto de seguridad.
-     * Implementa RN-03.
-     */
     private User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -286,10 +262,6 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.toResponseDtoList(orders);
     }
 
-    /**
-     * Confirma una orden.
-     * Solo se pueden confirmar órdenes en estado PENDING.
-     */
     @Override
     @Transactional
     public OrderResponseDto confirmOrder(UUID id) {
@@ -334,7 +306,6 @@ public class OrderServiceImpl implements OrderService {
             product.setCurrentStock(newStock);
             productRepository.save(product);
 
-            // Crear movimiento de inventario inverso
             InventoryMovement movement = InventoryMovement.builder()
                     .product(product)
                     .movementType(MovementType.IN)

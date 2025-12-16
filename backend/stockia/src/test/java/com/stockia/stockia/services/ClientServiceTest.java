@@ -49,8 +49,6 @@ class ClientServiceTest {
     @InjectMocks
     private ClientService clientService;
 
-    // ========== TESTS EXISTENTES DE REGISTRO ==========
-
     @Test
     void shouldRegisterNewClientSuccessfully() {
         Client newClient = new Client();
@@ -113,8 +111,6 @@ class ClientServiceTest {
 
         verify(clientRepository, never()).save(any(Client.class));
     }
-
-    // ========== NUEVOS TESTS DE HISTORIAL DE COMPRAS ==========
 
     @Test
     @DisplayName("Debería retornar historial cuando cliente existe con órdenes")

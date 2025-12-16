@@ -29,7 +29,6 @@ import java.time.format.DateTimeFormatter;
 @Slf4j
 public class OrderPdfServiceImpl implements OrderPdfService {
 
-        // Datos estáticos del negocio
         private static final String BUSINESS_NAME = "PRO EAT";
         private static final String BUSINESS_SUBTITLE = "FIT BAR";
         private static final String BUSINESS_ADDRESS = "Calle Ejemplo 123, Ciudad, Provincia";
@@ -38,7 +37,7 @@ public class OrderPdfServiceImpl implements OrderPdfService {
         private static final String DEFAULT_DNI_CUIT = "N/A";
 
         private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        private static final DeviceRgb BORDER_COLOR = new DeviceRgb(200, 200, 200); // Gris claro para bordes
+        private static final DeviceRgb BORDER_COLOR = new DeviceRgb(200, 200, 200);
 
         @Override
         public byte[] generatePdf(Order order) {
@@ -50,25 +49,15 @@ public class OrderPdfServiceImpl implements OrderPdfService {
                         PdfDocument pdfDoc = new PdfDocument(writer);
                         Document document = new Document(pdfDoc);
 
-                        // Configurar márgenes
                         document.setMargins(40, 40, 40, 40);
 
-                        // Encabezado
                         addHeader(document);
 
-                        // Información del negocio y orden
                         addBusinessAndOrderInfo(document, order);
 
-                        // Datos del cliente
                         addCustomerInfo(document, order);
-
-                        // Tabla de productos
                         addItemsTable(document, order);
-
-                        // Total
                         addTotal(document, order);
-
-                        // Footer
                         addFooter(document);
 
                         document.close();
@@ -84,12 +73,9 @@ public class OrderPdfServiceImpl implements OrderPdfService {
         }
 
         private void addHeader(Document document) {
-                // Tabla para header: Nombre del negocio (izq) | Título del documento (der)
                 Table headerTable = new Table(UnitValue.createPercentArray(new float[] { 1, 1 }))
                                 .useAllAvailableWidth()
                                 .setMarginBottom(10);
-
-                // Columna izquierda: Nombre del negocio
                 Paragraph businessName = new Paragraph()
                                 .add(new com.itextpdf.layout.element.Text(BUSINESS_NAME + "\n")
                                                 .setFontSize(22)
@@ -102,7 +88,6 @@ public class OrderPdfServiceImpl implements OrderPdfService {
                                 .setBorder(Border.NO_BORDER)
                                 .setTextAlignment(TextAlignment.LEFT);
 
-                // Columna derecha: Título del documento
                 Paragraph title = new Paragraph("Comprobante de pago")
                                 .setFontSize(16)
                                 .setTextAlignment(TextAlignment.RIGHT);
@@ -117,7 +102,6 @@ public class OrderPdfServiceImpl implements OrderPdfService {
 
                 document.add(headerTable);
 
-                // Línea separadora
                 document.add(new Paragraph()
                                 .setBorderBottom(new SolidBorder(BORDER_COLOR, 1))
                                 .setMarginBottom(15));
@@ -128,31 +112,26 @@ public class OrderPdfServiceImpl implements OrderPdfService {
                                 .useAllAvailableWidth()
                                 .setMarginBottom(15);
 
-                // Primera fila: Dirección comercial | Número de contacto
                 infoTable.addCell(createInfoCell("Dirección comercial:", BUSINESS_ADDRESS));
                 infoTable.addCell(createInfoCell("Número de contacto:", BUSINESS_PHONE));
 
-                // Segunda fila: N° de comprobante | Fecha y hora
                 infoTable.addCell(createInfoCell("N° de comprobante:", order.getOrderNumber()));
                 infoTable.addCell(createInfoCell("Fecha y hora:", order.getOrderDate().format(DATE_FORMAT)));
 
                 document.add(infoTable);
 
-                // Línea separadora
                 document.add(new Paragraph()
                                 .setBorderBottom(new SolidBorder(BORDER_COLOR, 1))
                                 .setMarginBottom(15));
         }
 
         private void addCustomerInfo(Document document, Order order) {
-                // Título de sección
                 Paragraph sectionTitle = new Paragraph("Datos del cliente")
                                 .setFontSize(12)
                                 .setBold()
                                 .setMarginBottom(8);
                 document.add(sectionTitle);
 
-                // Tabla con 3 columnas para los datos del cliente en una línea
                 Table customerTable = new Table(UnitValue.createPercentArray(new float[] { 1, 1, 1 }))
                                 .useAllAvailableWidth()
                                 .setMarginBottom(15);
@@ -163,32 +142,26 @@ public class OrderPdfServiceImpl implements OrderPdfService {
 
                 document.add(customerTable);
 
-                // Línea separadora
                 document.add(new Paragraph()
                                 .setBorderBottom(new SolidBorder(BORDER_COLOR, 1))
                                 .setMarginBottom(15));
         }
 
         private void addItemsTable(Document document, Order order) {
-                // Título de sección
                 Paragraph sectionTitle = new Paragraph("Productos vendidos")
                                 .setFontSize(12)
                                 .setBold()
                                 .setMarginBottom(8);
                 document.add(sectionTitle);
 
-                // Tabla de productos
                 Table itemsTable = new Table(UnitValue.createPercentArray(new float[] { 3, 1, 1.5f, 1.5f }))
                                 .useAllAvailableWidth()
                                 .setMarginBottom(10);
-
-                // Encabezados
                 itemsTable.addCell(createTableHeaderCell("Producto"));
                 itemsTable.addCell(createTableHeaderCell("Cantidad"));
                 itemsTable.addCell(createTableHeaderCell("Precio unitario"));
                 itemsTable.addCell(createTableHeaderCell("Subtotal"));
 
-                // Items
                 for (OrderItem item : order.getItems()) {
                         itemsTable.addCell(createProductCell(item.getProduct().getName()));
                         itemsTable.addCell(createQuantityCell(String.valueOf(item.getQuantity())));
@@ -198,18 +171,13 @@ public class OrderPdfServiceImpl implements OrderPdfService {
 
                 document.add(itemsTable);
 
-                // Subtotal y descuento dentro de la misma tabla
                 Table totalsTable = new Table(UnitValue.createPercentArray(new float[] { 3, 1 }))
                                 .useAllAvailableWidth()
                                 .setMarginBottom(15);
-
-                // Subtotal
                 totalsTable.addCell(createLabelCell("Subtotal"));
                 totalsTable.addCell(createTotalValueCell(String.format("AR$ %.3f", order.getSubtotal())));
 
-                // Descuento (si aplica)
                 if (order.getDiscountAmount().compareTo(java.math.BigDecimal.ZERO) > 0) {
-                        // Calcular porcentaje de descuento
                         double discountPercentage = order.getDiscountAmount()
                                         .divide(order.getSubtotal(), 4, java.math.RoundingMode.HALF_UP)
                                         .multiply(java.math.BigDecimal.valueOf(100))
@@ -223,14 +191,12 @@ public class OrderPdfServiceImpl implements OrderPdfService {
 
                 document.add(totalsTable);
 
-                // Línea separadora
                 document.add(new Paragraph()
                                 .setBorderBottom(new SolidBorder(BORDER_COLOR, 1))
                                 .setMarginBottom(15));
         }
 
         private void addTotal(Document document, Order order) {
-                // Total grande y destacado
                 Table totalTable = new Table(UnitValue.createPercentArray(new float[] { 1, 1 }))
                                 .useAllAvailableWidth()
                                 .setMarginBottom(30);
@@ -256,7 +222,6 @@ public class OrderPdfServiceImpl implements OrderPdfService {
         }
 
         private void addFooter(Document document) {
-                // Footer: "Powered by" en primera línea
                 Paragraph poweredBy = new Paragraph("Powered by")
                                 .setFontSize(9)
                                 .setFontColor(ColorConstants.GRAY)
@@ -265,7 +230,6 @@ public class OrderPdfServiceImpl implements OrderPdfService {
                                 .setMarginBottom(2);
                 document.add(poweredBy);
 
-                // "stockia" en línea separada con fuente más grande
                 Paragraph stockia = new Paragraph("stockia")
                                 .setFontSize(24)
                                 .setBold()
@@ -274,8 +238,6 @@ public class OrderPdfServiceImpl implements OrderPdfService {
                                 .setMarginTop(0);
                 document.add(stockia);
         }
-
-        // ==================== Helper Methods ====================
 
         private Cell createInfoCell(String label, String value) {
                 Paragraph content = new Paragraph()

@@ -28,19 +28,15 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendHtmlEmail(String to, String subject, String templateName, Map<String, Object> variables) {
         try {
-            // Procesar plantilla HTML
             Context context = new Context();
             context.setVariables(variables);
             String htmlContent = templateEngine.process(templateName, context);
-
-            // Construir el mail
             Email from = new Email("Stockiainc@gmail.com");
             Email toEmail = new Email(to);
 
             Content content = new Content("text/html", htmlContent);
             Mail mail = new Mail(from, subject, toEmail, content);
 
-            // Usar la API key de SendGrid desde el entorno (.env en Render)
             SendGrid sg = new SendGrid(sendGridKey);
 
             Request request = new Request();
@@ -50,7 +46,6 @@ public class EmailServiceImpl implements EmailService {
 
             Response response = sg.api(request);
 
-            // Logs opcionales
             log.info("Email sent. Status: {}", response.getStatusCode());
 
             if (response.getStatusCode() >= 400) {

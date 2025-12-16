@@ -42,7 +42,6 @@ public class InventoryMovementServiceImpl implements InventoryMovementService {
     @Override
     public Page<InventoryMovementResponseDto> searchInventoryMovements(MovementSearchRequestDto params,
             Pageable pageable) {
-        // Convertir fechas de LocalDate a LocalDateTime
         LocalDateTime startDateTime = params.startDate() != null
                 ? params.startDate().atStartOfDay()
                 : null;
@@ -96,11 +95,9 @@ public class InventoryMovementServiceImpl implements InventoryMovementService {
             throw new InsufficientStockException(product.getCurrentStock(), Math.abs(requestDto.quantity()));
         }
 
-        // Actualizar el stock del producto
         product.setCurrentStock(newStock);
         productRepository.save(product);
 
-        // Verificar si el stock llegó a un nivel bajo o se agotó
         if (product.getCurrentStock() <= product.getMinStock()) {
             eventPublisher.publishEvent(new LowStockEvent(
                     product.getId(),
