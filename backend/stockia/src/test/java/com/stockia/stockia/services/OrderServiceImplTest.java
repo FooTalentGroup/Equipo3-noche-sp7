@@ -152,10 +152,10 @@ class OrderServiceImplTest {
         OrderResponseDto result = orderService.createOrder(testOrderRequest);
 
         assertNotNull(result);
-        verify(productRepository).save(any(Product.class)); // Stock updated
-        verify(inventoryMovementRepository).save(any(InventoryMovement.class)); // Movement created
+        verify(productRepository).save(any(Product.class));
+        verify(inventoryMovementRepository).save(any(InventoryMovement.class));
         verify(orderRepository).save(any(Order.class));
-        assertEquals(8, testProduct.getCurrentStock()); // Stock decremented
+        assertEquals(8, testProduct.getCurrentStock());
     }
 
     @Test
@@ -181,7 +181,7 @@ class OrderServiceImplTest {
     @Test
     @DisplayName("Should throw exception when insufficient stock")
     void testCreateOrder_InsufficientStock() {
-        testProduct.setCurrentStock(1); // Only 1 in stock, but requesting 2
+        testProduct.setCurrentStock(1);
         when(userRepository.findByEmail("admin@test.com")).thenReturn(Optional.of(testUser));
         when(clientRepository.findById(testClient.getId())).thenReturn(Optional.of(testClient));
         when(productRepository.findById(testProduct.getId())).thenReturn(Optional.of(testProduct));
@@ -257,9 +257,9 @@ class OrderServiceImplTest {
 
         assertNotNull(result);
         assertEquals(OrderStatus.CANCELLED, testOrder.getStatus());
-        assertEquals(initialStock + 2, testProduct.getCurrentStock()); // Stock restored
+        assertEquals(initialStock + 2, testProduct.getCurrentStock());
         verify(productRepository).save(testProduct);
-        verify(inventoryMovementRepository).save(any(InventoryMovement.class)); // Reverse movement
+        verify(inventoryMovementRepository).save(any(InventoryMovement.class));
         assertEquals("Cliente solicitó cancelación", testOrder.getCancelReason());
         assertNotNull(testOrder.getCancelledDate());
     }

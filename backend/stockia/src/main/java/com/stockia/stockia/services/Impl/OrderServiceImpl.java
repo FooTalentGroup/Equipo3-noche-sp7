@@ -156,19 +156,13 @@ public class OrderServiceImpl implements OrderService {
                 .unitPrice(itemDto.getUnitPrice())
                 .build();
 
-        // Calcular el total del item ANTES de agregarlo a la orden
-        // Esto previene NullPointerException en calculateTotals()
         orderItem.calculateItemTotal();
-
-        // Agregar item a la orden
         order.addItem(orderItem);
 
-        // RN-05: Bloquear stock (decrementar inmediatamente)
         int newStock = product.getCurrentStock() - itemDto.getQuantity();
         product.setCurrentStock(newStock);
         productRepository.save(product);
 
-        // Disparar evento de stock bajo si aplica
         if (newStock <= product.getMinStock()) {
             eventPublisher.publishEvent(new com.stockia.stockia.events.LowStockEvent(
                     product.getId(),
@@ -179,7 +173,6 @@ public class OrderServiceImpl implements OrderService {
                     product.getName(), newStock, product.getMinStock());
         }
 
-        // Crear movimiento de inventario
         InventoryMovement movement = InventoryMovement.builder()
                 .product(product)
                 .movementType(MovementType.OUT)
@@ -201,7 +194,6 @@ public class OrderServiceImpl implements OrderService {
         String datePrefix = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String baseOrderNumber = "ORD-" + datePrefix + "-";
 
-        // Buscar el último número de orden del día
         int sequence = 1;
         String orderNumber;
         do {
@@ -266,7 +258,6 @@ public class OrderServiceImpl implements OrderService {
                 searchParams.paymentMethod(), searchParams.paymentStatus(),
                 searchParams.startDate(), searchParams.endDate());
 
-        // Convertir fechas de LocalDate a LocalDateTime
         LocalDateTime startDateTime = searchParams.startDate() != null
                 ? searchParams.startDate().atStartOfDay()
                 : null;
@@ -275,7 +266,6 @@ public class OrderServiceImpl implements OrderService {
                 ? searchParams.endDate().atTime(23, 59, 59)
                 : null;
 
-        // Buscar en el repositorio
         Page<Order> ordersPage = orderRepository.searchOrders(
                 searchParams.orderNumber(),
                 searchParams.customerName(),
@@ -286,7 +276,6 @@ public class OrderServiceImpl implements OrderService {
                 endDateTime,
                 pageable);
 
-        // Mapear a DTOs
         return ordersPage.map(orderMapper::toResponseDto);
     }
 
@@ -337,10 +326,8 @@ public class OrderServiceImpl implements OrderService {
             throw new InvalidOrderStatusException(order.getStatus().name(), "cancelar");
         }
 
-        // RN-04: Obtener usuario que ejecuta la cancelación
         User cancelledByUser = getAuthenticatedUser();
 
-        // Restaurar stock de cada item
         for (OrderItem item : order.getItems()) {
             Product product = item.getProduct();
             int newStock = product.getCurrentStock() + item.getQuantity();
@@ -362,7 +349,6 @@ public class OrderServiceImpl implements OrderService {
                     product.getName(), item.getQuantity(), newStock);
         }
 
-        // RN-04: Marcar orden como cancelada con motivo y usuario
         order.markAsCancelled(dto.getCancelReason(), cancelledByUser);
         Order savedOrder = orderRepository.save(order);
 

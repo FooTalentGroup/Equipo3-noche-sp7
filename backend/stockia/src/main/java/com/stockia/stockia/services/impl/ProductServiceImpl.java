@@ -43,14 +43,11 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponseDto createProduct(ProductRequestDto dto) {
         log.info("Creating product with name: {}", dto.getName());
 
-        // Normalizar nombre a lowercase para consistencia
         String normalizedName = dto.getName().trim().toLowerCase();
 
-        // Validar que la categoría exista
         ProductCategory category = categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new CategoryNotFoundException(dto.getCategoryId()));
 
-        // Validar que el nombre sea único
         boolean exists = productRepository.existsActiveProductByName(normalizedName);
         if (exists) {
             log.warn("Duplicate product name: {}", normalizedName);
@@ -59,7 +56,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         Product product = productMapper.toEntity(dto);
-        product.setName(normalizedName); // Establecer el nombre normalizado
+        product.setName(normalizedName);
         product.setCategory(category);
         Product savedProduct = productRepository.save(product);
         log.info("Product created with ID: {}", savedProduct.getId());
@@ -78,7 +75,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(readOnly = true)
     public Page<ProductResponseDto> searchProducts(ProductSearchRequestDto params, Pageable pageable) {
-        log.info("Searching products with filters - deleted: {}, includeInactive: {}, lowStock: {}, query: {}, categoryId: {}",
+        log.info(
+                "Searching products with filters - deleted: {}, includeInactive: {}, lowStock: {}, query: {}, categoryId: {}",
                 params.deleted(), params.includeInactive(), params.lowStock(), params.q(), params.categoryId());
 
         Page<Product> products = productRepository.searchProducts(
@@ -87,8 +85,7 @@ public class ProductServiceImpl implements ProductService {
                 params.deleted(),
                 params.includeInactive(),
                 params.lowStock(),
-                pageable
-        );
+                pageable);
 
         return products.map(productMapper::toResponseDto);
     }
@@ -100,30 +97,25 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
 
-        // Actualizar categoría si se proporciona
         if (dto.getCategoryId() != null && !dto.getCategoryId().equals(product.getCategory().getId())) {
             ProductCategory newCategory = categoryRepository.findById(dto.getCategoryId())
                     .orElseThrow(() -> new CategoryNotFoundException(dto.getCategoryId()));
             product.setCategory(newCategory);
         }
 
-        // Validar y normalizar nombre único si se está cambiando
         if (dto.getName() != null && !dto.getName().trim().isEmpty()) {
             String normalizedName = dto.getName().trim().toLowerCase();
 
-            // Solo validar si el nombre normalizado es diferente al actual
             if (!normalizedName.equals(product.getName())) {
                 boolean exists = productRepository.existsActiveProductByNameExcludingId(normalizedName, id);
                 if (exists) {
                     throw new DuplicateProductException(
                             "Producto duplicado. Ya existe otro producto con el nombre: " + normalizedName);
                 }
-                // Establecer el nombre normalizado
                 product.setName(normalizedName);
             }
         }
 
-        // Actualizar los demás campos (price, photoUrl, stock, etc.)
         if (dto.getPrice() != null) {
             product.setPrice(dto.getPrice());
         }
@@ -156,7 +148,6 @@ public class ProductServiceImpl implements ProductService {
         log.info("Product deleted with ID: {}", id);
     }
 
-
     @Override
     @Transactional
     public ProductResponseDto restoreProduct(UUID id) {
@@ -164,7 +155,6 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
 
-        // Validar que esté eliminado antes de restaurar
         SoftDeletableValidator.validateIsDeleted(product.getDeleted(), "producto", id);
 
         product.restore();

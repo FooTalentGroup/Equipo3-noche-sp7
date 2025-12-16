@@ -32,21 +32,17 @@ public class SalesReportServiceImpl implements SalesReportService {
         public SalesReportResponseDto generateSalesReport(LocalDate startDate, LocalDate endDate, String productName) {
                 log.info("Generando reporte de ventas para el período: {} - {}", startDate, endDate);
 
-                // Validar rango de fechas
                 if (endDate.isBefore(startDate)) {
                         throw new IllegalArgumentException(
                                         "La fecha de fin no puede ser anterior a la fecha de inicio");
                 }
 
-                // Convertir fechas a LocalDateTime para las queries
                 LocalDateTime startDateTime = startDate.atStartOfDay();
                 LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
 
-                // Obtener métricas del período actual
                 SalesMetricsDto currentMetrics = orderRepository.calculateSalesMetrics(
                                 startDateTime, endDateTime, productName);
 
-                // Calcular métricas del período anterior para comparación
                 long daysBetween = ChronoUnit.DAYS.between(startDate, endDate) + 1;
                 LocalDate previousStartDate = startDate.minusDays(daysBetween);
                 LocalDate previousEndDate = startDate.minusDays(1);
@@ -57,21 +53,16 @@ public class SalesReportServiceImpl implements SalesReportService {
                 SalesMetricsDto previousMetrics = orderRepository.calculateSalesMetrics(
                                 previousStartDateTime, previousEndDateTime, productName);
 
-                // Calcular porcentajes de cambio
                 calculateChangePercentages(currentMetrics, previousMetrics);
 
-                // Obtener ventas diarias
                 List<DailySalesDto> dailySales = orderRepository.getDailySales(
                                 startDateTime, endDateTime, productName);
 
-                // Obtener distribución por método de pago
                 List<PaymentMethodDistributionDto> paymentDistribution = orderRepository
                                 .getPaymentMethodDistribution(startDateTime, endDateTime, productName);
 
-                // Calcular porcentajes para la distribución
                 calculateDistributionPercentages(paymentDistribution);
 
-                // Construir respuesta
                 SalesReportResponseDto response = SalesReportResponseDto.builder()
                                 .metrics(currentMetrics)
                                 .dailySales(dailySales)
@@ -94,19 +85,16 @@ public class SalesReportServiceImpl implements SalesReportService {
          * @param previous Métricas del período anterior
          */
         private void calculateChangePercentages(SalesMetricsDto current, SalesMetricsDto previous) {
-                // Calcular cambio en ingresos
                 current.setRevenueChangePercentage(
                                 calculatePercentageChange(
                                                 previous.getTotalRevenue(),
                                                 current.getTotalRevenue()));
 
-                // Calcular cambio en cantidad de órdenes
                 current.setOrdersChangePercentage(
                                 calculatePercentageChange(
                                                 BigDecimal.valueOf(previous.getTotalOrders()),
                                                 BigDecimal.valueOf(current.getTotalOrders())));
 
-                // Calcular cambio en ticket promedio
                 current.setAverageTicketChangePercentage(
                                 calculatePercentageChange(
                                                 previous.getAverageTicket(),
@@ -123,7 +111,6 @@ public class SalesReportServiceImpl implements SalesReportService {
          */
         private Double calculatePercentageChange(BigDecimal oldValue, BigDecimal newValue) {
                 if (oldValue == null || oldValue.compareTo(BigDecimal.ZERO) == 0) {
-                        // Si el valor anterior es 0, no se puede calcular porcentaje
                         return newValue != null && newValue.compareTo(BigDecimal.ZERO) > 0 ? 100.0 : 0.0;
                 }
 
@@ -147,18 +134,14 @@ public class SalesReportServiceImpl implements SalesReportService {
         private void calculateDistributionPercentages(
                         List<PaymentMethodDistributionDto> distribution) {
 
-                // Calcular el total
                 BigDecimal total = distribution.stream()
                                 .map(PaymentMethodDistributionDto::getTotalAmount)
                                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-                // Si el total es 0, todos los porcentajes son 0
                 if (total.compareTo(BigDecimal.ZERO) == 0) {
                         distribution.forEach(d -> d.setPercentage(0.0));
                         return;
                 }
-
-                // Calcular porcentaje para cada método de pago
                 distribution.forEach(d -> {
                         BigDecimal percentage = d.getTotalAmount()
                                         .divide(total, 4, RoundingMode.HALF_UP)

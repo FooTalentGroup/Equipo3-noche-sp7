@@ -69,7 +69,6 @@ class ProductReportServiceImplTest {
                 endDate = LocalDate.of(2025, 12, 7);
                 pageable = PageRequest.of(0, 10);
 
-                // Crear datos de prueba
                 mockProducts = List.of(
                                 new MostSoldProductDto(
                                                 UUID.randomUUID(),
@@ -92,7 +91,6 @@ class ProductReportServiceImplTest {
         @Test
         @DisplayName("Should convert LocalDate to LocalDateTime correctly")
         void shouldConvertLocalDateToLocalDateTimeCorrectly() {
-                // Arrange
                 Page<MostSoldProductDto> mockPage = new PageImpl<>(mockProducts, pageable, mockProducts.size());
                 when(orderItemRepository.findMostSoldProducts(any(LocalDateTime.class), any(LocalDateTime.class),
                                 eq(pageable)))
@@ -108,11 +106,9 @@ class ProductReportServiceImplTest {
                                 endDateTimeCaptor.capture(),
                                 eq(pageable));
 
-                // Verificar que startDate se convirtió al inicio del día
                 LocalDateTime expectedStartDateTime = startDate.atStartOfDay();
                 assertThat(startDateTimeCaptor.getValue()).isEqualTo(expectedStartDateTime);
 
-                // Verificar que endDate se convirtió al final del día
                 LocalDateTime expectedEndDateTime = endDate.atTime(LocalTime.MAX);
                 assertThat(endDateTimeCaptor.getValue()).isEqualTo(expectedEndDateTime);
         }
@@ -191,12 +187,9 @@ class ProductReportServiceImplTest {
                                 endDateTimeCaptor.capture(),
                                 eq(pageable));
 
-                // Verificar que el mismo día se consulta desde inicio hasta fin del día
                 assertThat(startDateTimeCaptor.getValue()).isEqualTo(sameDate.atStartOfDay());
                 assertThat(endDateTimeCaptor.getValue()).isEqualTo(sameDate.atTime(LocalTime.MAX));
         }
-
-        // ==================== TESTS PARA REPORTE DE COSTOS ====================
 
         @Test
         @DisplayName("getCostReport - Should return 12 months with correct calculations")
@@ -207,7 +200,6 @@ class ProductReportServiceImplTest {
                 UUID categoryId = null;
                 UUID productId = null;
 
-                // Mock datos de ventas para enero y febrero
                 MonthlyCostDto januaryData = new MonthlyCostDto(1, 100L, 150.0);
                 MonthlyCostDto februaryData = new MonthlyCostDto(2, 120L, 155.0);
                 List<MonthlyCostDto> salesData = List.of(januaryData, februaryData);
@@ -220,7 +212,6 @@ class ProductReportServiceImplTest {
                 when(inventoryMovementRepository.findAverageCostByMonth(productId, categoryId, year, 2))
                                 .thenReturn(new BigDecimal("52.00"));
 
-                // Meses sin datos retornan null
                 for (int month = 3; month <= 12; month++) {
                         when(inventoryMovementRepository.findAverageCostByMonth(productId, categoryId, year, month))
                                         .thenReturn(null);
@@ -230,26 +221,22 @@ class ProductReportServiceImplTest {
 
                 assertThat(result).hasSize(12);
 
-                // Verificar enero (primer mes, variación = 0)
                 MonthlyCostDto january = result.get(0);
                 assertThat(january.month()).isEqualTo(1);
                 assertThat(january.monthName()).isEqualTo("Enero");
                 assertThat(january.unitsSold()).isEqualTo(100L);
                 assertThat(january.avgUnitCost()).isEqualByComparingTo("50.00");
-                assertThat(january.totalAvgCost()).isEqualByComparingTo("5000.00"); // 100 * 50
+                assertThat(january.totalAvgCost()).isEqualByComparingTo("5000.00");
                 assertThat(january.costVariationPercent()).isEqualByComparingTo("0.0");
 
-                // Verificar febrero (variación vs enero)
                 MonthlyCostDto february = result.get(1);
                 assertThat(february.month()).isEqualTo(2);
                 assertThat(february.monthName()).isEqualTo("Febrero");
                 assertThat(february.unitsSold()).isEqualTo(120L);
                 assertThat(february.avgUnitCost()).isEqualByComparingTo("52.00");
-                assertThat(february.totalAvgCost()).isEqualByComparingTo("6240.00"); // 120 * 52
-                // Variación: ((6240 - 5000) / 5000) * 100 = 24.8%
+                assertThat(february.totalAvgCost()).isEqualByComparingTo("6240.00");
                 assertThat(february.costVariationPercent()).isEqualByComparingTo("24.8");
 
-                // Verificar marzo (sin datos)
                 MonthlyCostDto march = result.get(2);
                 assertThat(march.month()).isEqualTo(3);
                 assertThat(march.monthName()).isEqualTo("Marzo");
@@ -265,7 +252,6 @@ class ProductReportServiceImplTest {
                 UUID categoryId = null;
                 UUID productId = null;
 
-                // Enero y marzo tienen datos, febrero no
                 MonthlyCostDto januaryData = new MonthlyCostDto(1, 100L, 150.0);
                 MonthlyCostDto marchData = new MonthlyCostDto(3, 150L, 160.0);
                 List<MonthlyCostDto> salesData = List.of(januaryData, marchData);
@@ -288,17 +274,13 @@ class ProductReportServiceImplTest {
                 List<MonthlyCostDto> result = productReportService.getCostReport(year, null, null);
 
                 MonthlyCostDto january = result.get(0);
-                assertThat(january.totalAvgCost()).isEqualByComparingTo("5000.00"); // 100 * 50
+                assertThat(january.totalAvgCost()).isEqualByComparingTo("5000.00");
 
-                // Febrero no tiene ventas, variación = 0
                 MonthlyCostDto february = result.get(1);
                 assertThat(february.unitsSold()).isZero();
                 assertThat(february.costVariationPercent()).isEqualByComparingTo("0.0");
-
-                // Marzo se compara con enero (último mes con ventas)
                 MonthlyCostDto march = result.get(2);
-                assertThat(march.totalAvgCost()).isEqualByComparingTo("7200.00"); // 150 * 48
-                // Variación: ((7200 - 5000) / 5000) * 100 = 44.0%
+                assertThat(march.totalAvgCost()).isEqualByComparingTo("7200.00");
                 assertThat(march.costVariationPercent()).isEqualByComparingTo("44.0");
         }
 
@@ -399,8 +381,6 @@ class ProductReportServiceImplTest {
                 }
         }
 
-        // ==================== TESTS PARA REPORTE DE STOCK ====================
-
         @Test
         @DisplayName("getStockReport - Should calculate daily stock correctly")
         void getStockReportShouldCalculateDailyStockCorrectly() {
@@ -409,21 +389,15 @@ class ProductReportServiceImplTest {
                 LocalDate startDate = LocalDate.of(2025, 11, 12);
                 LocalDate endDate = LocalDate.of(2025, 11, 14);
 
-                // Mock producto
                 Product product = new Product();
                 product.setId(productId);
                 product.setName(productName);
                 when(productRepository.findByNameContainingIgnoreCaseAndDeletedFalse(productName))
                                 .thenReturn(List.of(product));
 
-                // Stock inicial: 100 unidades
                 when(inventoryMovementRepository.calculateStockBeforeDate(productId, startDate))
                                 .thenReturn(100);
 
-                // Movimientos:
-                // 12-Nov: OUT 10
-                // 13-Nov: OUT 9
-                // 14-Nov: OUT 12
                 List<DailyMovementDto> movements = List.of(
                                 new DailyMovementDto(LocalDate.of(2025, 11, 12), MovementType.OUT, 10L),
                                 new DailyMovementDto(LocalDate.of(2025, 11, 13), MovementType.OUT, 9L),
@@ -436,7 +410,6 @@ class ProductReportServiceImplTest {
 
                 assertThat(result).hasSize(3);
 
-                // 12-Nov: 100 - 10 = 90
                 DailyStockDto day1 = result.get(0);
                 assertThat(day1.date()).isEqualTo(LocalDate.of(2025, 11, 12));
                 assertThat(day1.initialStock()).isEqualTo(100);
@@ -444,14 +417,12 @@ class ProductReportServiceImplTest {
                 assertThat(day1.exits()).isEqualTo(10);
                 assertThat(day1.currentStock()).isEqualTo(90);
 
-                // 13-Nov: 90 - 9 = 81
                 DailyStockDto day2 = result.get(1);
                 assertThat(day2.date()).isEqualTo(LocalDate.of(2025, 11, 13));
                 assertThat(day2.initialStock()).isEqualTo(90);
                 assertThat(day2.exits()).isEqualTo(9);
                 assertThat(day2.currentStock()).isEqualTo(81);
 
-                // 14-Nov: 81 - 12 = 69
                 DailyStockDto day3 = result.get(2);
                 assertThat(day3.date()).isEqualTo(LocalDate.of(2025, 11, 14));
                 assertThat(day3.initialStock()).isEqualTo(81);
@@ -476,7 +447,6 @@ class ProductReportServiceImplTest {
                 when(inventoryMovementRepository.calculateStockBeforeDate(productId, startDate))
                                 .thenReturn(100);
 
-                // Solo movimientos el 12 y 16, días 13-15 sin movimientos
                 List<DailyMovementDto> movements = List.of(
                                 new DailyMovementDto(LocalDate.of(2025, 11, 12), MovementType.OUT, 10L),
                                 new DailyMovementDto(LocalDate.of(2025, 11, 16), MovementType.IN, 20L));
@@ -486,15 +456,14 @@ class ProductReportServiceImplTest {
 
                 List<DailyStockDto> result = productReportService.getStockReport(productName, startDate, endDate);
 
-                assertThat(result).hasSize(5); // Todos los días del 12 al 16
+                assertThat(result).hasSize(5);
 
-                // Días 13, 14, 15 sin movimientos
                 for (int day = 13; day <= 15; day++) {
                         DailyStockDto dayData = result.get(day - 12);
                         assertThat(dayData.date()).isEqualTo(LocalDate.of(2025, 11, day));
                         assertThat(dayData.entries()).isZero();
                         assertThat(dayData.exits()).isZero();
-                        assertThat(dayData.initialStock()).isEqualTo(90); // Stock se mantiene
+                        assertThat(dayData.initialStock()).isEqualTo(90);
                         assertThat(dayData.currentStock()).isEqualTo(90);
                 }
         }
@@ -517,22 +486,19 @@ class ProductReportServiceImplTest {
                                 .thenReturn(100);
 
                 List<DailyMovementDto> movements = List.of(
-                                new DailyMovementDto(LocalDate.of(2025, 11, 12), MovementType.OUT, 10L), // 100->90
-                                new DailyMovementDto(LocalDate.of(2025, 11, 13), MovementType.OUT, 9L), // 90->81
-                                new DailyMovementDto(LocalDate.of(2025, 11, 14), MovementType.IN, 19L)); // 81->100
+                                new DailyMovementDto(LocalDate.of(2025, 11, 12), MovementType.OUT, 10L),
+                                new DailyMovementDto(LocalDate.of(2025, 11, 13), MovementType.OUT, 9L),
+                                new DailyMovementDto(LocalDate.of(2025, 11, 14), MovementType.IN, 19L));
 
                 when(inventoryMovementRepository.findDailyMovementsByProduct(productId, startDate, endDate))
                                 .thenReturn(movements);
 
                 List<DailyStockDto> result = productReportService.getStockReport(productName, startDate, endDate);
 
-                // Día 1: primer día, variación = 0
                 assertThat(result.get(0).stockVariationPercent()).isEqualByComparingTo("0.0");
 
-                // Día 2: (81 - 90) / 90 * 100 = -10%
                 assertThat(result.get(1).stockVariationPercent()).isEqualByComparingTo("-10.0");
 
-                // Día 3: (100 - 81) / 81 * 100 = +23.5%
                 assertThat(result.get(2).stockVariationPercent()).isEqualByComparingTo("23.5");
         }
 
@@ -553,7 +519,6 @@ class ProductReportServiceImplTest {
                 when(inventoryMovementRepository.calculateStockBeforeDate(productId, startDate))
                                 .thenReturn(100);
 
-                // Mismo día: entradas y salidas
                 List<DailyMovementDto> movements = List.of(
                                 new DailyMovementDto(LocalDate.of(2025, 11, 12), MovementType.IN, 50L),
                                 new DailyMovementDto(LocalDate.of(2025, 11, 12), MovementType.OUT, 30L));
@@ -568,7 +533,7 @@ class ProductReportServiceImplTest {
                 assertThat(day.initialStock()).isEqualTo(100);
                 assertThat(day.entries()).isEqualTo(50);
                 assertThat(day.exits()).isEqualTo(30);
-                assertThat(day.currentStock()).isEqualTo(120); // 100 + 50 - 30
+                assertThat(day.currentStock()).isEqualTo(120);
         }
 
         @Test
@@ -589,13 +554,12 @@ class ProductReportServiceImplTest {
                                 .thenReturn(50);
 
                 when(inventoryMovementRepository.findDailyMovementsByProduct(productId, startDate, endDate))
-                                .thenReturn(List.of()); // Sin movimientos
+                                .thenReturn(List.of());
 
                 List<DailyStockDto> result = productReportService.getStockReport(productName, startDate, endDate);
 
                 assertThat(result).hasSize(3);
 
-                // Todos los días deben tener stock constante
                 result.forEach(day -> {
                         assertThat(day.initialStock()).isEqualTo(50);
                         assertThat(day.entries()).isZero();
@@ -619,7 +583,6 @@ class ProductReportServiceImplTest {
                 when(productRepository.findByNameContainingIgnoreCaseAndDeletedFalse(productName))
                                 .thenReturn(List.of(product));
 
-                // Verificar que se calcula stock antes del período
                 when(inventoryMovementRepository.calculateStockBeforeDate(productId, startDate))
                                 .thenReturn(75);
 

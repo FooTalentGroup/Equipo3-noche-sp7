@@ -52,7 +52,6 @@ class ClientControllerPurchaseHistoryTest {
     @DisplayName("GET /api/clients/{id}/purchase-history - Debería retornar historial cuando cliente tiene órdenes")
     @WithMockUser(roles = "ADMIN")
     void getClientPurchaseHistory_ShouldReturnHistoryWhenClientHasOrders() throws Exception {
-        //  Cliente con 2 órdenes
         UUID clientId = UUID.randomUUID();
         List<OrderResponseDto> purchaseHistory = Arrays.asList(
             createOrderDto("ORD-20231124-0001", "Juan Pérez", BigDecimal.valueOf(450.00)),
@@ -61,7 +60,6 @@ class ClientControllerPurchaseHistoryTest {
 
         when(clientService.getClientPurchaseHistory(clientId)).thenReturn(purchaseHistory);
 
-        // Verificar respuesta exitosa
         mockMvc.perform(get(ENDPOINT, clientId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -80,13 +78,11 @@ class ClientControllerPurchaseHistoryTest {
     @DisplayName("GET /api/clients/{id}/purchase-history - Debería retornar lista vacía cuando cliente no tiene órdenes")
     @WithMockUser(roles = "ADMIN")
     void getClientPurchaseHistory_ShouldReturnEmptyListWhenNoOrders() throws Exception {
-        // Cliente sin órdenes
         UUID clientId = UUID.randomUUID();
         List<OrderResponseDto> emptyHistory = Collections.emptyList();
 
         when(clientService.getClientPurchaseHistory(clientId)).thenReturn(emptyHistory);
 
-        // Verificar respuesta vacía pero exitosa
         mockMvc.perform(get(ENDPOINT, clientId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -100,12 +96,10 @@ class ClientControllerPurchaseHistoryTest {
     @DisplayName("GET /api/clients/{id}/purchase-history - Debería retornar 404 cuando cliente no existe")
     @WithMockUser(roles = "ADMIN")
     void getClientPurchaseHistory_ShouldReturn404WhenClientNotFound() throws Exception {
-        // Cliente no existe
         UUID clientId = UUID.randomUUID();
         when(clientService.getClientPurchaseHistory(clientId))
             .thenThrow(new ClientNotFoundException(clientId));
 
-        // Verificar error 404
         mockMvc.perform(get(ENDPOINT, clientId))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -118,13 +112,11 @@ class ClientControllerPurchaseHistoryTest {
     @DisplayName("GET /api/clients/{id}/purchase-history - Debería funcionar con rol MANAGER")
     @WithMockUser(roles = "MANAGER")
     void getClientPurchaseHistory_ShouldWorkWithManagerRole() throws Exception {
-        // Usuario con rol MANAGER (debería tener acceso)
         UUID clientId = UUID.randomUUID();
         List<OrderResponseDto> emptyHistory = Collections.emptyList();
         
         when(clientService.getClientPurchaseHistory(clientId)).thenReturn(emptyHistory);
 
-        // Verificar que funciona con MANAGER
         mockMvc.perform(get(ENDPOINT, clientId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -134,10 +126,8 @@ class ClientControllerPurchaseHistoryTest {
     @Test
     @DisplayName("GET /api/clients/{id}/purchase-history - Debería retornar 401 cuando no autenticado")
     void getClientPurchaseHistory_ShouldReturn401WhenNotAuthenticated() throws Exception {
-        // Usuario no autenticado
         UUID clientId = UUID.randomUUID();
 
-        // Verificar no autorizado
         mockMvc.perform(get(ENDPOINT, clientId))
                 .andExpect(status().isUnauthorized());
     }
@@ -146,10 +136,7 @@ class ClientControllerPurchaseHistoryTest {
     @DisplayName("GET /api/clients/{id}/purchase-history - Debería retornar 400 cuando ID inválido")
     @WithMockUser(roles = "ADMIN")
     void getClientPurchaseHistory_ShouldReturn400WhenInvalidUUID() throws Exception {
-        // Given: ID inválido
         String invalidId = "invalid-uuid";
-
-        //  Verificar formato inválido
         mockMvc.perform(get("/api/clients/{clientId}/purchase-history", invalidId))
                 .andExpect(status().isBadRequest());
     }

@@ -41,7 +41,6 @@ class ClientControllerPurchaseHistoryTest {
     @MockitoBean
     private ClientService clientService;
 
-    //  MOCKS PARA LA SEGURIDAD
     @MockitoBean
     private JwtService jwtService;
 
@@ -57,16 +56,13 @@ class ClientControllerPurchaseHistoryTest {
     @DisplayName("GET /api/clients/{id}/purchase-history - Debería retornar historial cuando cliente tiene órdenes")
     @WithMockUser(roles = "ADMIN")
     void getClientPurchaseHistory_ShouldReturnHistoryWhenClientHasOrders() throws Exception {
-        // Cliente con 2 órdenes
         UUID clientId = UUID.randomUUID();
         List<OrderResponseDto> purchaseHistory = Arrays.asList(
-            createOrderDto("ORD-20231124-0001", "Juan Pérez", BigDecimal.valueOf(450.00)),
-            createOrderDto("ORD-20231123-0002", "Juan Pérez", BigDecimal.valueOf(320.50))
-        );
+                createOrderDto("ORD-20231124-0001", "Juan Pérez", BigDecimal.valueOf(450.00)),
+                createOrderDto("ORD-20231123-0002", "Juan Pérez", BigDecimal.valueOf(320.50)));
 
         when(clientService.getClientPurchaseHistory(clientId)).thenReturn(purchaseHistory);
 
-        //  Verificar respuesta exitosa
         mockMvc.perform(get(ENDPOINT, clientId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -85,13 +81,11 @@ class ClientControllerPurchaseHistoryTest {
     @DisplayName("GET /api/clients/{id}/purchase-history - Debería retornar lista vacía cuando cliente no tiene órdenes")
     @WithMockUser(roles = "ADMIN")
     void getClientPurchaseHistory_ShouldReturnEmptyListWhenNoOrders() throws Exception {
-        //  Cliente sin órdenes
         UUID clientId = UUID.randomUUID();
         List<OrderResponseDto> emptyHistory = Collections.emptyList();
 
         when(clientService.getClientPurchaseHistory(clientId)).thenReturn(emptyHistory);
 
-        //  Verificar respuesta vacía pero exitosa
         mockMvc.perform(get(ENDPOINT, clientId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -105,42 +99,22 @@ class ClientControllerPurchaseHistoryTest {
     @DisplayName("GET /api/clients/{id}/purchase-history - Debería retornar 404 cuando cliente no existe")
     @WithMockUser(roles = "ADMIN")
     void getClientPurchaseHistory_ShouldReturn404WhenClientNotFound() throws Exception {
-        // Cliente no existe
         UUID clientId = UUID.randomUUID();
         when(clientService.getClientPurchaseHistory(clientId))
-            .thenThrow(new ClientNotFoundException(clientId));
-
-        // Verificar error 404
+                .thenThrow(new ClientNotFoundException(clientId));
         mockMvc.perform(get(ENDPOINT, clientId))
                 .andExpect(status().isNotFound());
     }
 
-    /*@Test
-    @DisplayName("GET /api/clients/{id}/purchase-history - Debería retornar 403 cuando usuario sin permisos")
-    @WithMockUser(roles = "USER")
-    void getClientPurchaseHistory_ShouldReturn403WhenInsufficientPermissions() throws Exception {
-        //  Usuario sin rol ADMIN o MANAGER
-        UUID clientId = UUID.randomUUID();
-
-        //  Verificar acceso denegado
-        mockMvc.perform(get(ENDPOINT, clientId))
-                .andExpect(status().isForbidden());
-    } */
-
     @Test
     @DisplayName("GET /api/clients/{id}/purchase-history - Debería retornar 401 cuando no autenticado")
     void getClientPurchaseHistory_ShouldReturn401WhenNotAuthenticated() throws Exception {
-        //  Usuario no autenticado
         UUID clientId = UUID.randomUUID();
 
-        // Verificar no autorizado
         mockMvc.perform(get(ENDPOINT, clientId))
                 .andExpect(status().isUnauthorized());
     }
 
-    /**
-     * Método auxiliar para crear OrderResponseDto de prueba
-     */
     private OrderResponseDto createOrderDto(String orderNumber, String customerName, BigDecimal totalAmount) {
         OrderResponseDto dto = new OrderResponseDto();
         dto.setId(UUID.randomUUID());

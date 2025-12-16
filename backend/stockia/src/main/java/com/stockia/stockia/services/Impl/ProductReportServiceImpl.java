@@ -47,7 +47,6 @@ public class ProductReportServiceImpl implements ProductReportService {
         public Page<MostSoldProductDto> getMostSoldProducts(LocalDate startDate, LocalDate endDate, Pageable pageable) {
                 log.info("Generating most sold products report for period: {} to {}", startDate, endDate);
 
-                // Validar rango de fechas
                 if (endDate.isBefore(startDate)) {
                         throw new IllegalArgumentException(
                                         "La fecha de fin debe ser mayor o igual a la fecha de inicio");
@@ -74,7 +73,6 @@ public class ProductReportServiceImpl implements ProductReportService {
                 UUID categoryId = null;
                 UUID productId = null;
 
-                // Buscar categoría por nombre si se proporciona
                 if (categoryName != null && !categoryName.isBlank()) {
                         com.stockia.stockia.models.ProductCategory category = categoryRepository
                                         .findByNameIgnoreCase(categoryName)
@@ -84,7 +82,6 @@ public class ProductReportServiceImpl implements ProductReportService {
                         log.debug("Found category with ID: {} for name: {}", categoryId, categoryName);
                 }
 
-                // Buscar producto por nombre si se proporciona
                 if (productName != null && !productName.isBlank()) {
                         Product product = productRepository.findByNameContainingIgnoreCaseAndDeletedFalse(productName)
                                         .stream()
@@ -116,7 +113,6 @@ public class ProductReportServiceImpl implements ProductReportService {
                                         .setScale(2, RoundingMode.HALF_UP);
 
                         BigDecimal variation = BigDecimal.ZERO;
-                        // Solo calcular variación si el mes actual tiene ventas
                         if (monthlyData.unitsSold() > 0 && previousTotalCost != null
                                         && previousTotalCost.compareTo(BigDecimal.ZERO) > 0) {
                                 variation = totalCost.subtract(previousTotalCost)
@@ -142,13 +138,10 @@ public class ProductReportServiceImpl implements ProductReportService {
                 log.info("Generating stock report for productName: {},  period: {} to {}",
                                 productName, startDate, endDate);
 
-                // Validar rango de fechas
                 if (endDate.isBefore(startDate)) {
                         throw new IllegalArgumentException(
                                         "La fecha de fin debe ser mayor o igual a la fecha de inicio");
                 }
-
-                // Buscar producto por nombre (búsqueda case-insensitive exacta)
                 Product product = productRepository.findByNameContainingIgnoreCaseAndDeletedFalse(productName)
                                 .stream()
                                 .filter(p -> p.getName().equalsIgnoreCase(productName))
@@ -159,15 +152,12 @@ public class ProductReportServiceImpl implements ProductReportService {
                 UUID productId = product.getId();
                 log.debug("Found product with ID: {} for name: {}", productId, productName);
 
-                // Calcular stock al inicio del período
                 Integer initialStock = inventoryMovementRepository.calculateStockBeforeDate(productId, startDate);
                 log.debug("Initial stock before {}: {}", startDate, initialStock);
 
-                // Obtener movimientos del período agrupados por día y tipo
                 List<DailyMovementDto> movements = inventoryMovementRepository
                                 .findDailyMovementsByProduct(productId, startDate, endDate);
 
-                // Agrupar movimientos por fecha y tipo
                 Map<LocalDate, Map<MovementType, Long>> movementsByDate = new HashMap<>();
                 for (DailyMovementDto movement : movements) {
                         movementsByDate.computeIfAbsent(movement.date(), k -> new HashMap<>())
@@ -179,7 +169,6 @@ public class ProductReportServiceImpl implements ProductReportService {
                 Integer previousDayStock = null;
                 LocalDate currentDate = startDate;
 
-                // Generar registro para cada día del período
                 while (!currentDate.isAfter(endDate)) {
                         Map<MovementType, Long> dayMovements = movementsByDate.getOrDefault(currentDate,
                                         new HashMap<>());
@@ -190,7 +179,6 @@ public class ProductReportServiceImpl implements ProductReportService {
                         Integer dayInitialStock = currentStock;
                         currentStock = currentStock + entries - exits;
 
-                        // Calcular variación porcentual vs día anterior
                         BigDecimal variation = BigDecimal.ZERO;
                         if (previousDayStock != null && previousDayStock > 0) {
                                 variation = BigDecimal.valueOf(currentStock - previousDayStock)
