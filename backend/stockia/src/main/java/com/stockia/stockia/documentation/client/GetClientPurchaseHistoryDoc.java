@@ -16,7 +16,8 @@ import java.lang.annotation.Target;
 @Tag(name = "05 - Clientes")
 @Operation(
     summary = "Consultar historial de compras de cliente",
-    description = "Obtiene el historial completo de compras/órdenes realizadas por un cliente específico, ordenadas por fecha descendente (más recientes primero)."
+    description = "Obtiene el historial completo de compras/órdenes realizadas por un cliente específico, ordenadas por fecha descendente (más recientes primero).",
+    security = @SecurityRequirement(name = "bearer-key")
 )
 @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Historial obtenido exitosamente"),
