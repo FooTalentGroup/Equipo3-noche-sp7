@@ -1,6 +1,5 @@
-package com.stockia.stockia.config;
+package com.stockia.stockia.config.seeders;
 
-import com.stockia.stockia.enums.AccountStatus;
 import com.stockia.stockia.enums.Role;
 import com.stockia.stockia.models.User;
 import com.stockia.stockia.repositories.UserRepository;
