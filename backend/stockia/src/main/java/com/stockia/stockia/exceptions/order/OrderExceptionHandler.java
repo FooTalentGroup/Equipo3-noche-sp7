@@ -41,12 +41,7 @@ public class OrderExceptionHandler {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
-        @ExceptionHandler(InvalidOrderStatusException.class)
-        public ResponseEntity<ErrorResponse> handleInvalidOrderStatusException(
-                        InvalidOrderStatusException ex, HttpServletRequest request) {
-
-                log.warn("Estado de orden inválido: {}", ex.getMessage());
-         * 
+         /*
          * Retorna un error 400 BAD_REQUEST con detalles de la transición inválida.
          */
         @ExceptionHandler(InvalidOrderStatusException.class)
