@@ -90,8 +90,6 @@ public class CategoryServiceImpl implements CategoryService {
 
         if (dto.getDescription() != null) {
             category.setDescription(dto.getDescription());
-        if (dto.getDescription() != null) {
-            category.setDescription(dto.getDescription());
         }
         if (dto.getIsActive() != null) {
             category.setIsActive(dto.getIsActive());
