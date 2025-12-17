@@ -170,4 +170,14 @@ public class ClientController {
             String.format("Se encontraron %d compra(s) para el cliente", purchaseHistory.size())
         ));
     }
+
+    @GetFinalClientEndpointDoc
+    @PreAuthorize(ADMIN_OR_MANAGER)
+    @GetMapping("/final")
+    public ResponseEntity<ApiResult<?>> getFinalClient() {
+        Client client = clientService.getFinalClient();
+        return ResponseEntity.ok(
+                ApiResult.success(client, "Cliente Consumidor Final encontrado")
+        );
+    }
 }

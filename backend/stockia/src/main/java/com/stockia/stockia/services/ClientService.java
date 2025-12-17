@@ -17,6 +17,7 @@ package com.stockia.stockia.services;
 import com.stockia.stockia.dtos.client.ClientSearchRequestDto;
 import com.stockia.stockia.enums.ClientStatus;
 import com.stockia.stockia.exceptions.client.ClientNotFoundException;
+import com.stockia.stockia.exceptions.client.ClientProtectedException;
 import com.stockia.stockia.models.Client;
 import com.stockia.stockia.repositories.ClientRepository;
 import com.stockia.stockia.exceptions.client.ClientDuplicatedException;
@@ -44,6 +45,9 @@ public class ClientService {
 
     @Autowired 
     private OrderMapper orderMapper;
+
+    private static final String CONSUMIDOR_FINAL_EMAIL = "consumidor-final@stockia.com";
+
 
     /*
      * GETTER: Obtiene todos los Clients registrados.
@@ -173,6 +177,8 @@ public class ClientService {
         Client existingClient = clientRepository.findById(id)
                 .orElseThrow(() -> new com.stockia.stockia.exceptions.client.ClientNotFoundException(id));
 
+        validateClientIsEditable(existingClient);
+
         if (!existingClient.getEmail().equals(updatedData.getEmail())) {
             Optional<Client> clientWithEmail = clientRepository.findByEmailAndIdNot(updatedData.getEmail(), id);
             if (clientWithEmail.isPresent()) {
@@ -199,6 +205,7 @@ public class ClientService {
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new ClientNotFoundException(id));
 
+        validateClientIsEditable(client);
         client.setClientStatus(ClientStatus.INACTIVE);
         clientRepository.save(client);
     }
@@ -260,5 +267,21 @@ public class ClientService {
         return orders.stream()
             .map(orderMapper::toResponseDto)
             .collect(Collectors.toList());
+    }
+
+    public Client getFinalClient() {
+        return clientRepository.findByEmail(CONSUMIDOR_FINAL_EMAIL)
+                .orElseThrow(() ->
+                        new ClientNotFoundException(
+                                "Cliente Consumidor Final no encontrado"
+                        ));
+    }
+
+    private void validateClientIsEditable(Client client) {
+        if (client.getEmail().equalsIgnoreCase(CONSUMIDOR_FINAL_EMAIL)) {
+            throw new ClientProtectedException(
+                    "No se puede modificar ni dar de baja el cliente Consumidor Final"
+            );
+        }
     }
 }

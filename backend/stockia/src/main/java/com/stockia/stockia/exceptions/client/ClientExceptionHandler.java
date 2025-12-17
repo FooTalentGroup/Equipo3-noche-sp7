@@ -71,6 +71,26 @@ public class ClientExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
+    @ExceptionHandler(ClientProtectedException.class)
+    public ResponseEntity<ErrorResponse> handleClientProtectedException(
+            ClientProtectedException ex,
+            HttpServletRequest request) {
+
+        log.warn("Operación no permitida sobre cliente protegido: {}", ex.getMessage());
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "CLIENT_PROTECTED",
+                "Cliente protegido",
+                Collections.singletonList(ex.getMessage()),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(errorResponse);
+    }
+
     /**
      * Maneja IllegalArgumentException en el contexto de clientes.
      * 
