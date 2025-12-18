@@ -174,12 +174,6 @@ export default function RegisterUserPopup({ open, onClose, onSave, initialData =
                 </div>
               )}
 
-              {isEditMode && !changePassword && (
-                <div className="mt-2">
-                  <button type="button" onClick={() => setChangePassword(true)} className="text-sm text-[#436086] underline">Cambiar contraseña</button>
-                </div>
-              )}
-
               <div>
                 <label className="text-sm font-medium text-Stockia-Neutral-950 flex items-center gap-1">Rol asignado <span className="text-Stockia-Red-Error-600---Activo">*</span></label>
                 <Select className="mt-2 bg-white" value={form.role} onChange={(e) => setForm(f => ({ ...f, role: e.target.value }))}>
