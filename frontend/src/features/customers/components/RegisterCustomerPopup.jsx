@@ -1,4 +1,3 @@
-// src/features/customers/components/RegisterCustomerPopup.jsx
 import React, { useEffect, useState } from "react";
 import { Button } from "@/shared/components/ui/button.jsx";
 import { Input } from "@/shared/components/ui/input.jsx";
@@ -72,16 +71,13 @@ export default function RegisterCustomerPopup({ open, onClose, onSave, initialDa
         } catch (error) {
             setIsSubmitting(false);
 
-            // Prefer structured fieldErrors returned by the caller (CustomersPage transforms backend details into this shape)
             const fieldErrors = error?.response?.data?.fieldErrors || error?.data?.fieldErrors;
             if (fieldErrors && Object.keys(fieldErrors).length > 0) {
-                // Ensure values are strings and merge with existing errors
                 const normalized = Object.fromEntries(Object.entries(fieldErrors).map(([k, v]) => [k, String(v)]));
                 setErrors(prev => ({ ...prev, ...normalized }));
                 return;
             }
 
-            // Fallbacks for other common backend shapes (e.g., duplicate email)
             if (error.response?.status === 500) {
                 setErrors(prev => ({
                     ...prev,

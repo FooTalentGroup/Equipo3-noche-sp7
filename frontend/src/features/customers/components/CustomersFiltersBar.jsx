@@ -1,20 +1,15 @@
-// src/features/customers/components/CustomersFiltersBar.jsx
 import { FileUp, Plus, Printer, Search, X } from 'lucide-react';
 import { Button } from "@/shared/components/ui/button.jsx";
-import { useNavigate } from 'react-router';
 
 export function CustomersFiltersBar({
     searchQuery,
     onSearchChange,
     onRegister,
-    onPrint,
     onExport
 }) {
-    const navigate = useNavigate();
 
     return (
         <div className="flex gap-3 items-center mb-4 max-w-[1066px] h-10">
-            {/* Search Bar - Matches the width of ProductsFiltersBar */}
             <div className="relative flex-1 max-w-full">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input
@@ -35,8 +30,6 @@ export function CustomersFiltersBar({
                     </button>
                 )}
             </div>
-
-            {/* Action Buttons */}
             <Button
                 onClick={onExport}
                 className='bg-white text-neutral-950 hover:bg-gray-400 cursor-pointer shadow-sm'

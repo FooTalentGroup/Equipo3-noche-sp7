@@ -1,6 +1,5 @@
-// src/features/products/components/MovementHistoryTable.jsx
 import { ChevronLeft, ChevronRight, LoaderCircle, MoveDown, MoveUp } from 'lucide-react';
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 
 export function MovementHistoryTable({
     movements = [],
@@ -10,16 +9,13 @@ export function MovementHistoryTable({
     onPageChange,
     pageSize = 10,
 }) {
-    // If onPageChange is provided, treat component as controlled for pagination.
     const isControlled = typeof onPageChange === 'function';
     const [internalPage, setInternalPage] = useState(currentPage || 0);
 
-    // Keep internalPage in range when movements length changes
     useEffect(() => {
         const totalItems = movements?.length || 0;
         const calcTotal = totalItems === 0 ? 0 : Math.ceil(totalItems / pageSize);
         if (!isControlled) {
-            // if no pages, reset to 0; otherwise clamp to last page
             if (calcTotal === 0) setInternalPage(0);
             else if (internalPage > calcTotal - 1) setInternalPage(calcTotal - 1);
         }
@@ -104,7 +100,7 @@ export function MovementHistoryTable({
                     </thead>
 
                     <tbody className="divide-y divide-gray-200">
-                        { (movements || []).slice(page * pageSize, (page + 1) * pageSize).map((movement) => (
+                        {(movements || []).slice(page * pageSize, (page + 1) * pageSize).map((movement) => (
                             <tr key={movement.id} className="hover:bg-gray-50 transition-colors">
                                 <td className="px-6 py-4 text-[#171717] text-[14px] font-medium">
                                     {movement.productName || '—'}

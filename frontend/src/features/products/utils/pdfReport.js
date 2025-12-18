@@ -28,7 +28,6 @@ const generarReportePDF = (productos) => {
   const margenX = 15;
   let currentY = 20;
 
-  // 1. Título y Estilo del Reporte
   doc.setFontSize(24);
   doc.setFont('helvetica', 'normal');
   doc.text('Reporte de Productos', 105, currentY, { align: 'center' });
@@ -50,7 +49,6 @@ const generarReportePDF = (productos) => {
   doc.text('Detalle de Productos', margenX, currentY);
   currentY += 5;
 
-  // 2. Preparación de los datos y la tabla
   const headers = ["Producto", "Categoría", "Precio", "Stock Actual", "Stock Mínimo", "Fecha Creación"];
 
   const body = productos.map(p => [
@@ -62,7 +60,6 @@ const generarReportePDF = (productos) => {
     formatDate(p.createdAt),
   ]);
 
-  // Generación de la tabla
   autoTable(doc, {
     startY: currentY + 5,
     head: [headers],

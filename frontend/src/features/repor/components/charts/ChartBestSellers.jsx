@@ -55,7 +55,7 @@ export const options = {
     }
   },
   ticks: {
-    color: "#475569",     // slate-600
+    color: "#475569",
     font: {
       size: 14,
       weight: "500",
@@ -92,7 +92,7 @@ export default function BestSellersChart({ products = [], showPlaceholder = true
   const maxValue = Math.max(...soldQuantities, 0);
   const dynamicMax = Math.ceil(maxValue * 1.2);
 
-    const data = {
+  const data = {
     labels,
     datasets: [
       {
@@ -112,7 +112,7 @@ export default function BestSellersChart({ products = [], showPlaceholder = true
       ...options.plugins,
       tooltip: {
         ...options.plugins.tooltip,
-        enabled: !isEmpty, // Disable tooltip for empty state
+        enabled: !isEmpty,
       }
     },
     scales: {

@@ -73,22 +73,21 @@ export default function ChartStock({ dataPoints, labels, forceHourly = false, fi
     const [visibleSlots, setVisibleSlots] = useState(0);
     const [leftPercent, setLeftPercent] = useState(0);
 
-        const validDataPoints = dataPoints && dataPoints.length > 0 ? dataPoints : [];
-        const validLabels = labels && labels.length > 0 ? labels : [];
+    const validDataPoints = dataPoints && dataPoints.length > 0 ? dataPoints : [];
+    const validLabels = labels && labels.length > 0 ? labels : [];
 
-        const hourLabels = Array.from({ length: 11 }, (_, i) => `${String(8 + i).padStart(2, '0')}:00`);
+    const hourLabels = Array.from({ length: 11 }, (_, i) => `${String(8 + i).padStart(2, '0')}:00`);
 
-        const effectiveLabels = forceHourly ? hourLabels : validLabels;
-        let effectiveData = validDataPoints;
-        if (forceHourly) {
-            if (Array.isArray(dataPoints) && dataPoints.length === hourLabels.length) {
-                effectiveData = dataPoints;
-            } else {
-                effectiveData = Array(hourLabels.length).fill(0);
-            }
+    const effectiveLabels = forceHourly ? hourLabels : validLabels;
+    let effectiveData = validDataPoints;
+    if (forceHourly) {
+        if (Array.isArray(dataPoints) && dataPoints.length === hourLabels.length) {
+            effectiveData = dataPoints;
+        } else {
+            effectiveData = Array(hourLabels.length).fill(0);
         }
+    }
 
-    // slot width per label (px) - tweak if needed
     const slotWidth = 56;
 
     const minWidth = useMemo(() => {
@@ -97,9 +96,7 @@ export default function ChartStock({ dataPoints, labels, forceHourly = false, fi
     }, [validLabels.length, slotWidth, forceHourly, fitToContainer]);
 
     const numericData = (effectiveData || []).map(v => Number(v) || 0);
-    // For visualization use absolute (magnitude) so small negative stocks still render as tall bars
     const plotData = numericData.map(v => Math.abs(v));
-    // If there is no real data (all zeros or empty), show muted placeholder bars so chart is visible
     const isPlaceholder = showPlaceholder && ((!validDataPoints || validDataPoints.length === 0) || numericData.every(v => v === 0));
     const placeholderSample = [61, 55, 49, 45, 41, 38, 34, 30, 26, 22, 18];
     const placeholderData = (effectiveLabels && effectiveLabels.length <= placeholderSample.length)
@@ -121,7 +118,6 @@ export default function ChartStock({ dataPoints, labels, forceHourly = false, fi
         ],
     };
 
-    // compute dynamic y max to match expected visual scale
     const actualMax = (validDataPoints && validDataPoints.length) ? Math.max(...validDataPoints.map(v => Math.abs(Number(v) || 0))) : 0;
     const placeholderMax = placeholderData.length ? Math.max(...placeholderData) : 75;
     const maxVal = isPlaceholder ? placeholderMax : actualMax;
@@ -151,7 +147,7 @@ export default function ChartStock({ dataPoints, labels, forceHourly = false, fi
                 max: yMax,
                 ticks: {
                     stepSize: stepSize,
-                    callback: function(value) {
+                    callback: function (value) {
                         if (Number.isInteger(value)) return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                         return value;
                     }
@@ -207,10 +203,10 @@ export default function ChartStock({ dataPoints, labels, forceHourly = false, fi
         <div>
             <div style={{ overflow: 'hidden', width: '100%' }}>
                 <div ref={containerRef} style={{ overflowX: 'auto', overflowY: 'hidden', width: '100%' }}>
-                        <div style={{ minWidth: typeof minWidth === 'number' ? `${minWidth}px` : minWidth, height: 340, padding: 8 }}>
-                            <Bar key={JSON.stringify({ d: validDataPoints, l: validLabels })} options={localOptions} data={data} />
-                        </div>
+                    <div style={{ minWidth: typeof minWidth === 'number' ? `${minWidth}px` : minWidth, height: 340, padding: 8 }}>
+                        <Bar key={JSON.stringify({ d: validDataPoints, l: validLabels })} options={localOptions} data={data} />
                     </div>
+                </div>
             </div>
 
             {/* Barra de scroll inferior sincronizada */}

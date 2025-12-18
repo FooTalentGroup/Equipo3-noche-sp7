@@ -38,7 +38,6 @@ const BestSellersReport = () => {
     }
   }, [topFive]);
 
-  // Prepare export data
   useEffect(() => {
     if (content.length > 0) {
       const formatDate = (date) => {

@@ -9,7 +9,6 @@ export async function getCustomers({ page = 0, size = 10, name = "" } = {}) {
 
   const data = unwrap(res);
 
-  // Safely compute the content array. Use parentheses so the ternary applies to Array.isArray check.
   const content = data?.content ?? data?.customers ?? (Array.isArray(data) ? data : []);
 
   return {

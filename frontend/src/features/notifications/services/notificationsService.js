@@ -14,7 +14,6 @@ export async function getNotifications({ page = 0, size = 20, type, isRead } = {
 export async function getUnreadCount() {
   const res = await apiClient.get('/api/notifications/unread-count');
   const data = unwrap(res);
-  // some responses wrap the count in data, others return { data: count }
   return typeof data === 'number' ? data : data?.data ?? data;
 }
 

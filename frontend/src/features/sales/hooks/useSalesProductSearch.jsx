@@ -33,7 +33,6 @@ export const useSalesProductSearch = (debounceTime = 300) => {
         const productList = response.data?.content || [];
         setInitialProducts(productList);
       } catch (error) {
-        // Silent fail
       } finally {
         setLoading(false);
       }
@@ -68,7 +67,6 @@ export const useSalesProductSearch = (debounceTime = 300) => {
         }
         setProducts(productList);
       } catch (error) {
-        // Silent fail
         setProducts([]);
       } finally {
         setLoading(false);

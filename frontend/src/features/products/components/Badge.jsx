@@ -1,4 +1,3 @@
-// components/Badge.jsx
 import React from "react";
 import { BadgeCheck, TriangleAlert, OctagonX } from "lucide-react";
 
@@ -20,7 +19,6 @@ const Badge = ({ variant = "success", children, className, ...props }) => {
 
     let icon = null;
     const text = typeof children === 'string' ? children.trim().toLowerCase() : '';
-    // Precise icon layout and style
     const iconStyle = {
         width: '15px',
         height: '15px',

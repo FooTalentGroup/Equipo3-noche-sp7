@@ -62,7 +62,6 @@ export function useCreateProduct() {
     onSuccess: (updatedProduct) => {
       updateProduct(id, updatedProduct.data);
       updateProductLocal(updatedProduct.data);
-      // queryClient.invalidateQueries(["products"]);
       toast.success("Producto actualizado exitosamente");
       setIsSuccess(true);
       form.reset();

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Plus, Minus } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
-import { useCart } from "../hooks/useCart";
 
 export const ProductCard = ({
   id,

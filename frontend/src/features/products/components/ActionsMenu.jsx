@@ -18,12 +18,10 @@ export default function ActionsMenu({ product, handleEdit = () => { },
                 const viewportHeight = window.innerHeight;
                 const spaceBelow = viewportHeight - rect.bottom;
                 const spaceAbove = rect.top;
-                // If there's less than 250px below (approximate menu height), open upward
                 setMenuPosition(spaceBelow < 250 && spaceAbove > spaceBelow ? 'top' : 'bottom');
             }
         };
 
-        // Update position when menu might open
         const handleMouseEnter = () => updatePosition();
         if (menuButtonRef.current) {
             menuButtonRef.current.addEventListener('mouseenter', handleMouseEnter);

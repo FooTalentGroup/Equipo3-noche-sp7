@@ -1,7 +1,7 @@
 import apiClient from "@/shared/services/apiClient";
 
 export async function getSalesLastWeek() {
-  const endDate = new Date();// Today
+  const endDate = new Date();
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 7);
 

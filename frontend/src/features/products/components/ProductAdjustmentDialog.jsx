@@ -46,12 +46,10 @@ export function ProductAdjustmentDialog({ open, onOpenChange, product }) {
             setActiveTab('entrada');
             setShowSuccess(false);
 
-            // Fetch last inventory movement to prefill data
             const fetchLastMovement = async () => {
                 try {
                     const movements = await getInventoryMovementsByProduct(product.id);
                     if (movements && movements.length > 0) {
-                        // Get the most recent movement
                         const lastMovement = movements[0];
                         form.reset({
                             quantity: lastMovement.quantity?.toString() || '',
@@ -59,7 +57,6 @@ export function ProductAdjustmentDialog({ open, onOpenChange, product }) {
                             reason: '',
                         });
                     } else {
-                        // No previous movements, use empty defaults
                         form.reset({
                             quantity: '',
                             purchaseCost: '',
@@ -68,7 +65,6 @@ export function ProductAdjustmentDialog({ open, onOpenChange, product }) {
                     }
                 } catch (error) {
                     console.error('Error fetching last movement:', error);
-                    // On error, use empty defaults
                     form.reset({
                         quantity: '',
                         purchaseCost: '',
@@ -114,7 +110,6 @@ export function ProductAdjustmentDialog({ open, onOpenChange, product }) {
 
             const result = await createInventoryMovement(movementData);
 
-            // Update the product stock in context
             const newStock = activeTab === 'entrada'
                 ? currentStock + movementData.quantity
                 : Math.max(0, currentStock - movementData.quantity);
@@ -126,10 +121,9 @@ export function ProductAdjustmentDialog({ open, onOpenChange, product }) {
             });
 
             setIsSubmitting(false);
-            onOpenChange?.(false); // Close the dialog
+            onOpenChange?.(false);
             setShowSuccess(true);
 
-            // Redirect after 5 seconds
             setTimeout(() => {
                 setShowSuccess(false);
                 navigate('/inventory-movements');
@@ -138,7 +132,6 @@ export function ProductAdjustmentDialog({ open, onOpenChange, product }) {
         } catch (error) {
             console.error('❌ Error creating inventory movement:', error);
             setIsSubmitting(false);
-            // You might want to show an error toast here
         }
     };
 

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Bell } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { useLocation } from "react-router-dom";
-import {NotificationsDropdown} from '@/features/notifications/components/NotificationsDropdown';
+import { NotificationsDropdown } from '@/features/notifications/components/NotificationsDropdown';
 import { useNotifications } from '@/features/notifications/hooks/useNotifications';
 
 const PAGE_LABELS = [
@@ -26,19 +26,16 @@ export function TopBar() {
 
   const toggleNotif = async () => {
     setShowNotif(s => !s);
-    // refresh unread when opening
     if (!showNotif) {
       fetchUnread();
       try {
         await fetchList();
         if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'default') {
-          // ask for permission once, then show aggregated notification if granted
           Notification.requestPermission().then((perm) => {
             if (perm === 'granted') {
               try { showLowStockNotification(); } catch (e) { /* ignore */ }
             }
           }).catch(() => {
-            /* ignore */
           });
         } else {
           try { showLowStockNotification(); } catch (e) { /* ignore */ }
@@ -47,15 +44,11 @@ export function TopBar() {
     }
   };
 
-  // Refresh notifications on every navigation (pathname change)
   useEffect(() => {
-    // fetch unread count and list when the route changes
     try {
       fetchUnread();
-      // refresh the list too so dropdown is up-to-date after navigation
       fetchList();
     } catch (e) {
-      // ignore
     }
   }, [pathname, fetchUnread, fetchList]);
 

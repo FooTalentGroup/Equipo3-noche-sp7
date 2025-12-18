@@ -12,14 +12,14 @@ export function UnifiedImageField({ form }) {
     form.setValue("photoUrl", "");
   };
 
-  useEffect(()=>{
-    if(photoUrl){
+  useEffect(() => {
+    if (photoUrl) {
       form.setValue("imageFile", null);
     }
-    if(imageFile){
+    if (imageFile) {
       form.setValue("photoUrl", "");
     }
-  },[photoUrl, imageFile, form])
+  }, [photoUrl, imageFile, form])
 
   return (
     <div className="space-y-4">
@@ -32,7 +32,6 @@ export function UnifiedImageField({ form }) {
         disabled={!!imageFile}
       />
 
-      {/* Divider */}
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t" />

@@ -1,4 +1,3 @@
-// src/features/products/hooks/useMovementsFilter.jsx
 import { useEffect, useState } from 'react';
 
 export function useMovementsFilter(delay = 500) {
