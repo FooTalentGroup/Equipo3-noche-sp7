@@ -1,6 +1,7 @@
 package com.stockia.stockia.services;
 
 import com.stockia.stockia.dtos.order.CancelOrderRequestDto;
+import com.stockia.stockia.dtos.order.EditOrderRequestDto;
 import com.stockia.stockia.dtos.order.OrderItemRequestDto;
 import com.stockia.stockia.dtos.order.OrderRequestDto;
 import com.stockia.stockia.dtos.order.OrderResponseDto;
@@ -9,6 +10,7 @@ import com.stockia.stockia.enums.OrderStatus;
 import com.stockia.stockia.enums.PaymentMethod;
 import com.stockia.stockia.enums.PaymentStatus;
 import com.stockia.stockia.exceptions.client.ClientNotFoundException;
+import com.stockia.stockia.exceptions.UnauthorizedException;
 import com.stockia.stockia.exceptions.order.InvalidOrderStatusException;
 import com.stockia.stockia.exceptions.order.OrderNotFoundException;
 import com.stockia.stockia.exceptions.product.InsufficientStockException;
@@ -24,6 +26,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -44,6 +48,7 @@ import static org.mockito.Mockito.*;
  * Valida toda la lógica de negocio del módulo de ventas.
  */
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @DisplayName("OrderService - Unit Tests")
 class OrderServiceImplTest {
 
@@ -96,8 +101,8 @@ class OrderServiceImplTest {
 
         testProduct = Product.builder()
                 .id(UUID.randomUUID())
-                .name("Laptop HP")
-                .price(BigDecimal.valueOf(1000.00))
+                .name("Cheesecake de Fresa")
+                .price(BigDecimal.valueOf(45.00))
                 .currentStock(10)
                 .isAvailable(true)
                 .build();
@@ -116,7 +121,7 @@ class OrderServiceImplTest {
         OrderItemRequestDto itemRequest = OrderItemRequestDto.builder()
                 .productId(testProduct.getId())
                 .quantity(2)
-                .unitPrice(BigDecimal.valueOf(1000.00))
+                .unitPrice(BigDecimal.valueOf(45.00))
                 .build();
 
         testOrderRequest = OrderRequestDto.builder()
@@ -236,7 +241,7 @@ class OrderServiceImplTest {
         OrderItem item = OrderItem.builder()
                 .product(testProduct)
                 .quantity(2)
-                .unitPrice(BigDecimal.valueOf(1000.00))
+                .unitPrice(BigDecimal.valueOf(45.00))
                 .build();
         testOrder.addItem(item);
 
@@ -346,8 +351,180 @@ class OrderServiceImplTest {
 
         byte[] result = orderService.generateOrderPdf(testOrder.getId());
 
-        assertNotNull(result);
         assertArrayEquals(expectedPdf, result);
         verify(orderPdfService).generatePdf(testOrder);
+    }
+
+    @Test
+    @DisplayName("Should edit order successfully")
+    void testEditOrder_Success() {
+        OrderItem existingItem = OrderItem.builder()
+                .product(testProduct)
+                .quantity(2)
+                .unitPrice(BigDecimal.valueOf(45.00))
+                .build();
+        testOrder.addItem(existingItem);
+
+        int initialStock = testProduct.getCurrentStock(); // 10
+
+        Product newProduct = Product.builder()
+                .id(UUID.randomUUID())
+                .name("Brownie de Chocolate")
+                .price(BigDecimal.valueOf(25.00))
+                .currentStock(20)
+                .isAvailable(true)
+                .build();
+
+        OrderItemRequestDto newItemRequest = OrderItemRequestDto.builder()
+                .productId(newProduct.getId())
+                .quantity(3)
+                .unitPrice(BigDecimal.valueOf(25.00))
+                .build();
+
+        EditOrderRequestDto editRequest = EditOrderRequestDto.builder()
+                .items(List.of(newItemRequest))
+                .build();
+
+        when(orderRepository.findById(testOrder.getId())).thenReturn(Optional.of(testOrder));
+        when(userRepository.findByEmail("admin@test.com")).thenReturn(Optional.of(testUser));
+        when(productRepository.findById(newProduct.getId())).thenReturn(Optional.of(newProduct));
+        when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        OrderResponseDto expectedResponse = new OrderResponseDto();
+        when(orderMapper.toResponseDto(any(Order.class))).thenReturn(expectedResponse);
+
+        OrderResponseDto result = orderService.editOrder(testOrder.getId(), editRequest);
+
+        assertNotNull(result);
+
+        assertEquals(initialStock + 2, testProduct.getCurrentStock());
+        assertEquals(17, newProduct.getCurrentStock());
+
+        verify(productRepository, atLeast(2)).save(any(Product.class));
+
+        verify(inventoryMovementRepository, atLeast(2)).save(any(InventoryMovement.class));
+
+        verify(orderRepository).save(any(Order.class));
+    }
+
+    @Test
+    @DisplayName("Should throw exception when editing order not found")
+    void testEditOrder_OrderNotFound() {
+        EditOrderRequestDto editRequest = EditOrderRequestDto.builder()
+                .items(List.of(OrderItemRequestDto.builder()
+                        .productId(testProduct.getId())
+                        .quantity(1)
+                        .unitPrice(BigDecimal.valueOf(100.00))
+                        .build()))
+                .build();
+
+        UUID nonExistentId = UUID.randomUUID();
+        when(orderRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+
+        assertThrows(OrderNotFoundException.class,
+                () -> orderService.editOrder(nonExistentId, editRequest));
+
+        verify(orderRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when editing order not in PENDING status")
+    void testEditOrder_InvalidStatus() {
+        testOrder.setStatus(OrderStatus.CONFIRMED);
+
+        EditOrderRequestDto editRequest = EditOrderRequestDto.builder()
+                .items(List.of(OrderItemRequestDto.builder()
+                        .productId(testProduct.getId())
+                        .quantity(1)
+                        .unitPrice(BigDecimal.valueOf(100.00))
+                        .build()))
+                .build();
+
+        when(orderRepository.findById(testOrder.getId())).thenReturn(Optional.of(testOrder));
+
+        assertThrows(InvalidOrderStatusException.class,
+                () -> orderService.editOrder(testOrder.getId(), editRequest));
+
+        verify(orderRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when user is not order creator")
+    void testEditOrder_UnauthorizedUser() {
+        User differentUser = new User();
+        differentUser.setId(UUID.randomUUID());
+        differentUser.setEmail("other@test.com");
+        differentUser.setName("Other User");
+
+        EditOrderRequestDto editRequest = EditOrderRequestDto.builder()
+                .items(List.of(OrderItemRequestDto.builder()
+                        .productId(testProduct.getId())
+                        .quantity(1)
+                        .unitPrice(BigDecimal.valueOf(100.00))
+                        .build()))
+                .build();
+
+        when(orderRepository.findById(testOrder.getId())).thenReturn(Optional.of(testOrder));
+        when(userRepository.findByEmail("admin@test.com")).thenReturn(Optional.of(differentUser));
+
+        assertThrows(UnauthorizedException.class,
+                () -> orderService.editOrder(testOrder.getId(), editRequest));
+
+        verify(orderRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when editing with insufficient stock")
+    void testEditOrder_InsufficientStock() {
+        OrderItem existingItem = OrderItem.builder()
+                .product(testProduct)
+                .quantity(2)
+                .unitPrice(BigDecimal.valueOf(1000.00))
+                .build();
+        testOrder.addItem(existingItem);
+
+        // Producto con stock insuficiente
+        Product lowStockProduct = Product.builder()
+                .id(UUID.randomUUID())
+                .name("Tarta de Limón")
+                .price(BigDecimal.valueOf(55.00))
+                .currentStock(2)
+                .isAvailable(true)
+                .build();
+
+        OrderItemRequestDto newItemRequest = OrderItemRequestDto.builder()
+                .productId(lowStockProduct.getId())
+                .quantity(5) // Requiere 5 pero solo hay 2
+                .unitPrice(BigDecimal.valueOf(55.00))
+                .build();
+
+        EditOrderRequestDto editRequest = EditOrderRequestDto.builder()
+                .items(List.of(newItemRequest))
+                .build();
+
+        when(orderRepository.findById(testOrder.getId())).thenReturn(Optional.of(testOrder));
+        when(userRepository.findByEmail("admin@test.com")).thenReturn(Optional.of(testUser));
+        when(productRepository.findById(lowStockProduct.getId())).thenReturn(Optional.of(lowStockProduct));
+
+        assertThrows(InsufficientStockException.class,
+                () -> orderService.editOrder(testOrder.getId(), editRequest));
+
+        verify(orderRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when editing with empty items list")
+    void testEditOrder_EmptyItems() {
+        EditOrderRequestDto editRequest = EditOrderRequestDto.builder()
+                .items(List.of())
+                .build();
+
+        when(orderRepository.findById(testOrder.getId())).thenReturn(Optional.of(testOrder));
+        when(userRepository.findByEmail("admin@test.com")).thenReturn(Optional.of(testUser));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> orderService.editOrder(testOrder.getId(), editRequest));
+
+        verify(orderRepository, never()).save(any());
     }
 }

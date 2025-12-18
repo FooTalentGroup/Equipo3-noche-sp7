@@ -104,4 +104,17 @@ public class SecurityResponses {
   @ForbiddenAdminOrManager
   public @interface RequiresAdminOrManager {
   }
+
+  /**
+   * Combinación de respuestas de seguridad para endpoints que requieren ADMIN,
+   * MANAGER o EMPLOYEE.
+   * Aplica automáticamente las respuestas 401 (No autorizado) y 403 (Acceso
+   * denegado).
+   */
+  @Target(ElementType.ANNOTATION_TYPE)
+  @Retention(RetentionPolicy.RUNTIME)
+  @Unauthorized
+  @ForbiddenAdminOrManager
+  public @interface RequiresAdminOrManagerOrEmployee {
+  }
 }

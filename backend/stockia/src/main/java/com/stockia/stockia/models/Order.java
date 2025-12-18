@@ -303,4 +303,14 @@ public class Order {
     public boolean canBeDelivered() {
         return this.status == OrderStatus.CONFIRMED;
     }
+
+    /**
+     * Verifica si la orden puede ser editada.
+     * Solo se pueden editar órdenes en estado PENDING.
+     * 
+     * @return true si puede ser editada
+     */
+    public boolean canBeEdited() {
+        return this.status == OrderStatus.PENDING;
+    }
 }

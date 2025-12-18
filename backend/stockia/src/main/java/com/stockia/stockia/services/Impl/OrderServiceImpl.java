@@ -1,6 +1,7 @@
 package com.stockia.stockia.services.Impl;
 
 import com.stockia.stockia.dtos.order.CancelOrderRequestDto;
+import com.stockia.stockia.dtos.order.EditOrderRequestDto;
 import com.stockia.stockia.dtos.order.OrderItemRequestDto;
 import com.stockia.stockia.dtos.order.OrderRequestDto;
 import com.stockia.stockia.dtos.order.OrderResponseDto;
@@ -278,6 +279,75 @@ public class OrderServiceImpl implements OrderService {
         Order savedOrder = orderRepository.save(order);
 
         log.info("Order confirmed successfully: {}", order.getOrderNumber());
+        return orderMapper.toResponseDto(savedOrder);
+    }
+
+    /**
+     * Edita una orden en estado PENDING.
+     * Solo el usuario que creó la orden puede editarla.
+     * Restaura el stock de los items anteriores y aplica los nuevos items.
+     */
+    @Override
+    @Transactional
+    public OrderResponseDto editOrder(UUID id, EditOrderRequestDto dto) {
+        log.info("Editing order: {}", id);
+
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new OrderNotFoundException(id));
+
+        if (!order.canBeEdited()) {
+            throw new InvalidOrderStatusException(order.getStatus().name(), "editar");
+        }
+
+        User authenticatedUser = getAuthenticatedUser();
+        if (!order.getUser().getId().equals(authenticatedUser.getId())) {
+            throw new UnauthorizedException(
+                    "No tiene permisos para editar esta orden. Solo el usuario que la creó puede editarla.");
+        }
+
+        if (dto.getItems() == null || dto.getItems().isEmpty()) {
+            throw new IllegalArgumentException("La orden debe contener al menos un producto");
+        }
+
+        // Restaurar stock de items anteriores
+        for (OrderItem item : order.getItems()) {
+            Product product = item.getProduct();
+            int newStock = product.getCurrentStock() + item.getQuantity();
+            product.setCurrentStock(newStock);
+            productRepository.save(product);
+
+            InventoryMovement movement = InventoryMovement.builder()
+                    .product(product)
+                    .movementType(MovementType.IN)
+                    .quantity(item.getQuantity())
+                    .newStock(newStock)
+                    .reason("Edición de orden - Reversión: " + order.getOrderNumber())
+                    .user(authenticatedUser)
+                    .build();
+            inventoryMovementRepository.save(movement);
+
+            log.info("Stock restored for product: {} ({} units). New stock: {}",
+                    product.getName(), item.getQuantity(), newStock);
+        }
+
+        // Limpiar items anteriores
+        order.getItems().clear();
+
+        // Procesar nuevos items
+        for (OrderItemRequestDto itemDto : dto.getItems()) {
+            processOrderItem(order, itemDto, authenticatedUser);
+        }
+
+        // Recalcular totales
+        order.calculateTotals();
+
+        if (order.getDiscountAmount().compareTo(order.getSubtotal()) > 0) {
+            throw new IllegalArgumentException("El descuento no puede exceder el subtotal de la orden");
+        }
+
+        Order savedOrder = orderRepository.save(order);
+        log.info("Order edited successfully: {}", order.getOrderNumber());
+
         return orderMapper.toResponseDto(savedOrder);
     }
 
