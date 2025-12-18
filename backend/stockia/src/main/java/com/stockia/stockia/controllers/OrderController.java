@@ -2,6 +2,7 @@ package com.stockia.stockia.controllers;
 
 import com.stockia.stockia.documentation.order.*;
 import com.stockia.stockia.dtos.order.CancelOrderRequestDto;
+import com.stockia.stockia.dtos.order.EditOrderRequestDto;
 import com.stockia.stockia.dtos.order.OrderRequestDto;
 import com.stockia.stockia.dtos.order.OrderResponseDto;
 import com.stockia.stockia.dtos.order.OrderSearchRequestDto;
@@ -36,6 +37,7 @@ import static com.stockia.stockia.security.constants.SecurityConstants.Roles.*;
  * - GET [/api/orders] → Listar todas las órdenes
  * - GET [/api/orders/status/{status}] → Filtrar órdenes por estado
  * - PATCH [/api/orders/{id}/confirm] → Confirmar orden
+ * - PUT [/api/orders/{id}] → Editar orden (solo PENDING y creador)
  * - PATCH [/api/orders/{id}/cancel] → Cancelar orden
  * - PATCH [/api/orders/{id}/deliver] → Marcar como entregada
  * - GET [/api/orders/{id}/pdf] → Generar comprobante PDF
@@ -146,6 +148,25 @@ public class OrderController {
         log.info("PATCH /api/orders/{}/confirm - Confirming order", id);
         OrderResponseDto order = orderService.confirmOrder(id);
         return ResponseEntity.ok(ApiResult.success("Orden confirmada exitosamente", order));
+    }
+
+    /**
+     * Edita una orden en estado PENDING.
+     * Solo el usuario que creó la orden puede editarla.
+     * 
+     * @param id  ID de la orden a editar
+     * @param dto Datos actualizados de los items
+     * @return Orden editada
+     */
+    @PutMapping("/{id}")
+    @EditOrderDoc
+    @PreAuthorize(ADMIN_OR_MANAGER)
+    public ResponseEntity<ApiResult<OrderResponseDto>> editOrder(
+            @PathVariable UUID id,
+            @Valid @RequestBody EditOrderRequestDto dto) {
+        log.info("PUT /api/orders/{} - Editing order", id);
+        OrderResponseDto order = orderService.editOrder(id, dto);
+        return ResponseEntity.ok(ApiResult.success("Orden editada exitosamente", order));
     }
 
     /**

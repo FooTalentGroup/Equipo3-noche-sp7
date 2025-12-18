@@ -1,6 +1,7 @@
 package com.stockia.stockia.services;
 
 import com.stockia.stockia.dtos.order.CancelOrderRequestDto;
+import com.stockia.stockia.dtos.order.EditOrderRequestDto;
 import com.stockia.stockia.dtos.order.OrderRequestDto;
 import com.stockia.stockia.dtos.order.OrderResponseDto;
 import com.stockia.stockia.dtos.order.OrderSearchRequestDto;
@@ -79,6 +80,17 @@ public interface OrderService {
      * @return DTO con la información de la orden confirmada
      */
     OrderResponseDto confirmOrder(UUID id);
+
+    /**
+     * Edita una orden en estado PENDING.
+     * Solo permite editar los items de la orden.
+     * Verifica autorización del usuario y disponibilidad de stock.
+     * 
+     * @param id  ID de la orden a editar
+     * @param dto Datos actualizados de los items
+     * @return DTO con la información de la orden actualizada
+     */
+    OrderResponseDto editOrder(UUID id, EditOrderRequestDto dto);
 
     /**
      * Cancela una orden.
