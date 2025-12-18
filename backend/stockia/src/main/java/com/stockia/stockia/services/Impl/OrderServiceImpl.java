@@ -57,7 +57,6 @@ public class OrderServiceImpl implements OrderService {
     private final ClientRepository clientRepository;
     private final UserRepository userRepository;
     private final InventoryMovementRepository inventoryMovementRepository;
-    private final InventoryMovementService inventoryMovementService;
     private final OrderMapper orderMapper;
     private final OrderPdfService orderPdfService;
     private final org.springframework.context.ApplicationEventPublisher eventPublisher;
@@ -309,7 +308,6 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalArgumentException("La orden debe contener al menos un producto");
         }
 
-        // Restaurar stock de items anteriores
         for (OrderItem item : order.getItems()) {
             Product product = item.getProduct();
             int newStock = product.getCurrentStock() + item.getQuantity();
@@ -330,15 +328,11 @@ public class OrderServiceImpl implements OrderService {
                     product.getName(), item.getQuantity(), newStock);
         }
 
-        // Limpiar items anteriores
         order.getItems().clear();
 
-        // Procesar nuevos items
         for (OrderItemRequestDto itemDto : dto.getItems()) {
             processOrderItem(order, itemDto, authenticatedUser);
         }
-
-        // Recalcular totales
         order.calculateTotals();
 
         if (order.getDiscountAmount().compareTo(order.getSubtotal()) > 0) {
@@ -397,10 +391,6 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.toResponseDto(savedOrder);
     }
 
-    /**
-     * Marca una orden como entregada.
-     * Solo se pueden marcar como entregadas órdenes en estado CONFIRMED.
-     */
     @Override
     @Transactional
     public OrderResponseDto markAsDelivered(UUID id) {
@@ -420,10 +410,6 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.toResponseDto(savedOrder);
     }
 
-    /**
-     * Genera el PDF del comprobante de venta.
-     * Delega a OrderPdfService para la generación del documento.
-     */
     @Override
     public byte[] generateOrderPdf(UUID id) {
         log.info("Generating PDF for order: {}", id);
