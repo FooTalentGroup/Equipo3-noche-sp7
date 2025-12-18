@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import UsersTable from '../components/UsersTable';
 import RegisterUserPopup from '../components/RegisterUserPopup';
-import { Plus, Search, History, ChevronLeft, ChevronRight } from 'lucide-react'; 
+import UsersHistoryModal from '../components/UsersHistoryModal';
+import { Plus, Search, History, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getUsers, deleteUser, createUser, updateUser } from '../services/usersService';
 import { ConfirmDialog } from '@/features/products/components/ConfirmDialog';
 
@@ -14,6 +15,7 @@ const UsersPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [toDeleteId, setToDeleteId] = useState(null);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -158,8 +160,8 @@ const UsersPage = () => {
         </div>
 
         <div className="flex items-center gap-6">
-          <button className="cursor-pointer flex items-center justify-center gap-2 py-2 bg-[#F5F5F5] rounded-[8px] shadow-md w-[199px]">
-            
+          <button className="cursor-pointer flex items-center justify-center gap-2 py-2 bg-[#F5F5F5] rounded-[8px] shadow-md w-[199px]" onClick={() => setIsHistoryOpen(true)}>
+
             <History className="h-4 w-4" /> 
             Historial de usuarios
           </button>
@@ -232,11 +234,17 @@ const UsersPage = () => {
       
      
       <RegisterUserPopup
-        isOpen={isRegisterOpen}
+        open={isRegisterOpen}
         onClose={closeRegister}
         onSave={handleSave}
         initialData={editingUser}
-        roleMap={roleMap}
+
+       />
+
+      <UsersHistoryModal
+        open={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        onRestore={() => fetchUsers(currentPage)}
       />
 
       <ConfirmDialog
