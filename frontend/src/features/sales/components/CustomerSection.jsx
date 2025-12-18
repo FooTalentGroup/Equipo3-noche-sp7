@@ -53,7 +53,7 @@ export function CustomerSection({ preSelectedCustomer, onCustomerSelected, onCus
         name: customerData.nombre,
         phone: customerData.telefono,
         email: customerData.email,
-        isFrequent: customerData.joined,
+        isFrequent: customerData.esFrecuente ?? customerData.joined ?? false,
       };
 
       const savedCustomer = await createCustomer(mappedData);
@@ -62,6 +62,27 @@ export function CustomerSection({ preSelectedCustomer, onCustomerSelected, onCus
 
       return savedCustomer;
     } catch (error) {
+      const detailMsg = error?.data?.details?.[0] || error?.response?.data?.details?.[0] || error?.message || String(error);
+      console.error('[CustomerSection] Error saving customer:', detailMsg);
+
+      const msgStr = String(detailMsg).toLowerCase();
+      const fieldErrors = {};
+      if (msgStr.includes('teléfono') || msgStr.includes('telefono') || msgStr.includes('phone')) {
+        fieldErrors.telefono = detailMsg;
+      }
+      if (msgStr.includes('email') || msgStr.includes('correo') || msgStr.includes('e-mail')) {
+        fieldErrors.email = detailMsg;
+      }
+      if (msgStr.includes('nombre') || msgStr.includes('name')) {
+        fieldErrors.nombre = detailMsg;
+      }
+
+      if (Object.keys(fieldErrors).length > 0) {
+        const customError = new Error(detailMsg);
+        customError.response = { data: { fieldErrors } };
+        throw customError;
+      }
+
       throw error;
     }
   };
