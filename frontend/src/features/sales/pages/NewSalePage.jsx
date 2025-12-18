@@ -91,7 +91,6 @@ const NewSalePage = () => {
   };
 
   const handleSelectProduct = (product) => {
-    console.log(product);
     addItem(product);
   };
 

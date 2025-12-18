@@ -14,7 +14,6 @@ export function useProductsFilter(initial = {}) {
   function openFilters() { setIsFiltersOpen(true); }
   function closeFilters() { setIsFiltersOpen(false); }
   function applyFilters() {
-    // currently state is already applied; placeholder for analytics or syncing to URL
   }
   function clearFilters() {
     setFilters({

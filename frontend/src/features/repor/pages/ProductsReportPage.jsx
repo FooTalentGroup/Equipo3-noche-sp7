@@ -76,12 +76,10 @@ function ProductsReport() {
         <Button
           onClick={() => {
             try {
-              // debug click
-              // eslint-disable-next-line no-console
+
               console.debug('Ver reporte clicked, setIsExportModalOpen:', !!setIsExportModalOpen);
               setIsExportModalOpen?.(true);
             } catch (e) {
-              // eslint-disable-next-line no-console
               console.error('Error al abrir modal de export:', e);
             }
           }}

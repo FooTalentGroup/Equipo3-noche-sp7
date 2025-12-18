@@ -1,4 +1,3 @@
-// src/features/customers/pages/CustomersPage.jsx
 import { useCallback, useEffect, useState } from 'react';
 import { CustomersFiltersBar } from '@/features/customers/components/CustomersFiltersBar.jsx';
 import { CustomersTable } from '@/features/customers/components/CustomersTable.jsx';
@@ -9,14 +8,6 @@ import { useCustomersFilter } from '../hooks/useCustomersFilter';
 import { ConfirmDialog } from '@/features/products/components/ConfirmDialog';
 
 const PAGE_SIZE = 10;
-
-const mapCustomer = (c) => ({
-    id: c.id,
-    nombre: c.name,
-    email: c.email,
-    telefono: c.phone,
-    esFrecuente: c.isFrequent ?? false
-});
 
 export default function CustomersPage() {
     const { searchQuery, debouncedSearch, setSearchQuery } = useCustomersFilter(500);
@@ -38,14 +29,11 @@ export default function CustomersPage() {
         try {
             const data = await getCustomers({ page, size: PAGE_SIZE, name });
 
-            // Helpful debug log — remove or guard in production if noisy
             console.debug('[CustomersPage] getCustomers response:', data);
 
-            // Some responses may be wrapped (e.g., { data: { content: [...] } }) depending on unwrap behavior.
-            // Normalize to a payload object that actually contains content/clients array.
+
             const payload = data?.data ?? data;
 
-            // Normalize several possible response shapes and compute clientStatus
             const customersArray = Array.isArray(payload?.customers)
                 ? payload.customers
                 : Array.isArray(payload?.customers?.content)
@@ -56,7 +44,6 @@ export default function CustomersPage() {
                             ? payload
                             : [];
 
-            // Map server objects to a normalized shape including clientStatus (trim + uppercase)
             const mappedAll = customersArray.map((u) => ({
                 raw: u,
                 id: u.id,
@@ -67,7 +54,6 @@ export default function CustomersPage() {
                 clientStatus: String(u.clientStatus ?? u.status ?? 'ACTIVE').trim().toUpperCase(),
             }));
 
-            // Filter out soft-deleted / inactive clients: show only ACTIVE
             const activeClients = mappedAll.filter((c) => c.clientStatus === 'ACTIVE');
 
             const mapped = activeClients.map((c) => ({
@@ -84,14 +70,13 @@ export default function CustomersPage() {
                 totalElements: payload?.totalElements ?? payload?.page?.totalElements ?? (activeClients.length ?? 0),
                 pageSize: payload?.pageSize ?? PAGE_SIZE
             });
-         } catch (err) {
+        } catch (err) {
             console.error('[CustomersPage] fetchCustomers error:', err);
-            // show empty state on error
             setCustomers([]);
-         } finally {
-             setIsLoading(false);
-         }
-     }, []);
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
         setCurrentPage(0);
@@ -131,7 +116,6 @@ export default function CustomersPage() {
                     phone: payload.telefono.trim(),
                     isFrequent: payload.esFrecuente
                 });
-                // For edits close the popup so the popup can unmount
                 closePopup();
             } else {
                 await createCustomer({
@@ -140,17 +124,13 @@ export default function CustomersPage() {
                     phone: payload.telefono.trim(),
                     isFrequent: payload.esFrecuente
                 });
-                // For creation, do NOT close the popup here — the popup will show its SuccessModal
             }
 
-            // Refresh customers after successful save
             await fetchCustomers(0, debouncedSearch);
         } catch (error) {
-            // Prefer the backend details message from error.data.details[0] when available
             const detailMsg = error?.data?.details?.[0] || error?.response?.data?.details?.[0] || error?.message || String(error);
             console.error('Error saving customer:', detailMsg);
 
-            // Map the detail message to a field-specific error using simple keyword checks
             const msgStr = String(detailMsg).toLowerCase();
             const fieldErrors = {};
             if (msgStr.includes('teléfono') || msgStr.includes('telefono') || msgStr.includes('phone')) {
@@ -169,13 +149,11 @@ export default function CustomersPage() {
                 throw customError;
             }
 
-            // No field matched — rethrow original error so the popup can show a fallback message
             throw error;
         }
     };
 
     const handleDelete = (id) => {
-        // open confirmation dialog
         setToDeleteId(id);
         setIsConfirmOpen(true);
     };
@@ -184,7 +162,6 @@ export default function CustomersPage() {
         if (!toDeleteId) return;
         try {
             await deleteCustomer(toDeleteId);
-            // refresh list after delete
             await fetchCustomers(currentPage, debouncedSearch);
         } catch (err) {
             console.error('Error deleting customer', err);

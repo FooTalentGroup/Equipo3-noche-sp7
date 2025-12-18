@@ -1,4 +1,3 @@
-// hooks/useProduct.js
 import { useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { useApiQueryFn } from "@/shared/hooks/useApi";

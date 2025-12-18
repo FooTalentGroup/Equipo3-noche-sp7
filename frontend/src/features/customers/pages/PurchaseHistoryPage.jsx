@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router';
+import { useParams, useLocation } from 'react-router';
 import { ChevronLeft, ChevronRight, FileUp, LoaderCircle } from 'lucide-react';
 import { getPurchaseHistory } from '../services/customerService';
 import { Button } from '@/shared/components/ui/button';
@@ -9,7 +9,6 @@ const PAGE_SIZE = 10;
 
 export default function PurchaseHistoryPage() {
     const { id } = useParams();
-    const navigate = useNavigate();
     const location = useLocation();
     const [purchases, setPurchases] = useState([]);
     const [customerName, setCustomerName] = useState(location.state?.customerName || 'Cliente');
@@ -128,8 +127,8 @@ export default function PurchaseHistoryPage() {
                         <tbody className="divide-y divide-gray-100">
                             {purchases.map((purchase) => {
                                 const date = new Date(purchase.orderDate);
-                                const formattedDate = date.toISOString().split('T')[0]; // YYYY-MM-DD
-                                const formattedTime = date.toLocaleTimeString('es-ES', { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: false }); // H:MM:SS
+                                const formattedDate = date.toISOString().split('T')[0];
+                                const formattedTime = date.toLocaleTimeString('es-ES', { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: false });
 
                                 return (
                                     <tr key={purchase.id} className="hover:bg-gray-50 transition-colors">

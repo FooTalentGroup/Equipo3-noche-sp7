@@ -1,6 +1,5 @@
 import ForgotPasswordPage from "../pages/ForgotPasswordPage.jsx";
 import LoginPage from "../pages/LoginPage.jsx";
-import RegisterPage from "../pages/RegisterPage.jsx";
 import { PublicRoute } from "@/infrastructure/router/PublicRoute.jsx";
 import ResetPasswordPage from "../pages/ResetPasswordPage.jsx";
 import { ResetPasswordSuccess } from "../pages/ResetPasswordSucessPage.jsx";
@@ -38,13 +37,5 @@ export const authRoutes = [
         <ResetPasswordSuccess />
       </PublicRoute>
     ),
-  },
-  {
-    path: "/register",
-    element: (
-      <PublicRoute>
-        <RegisterPage />
-      </PublicRoute>
-    ),
-  },
+  }
 ];

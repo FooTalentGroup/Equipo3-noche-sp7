@@ -28,7 +28,6 @@ export default function MovementHistoryPage() {
         pageSize: PAGE_SIZE
     });
 
-    // Fetch movements from backend
     const fetchMovements = useCallback(async (page = 0, search = '', currentFilters = filters) => {
         const token = getAuthToken();
         if (!token) return;

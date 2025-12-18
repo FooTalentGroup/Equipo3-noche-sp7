@@ -34,7 +34,7 @@ function logError(...args) {
   if (!isDev) console.error(...args);
 }
 function logDebug(...args) {
-  if (isDev) console.debug(...args); else console.log(...args);
+  if (isDev) console.debug(...args); else console.debug(...args);
 }
 
 export const connectNotificationsSocket = async (onNotification) => {
@@ -100,14 +100,11 @@ export const disconnectNotificationsSocket = () => {
       stompClient = null;
     }
   } catch (e) {
-    // ignore
   }
 };
 
-// Subscription helper for unread count
 export const subscribeUnread = (cb) => on('unread', cb);
 
-// Helpers to update unread from outside (e.g., after marking read via REST)
 export const setUnread = (value) => {
   unreadCount = Number(value) || 0;
   emit('unread', unreadCount);

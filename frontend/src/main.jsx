@@ -1,4 +1,3 @@
-// Ensure `global` exists in browser runtime for libs that expect a Node global (e.g. sockjs-client)
 if (typeof global === 'undefined') {
   window.global = window;
 }
@@ -12,7 +11,6 @@ import { queryClient } from '@/lib/query-client';
 import './index.css';
 import { Toaster } from '@/shared/components/ui/sonner.jsx';
 
-// Silence specific React DevTools suggestion in development to reduce console noise
 if (import.meta.env && import.meta.env.MODE === 'development') {
   const originalInfo = console.info.bind(console);
   console.info = (...args) => {

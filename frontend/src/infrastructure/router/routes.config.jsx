@@ -2,7 +2,6 @@ import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import App from '@/App.jsx';
 import NotFoundPage from '@/infrastructure/pages/NotFoundPage.jsx';
-import SuppliersPage from '@/features/suppliers/pages/SuppliersPage.jsx';
 import DiscountsPage from '@/features/discounts/pages/DiscountPage.jsx';
 import { productsRoutes } from '@/features/products/routes/products.routes';
 import { authRoutes } from '@/features/auth/routes/auth.routes.jsx';
@@ -30,7 +29,6 @@ const router = createBrowserRouter([
             ...inventoryRoutes,
             ...customersRoutes,
 
-            { path: 'suppliers', element: <SuppliersPage /> },
             ...salesRoutes,
             { path: 'discounts', element: <DiscountsPage /> },
             ...reportsRoutes,

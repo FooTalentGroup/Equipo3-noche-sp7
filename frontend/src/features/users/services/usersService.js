@@ -8,7 +8,6 @@ export async function getUsers({ page = 0, size = 20, name = '' } = {}) {
   const res = await apiClient.get('/api/users', { params });
   const data = unwrap(res);
 
-  // data expected shape: { content: [...], totalElements, totalPages, pageable, ... }
   const content = data?.content ?? data?.users ?? (Array.isArray(data) ? data : []);
 
      return {
@@ -44,7 +43,6 @@ export async function updateUser(id, payload, activateUser = false) {
       {
     name: payload.nombre ?? payload.name,
     email: payload.email,
-    // send password only if present
     ...(payload.password ? { password: payload.password } : {}),
     role: payload.role,
     accountStatus: payload.accountStatus ?? 'ACTIVE',

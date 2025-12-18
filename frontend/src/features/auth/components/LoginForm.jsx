@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import { Eye, EyeOff, UtensilsCrossed } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import {
   Form,
   FormField,
@@ -38,7 +38,6 @@ export function LoginForm() {
     onSuccess: (data) => {
       if (data && data.success && data.data && data.data.token) {
         setAuthToken(data.data.token);
-        console.log("Token guardado, navegando a:", from);
         window.location.href = from;
       } else {
         console.warn("No se recibió token en la respuesta:", data);

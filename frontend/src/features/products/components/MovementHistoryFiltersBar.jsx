@@ -1,4 +1,3 @@
-// src/features/products/components/MovementHistoryFiltersBar.jsx
 import { Printer, Filter, Search, X } from 'lucide-react';
 import { Button } from "@/shared/components/ui/button.jsx";
 

@@ -34,7 +34,6 @@ export function useSalesCustomerSearch(delay = 500) {
       try {
         const response = await getCustomers({ name: debouncedSearch });
 
-        // Normalize several possible response shapes (matches CustomersPage logic)
         const payload = response?.data ?? response;
 
         const customersArray = Array.isArray(payload?.customers)
@@ -57,7 +56,6 @@ export function useSalesCustomerSearch(delay = 500) {
           clientStatus: String(u.clientStatus ?? u.status ?? 'ACTIVE').trim().toUpperCase(),
         }));
 
-        // Filter only ACTIVE clients to match CustomersPage behavior
         const activeClients = mappedAll.filter((c) => c.clientStatus === 'ACTIVE');
 
         const mapped = activeClients.map((c) => ({
@@ -70,7 +68,6 @@ export function useSalesCustomerSearch(delay = 500) {
 
         setCustomers(mapped);
       } catch (error) {
-        // Silent fail but clear results
         setCustomers([]);
       } finally {
         setLoading(false);
