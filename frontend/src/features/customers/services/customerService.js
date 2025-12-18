@@ -60,3 +60,10 @@ export async function deleteCustomer(id) {
   const res = await apiClient.delete(`/api/clients/${id}`);
   return unwrap(res);
 }
+
+export async function getFinalConsumer() {
+  const res = await apiClient.get('/api/clients/final');
+  return unwrap(res);
+}
+
+

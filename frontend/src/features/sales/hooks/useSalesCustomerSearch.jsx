@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { getCustomers } from '@/features/customers/services/customerService';
+import { getCustomers,getFinalConsumer } from '@/features/customers/services/customerService';
 
+let CACHED_CONSUMIDOR_FINAL = null;
 
 export function useSalesCustomerSearch(delay = 500) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -9,6 +10,7 @@ export function useSalesCustomerSearch(delay = 500) {
   const [loading, setLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [loadingConsumidorFinal, setLoadingConsumidorFinal] = useState(false);
 
 
   useEffect(() => {
@@ -83,17 +85,46 @@ export function useSalesCustomerSearch(delay = 500) {
     setShowResults(false);
   };
 
-  const selectConsumidorFinal = () => {
-    const consumidorFinal = {
-      id: 'consumidor-final',
-      name: 'Consumidor final',
-      email: null,
-      phone: null,
-      isConsumidorFinal: true
-    };
-    setSelectedCustomer(consumidorFinal);
-    setSearchQuery('Consumidor final');
-    setShowResults(false);
+ const selectConsumidorFinal = async() => {
+    if (CACHED_CONSUMIDOR_FINAL) {
+      setSelectedCustomer(CACHED_CONSUMIDOR_FINAL);
+      setSearchQuery('Consumidor final');
+      setShowResults(false);
+      return;
+    }
+
+    setLoadingConsumidorFinal(true);
+    
+    try {
+      const response = await getFinalConsumer();
+      const consumidorFinalData = response.customer || response.client || response;
+      
+      if (!consumidorFinalData || !consumidorFinalData.id) {
+        throw new Error('No se pudo obtener el consumidor final');
+      }
+
+      const consumidorFinal = {
+        id: consumidorFinalData.id,
+        name: consumidorFinalData.name || 'Consumidor final',
+        email: consumidorFinalData.email || null,
+        phone: consumidorFinalData.phone || null,
+        isConsumidorFinal: true
+      };
+
+      CACHED_CONSUMIDOR_FINAL = consumidorFinal;
+      
+      setSelectedCustomer(consumidorFinal);
+      setSearchQuery('Consumidor final');
+      setShowResults(false);
+      
+      console.log('Consumidor Final obtenido:', consumidorFinal);
+      
+    } catch (error) {
+      console.error('Error al obtener Consumidor Final:', error);
+      alert('Error al obtener el Consumidor Final. Por favor, intenta nuevamente.');
+    } finally {
+      setLoadingConsumidorFinal(false);
+    }
   };
 
   const clearCustomer = () => {
@@ -102,6 +133,7 @@ export function useSalesCustomerSearch(delay = 500) {
     setCustomers([]);
     setShowResults(false);
   };
+
 
   return {
     searchQuery,
@@ -114,5 +146,6 @@ export function useSalesCustomerSearch(delay = 500) {
     selectCustomer,
     clearCustomer,
     selectConsumidorFinal,
+    loadingConsumidorFinal,
   };
 }
