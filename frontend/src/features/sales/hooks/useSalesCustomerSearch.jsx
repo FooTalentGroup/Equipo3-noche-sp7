@@ -21,9 +21,10 @@ export function useSalesCustomerSearch(delay = 500) {
 
   useEffect(() => {
     const fetchCustomers = async () => {
-      if (debouncedSearch.length < 2) {
+      if (!debouncedSearch || debouncedSearch.length < 2) {
         setCustomers([]);
         setShowResults(false);
+        setLoading(false);
         return;
       }
 
@@ -32,10 +33,44 @@ export function useSalesCustomerSearch(delay = 500) {
 
       try {
         const response = await getCustomers({ name: debouncedSearch });
-        const customersList = response?.customers?.content || [];
-        setCustomers(customersList);
+
+        // Normalize several possible response shapes (matches CustomersPage logic)
+        const payload = response?.data ?? response;
+
+        const customersArray = Array.isArray(payload?.customers)
+          ? payload.customers
+          : Array.isArray(payload?.customers?.content)
+            ? payload.customers.content
+            : Array.isArray(payload?.content)
+              ? payload.content
+              : Array.isArray(payload)
+                ? payload
+                : [];
+
+        const mappedAll = customersArray.map((u) => ({
+          raw: u,
+          id: u.id,
+          name: u.name ?? u.nombre ?? '',
+          email: u.email ?? u.correo ?? '',
+          phone: u.phone ?? u.telefono ?? '',
+          isFrequent: u.isFrequent ?? u.esFrecuente ?? false,
+          clientStatus: String(u.clientStatus ?? u.status ?? 'ACTIVE').trim().toUpperCase(),
+        }));
+
+        // Filter only ACTIVE clients to match CustomersPage behavior
+        const activeClients = mappedAll.filter((c) => c.clientStatus === 'ACTIVE');
+
+        const mapped = activeClients.map((c) => ({
+          id: c.id,
+          name: c.name,
+          email: c.email,
+          phone: c.phone,
+          isFrequent: c.isFrequent,
+        }));
+
+        setCustomers(mapped);
       } catch (error) {
-        // Silent fail
+        // Silent fail but clear results
         setCustomers([]);
       } finally {
         setLoading(false);
