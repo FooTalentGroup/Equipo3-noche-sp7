@@ -4,7 +4,7 @@ export function InfoBanner() {
     <div
       className="relative flex flex-col text-center px-7 py-11 shadow-sm rounded-xl text-stokia-neutral-50 bg-cover bg-center overflow-hidden"
       style={{
-        backgroundImage: "url('/public/home_banner.png')",
+        backgroundImage: "url('/home_banner.png')",
       }}
     >
       <div id="overlay" className="absolute inset-0 bg-stokia-primary-950 opacity-75" />
