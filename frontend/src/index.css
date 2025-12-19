@@ -50,14 +50,21 @@
   --color-stokia-neutral-950: var(--stokia-neutral-950);
   --color-stokia-primary-50: var(--stokia-primary-50);
   --color-stokia-primary-100: var(--stokia-primary-100);
+  --color-stokia-primary-200: var(--stokia-primary-200);
   --color-stokia-primary-800: var(--stokia-primary-800);
   --color-stokia-primary-500: var(--stokia-primary-500);
   --color-stokia-primary-600: var(--stokia-primary-600);
+  --color-stokia-primary-950: var(--stokia-primary-950);
   --color-stokia-blue-light: var(--stokia-blue-light);
   --color-stokia-green: var(--stokia-green);
+  --color-stokia-green-200: var(--stokia-green-200);
   --color-stokia-green-600: var(--stokia-green-600);
   --color-stokia-blue-light: var(--stokia-success-500);
-
+  --color-stokia-yellow-200: var(--stokia-yellow-200);
+  --color-stokia-yellow-600: var(--stokia-yellow-600);
+  --color-stokia-orange-200: var(--stokia-orange-200);
+  --color-stokia-orange-600: var(--stokia-orange-600);
+  --color-stokia-red-200: var(--stokia-red-200);
 }
 
 :root {
@@ -105,13 +112,21 @@
   --stokia-neutral-950: oklch(0.2543 0.0072 248.11);
   --stokia-primary-50: oklch(0.9755 0.0045 258.32);
   --stokia-primary-100: oklch(0.9478 0.0091 258.34);
+  --stokia-primary-200: oklch(0.8847 0.0209 254.92);
   --stokia-primary-500: oklch(0.5684 0.0732 251.13);
   --stokia-primary-600: oklch(0.483 0.0707 255.51);
+  --stokia-primary-950: oklch(0.2667 0.0293 259.08);
   --stokia-blue-light: oklch(0.87 0.025 250);
   --stokia-primary-800: oklch(0.3781 0.0495 255.54);
   --stokia-green: oklch(0.8195 0.0754 148.3);
+  --stokia-green-200: oklch(0.9009 0.0439 149.36);
   --stokia-green-600: oklch(0.532 0.109 146.77);
   --stokia-success-500: oklch(0.58 0.12 149);
+  --stokia-yellow-200: oklch(0.8888 0.0597 92.5);
+  --stokia-yellow-600: oklch(0.5697 0.0995 96.88);
+  --stokia-orange-200: oklch(0.888 0.049 69.13);
+  --stokia-orange-600: oklch(0.6063 0.141 44.88);
+  --stokia-red-200: oklch(0.8904 0.0475 18.08);
   font-family: 'Roboto Flex', system-ui, sans-serif;
 
 }
