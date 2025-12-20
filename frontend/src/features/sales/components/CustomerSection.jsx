@@ -46,7 +46,6 @@ export function CustomerSection({ preSelectedCustomer, onCustomerSelected, onCus
     if (onCustomerSelected) {
       onCustomerSelected(customer);
     }
-    setIsLocked(true);
   };
 
 
@@ -95,7 +94,6 @@ export function CustomerSection({ preSelectedCustomer, onCustomerSelected, onCus
     if (onCustomerSelected) {
       onCustomerSelected({ id: "final", name: "Consumidor Final" });
     }
-    setIsLocked(true);
   };
 
   const handleClearCustomer = () => {
@@ -106,12 +104,9 @@ export function CustomerSection({ preSelectedCustomer, onCustomerSelected, onCus
     setIsLocked(false);
   };
   const handleChangeQuery = (value) => {
-    if (!isLocked && !disableRemove) {
-      setCustomerQuery(value);
-      if (selectedCustomer && value !== selectedCustomer.name) {
-      clearCustomer();
-    }
-    }
+     if (!selectedCustomer && !disableRemove) {
+    setCustomerQuery(value);
+  }
   };
 
 
@@ -128,22 +123,23 @@ export function CustomerSection({ preSelectedCustomer, onCustomerSelected, onCus
               onClear={handleClearCustomer}
               placeholder="Buscar clientes"
               className="w-[432px] h-[36px]"
-              disableClear={isLocked || disableRemove}
+              disableClear={disableRemove}
+              disabled={selectedCustomer !== null}
             />
 
             <CustomerSearchResults
               customers={customers}
               loading={loadingCustomers}
               onSelect={handleSelectCustomer}
-              show={showCustomerResults && !selectedCustomer && !isLocked}
+              show={showCustomerResults && !selectedCustomer && !disableRemove}
             />
           </div>
 
           <div className="flex space-x-6">
             <Button
               onClick={handleConsumidorFinal}
-              className="btn-standard bg-btn-primary hover:bg-btn-primary/90 text-white disabled:text-muted-foreground disabled:bg-secondary disabled:cursor-not-allowed disabled:shadow-none"
-              disabled={selectedCustomer !== null || isLocked}
+              className="btn-standard bg-stokia-neutral-50 hover:bg-stokia-neutral-50 text-foreground disabled:text-muted-foreground disabled:bg-secondary disabled:cursor-not-allowed disabled:shadow-none"
+              disabled={selectedCustomer !== null || disableRemove}
             >
               <UserCheck className="h-4 w-4" />
               <span>Consumidor final</span>
@@ -152,7 +148,7 @@ export function CustomerSection({ preSelectedCustomer, onCustomerSelected, onCus
             <Button
               onClick={() => setShowRegisterPopup(true)}
               className="btn-standard bg-btn-primary hover:bg-btn-primary/90 text-white disabled:text-muted-foreground disabled:bg-secondary disabled:cursor-not-allowed disabled:shadow-none"
-              disabled={selectedCustomer !== null || isLocked}
+              disabled={selectedCustomer !== null || disableRemove}
             >
               <UserPlus className="h-4 w-4" />
               <span>Nuevo cliente</span>
