@@ -29,7 +29,10 @@ export function CustomerSection({ preSelectedCustomer, onCustomerSelected, onCus
       internalSelectCustomer(preSelectedCustomer);
       setCustomerQuery(preSelectedCustomer.name || '');
       setIsLocked(disableRemove);
-    }
+    }else {
+    clearCustomer();
+    setIsLocked(false);
+  }
   }, [preSelectedCustomer, disableRemove]);
 
   useEffect(() => {
@@ -105,6 +108,9 @@ export function CustomerSection({ preSelectedCustomer, onCustomerSelected, onCus
   const handleChangeQuery = (value) => {
     if (!isLocked && !disableRemove) {
       setCustomerQuery(value);
+      if (selectedCustomer && value !== selectedCustomer.name) {
+      clearCustomer();
+    }
     }
   };
 
