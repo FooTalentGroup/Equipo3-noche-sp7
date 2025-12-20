@@ -66,3 +66,8 @@ export async function getSaleTicket(id) {
     throw error;
   }
 }
+
+export async function updateSale(id, orderData) {
+  const { data } = await apiClient.put(`/api/orders/${id}`, orderData);
+  return data;
+}
