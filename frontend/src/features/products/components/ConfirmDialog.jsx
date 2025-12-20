@@ -35,7 +35,7 @@ export const ConfirmDialog = ({
           <AlertDialogTitle>{dialogTitle}</AlertDialogTitle>
           <AlertDialogDescription>{dialogDescription}</AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter className="justify-start! gap-6">
+        <AlertDialogFooter className="gap-6">
           <AlertDialogCancel onClick={onCancel}>
             {cancelTitle}
           </AlertDialogCancel>

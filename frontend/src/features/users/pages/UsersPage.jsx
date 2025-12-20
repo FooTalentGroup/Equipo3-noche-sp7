@@ -249,10 +249,10 @@ const UsersPage = () => {
 
       <ConfirmDialog
         isOpen={isConfirmOpen}
-        onClose={() => setIsConfirmOpen(false)}
-        onConfirm={handleConfirmDelete}
-        title="Confirmar Eliminación"
-        description="¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer."
+        onCancel={() => setIsConfirmOpen(false)}
+        onAccept={handleConfirmDelete}
+        dialogTitle="Confirmar eliminación"
+        dialogDescription="¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer."
       />
     </div>
   );
