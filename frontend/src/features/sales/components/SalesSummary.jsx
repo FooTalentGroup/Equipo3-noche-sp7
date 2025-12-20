@@ -6,7 +6,7 @@ import DiscountModal from "./DiscountModal";
 const CartItem = ({ item, onRemove }) => {
   const formatCurrency = (amount) => `$${amount.toFixed(2)}`;
   return (
-    <div className="flex justify-between items-start text-sm border-b border-gray-100 py-2 last:border-b-0 min-w-0">
+    <div className="flex-col justify-between items-start text-sm border-b border-gray-100 py-2 last:border-b-0 gap-2">
       <Button
         variant="ghost"
         onClick={() => onRemove(item.id)}
@@ -15,7 +15,7 @@ const CartItem = ({ item, onRemove }) => {
         <X className="h-4 w-4" />
       </Button>
       <div className="flex-1 min-w-0 pr-2 flex-shrink">
-        <span className="text-gray-800 font-medium truncate block">
+        <span className="text-gray-800 font-medium truncate">
           {item.name}
         </span>
 
@@ -25,8 +25,8 @@ const CartItem = ({ item, onRemove }) => {
         </span>
       </div>
 
-      <div className="flex items-center space-x-2 flex-shrink-0">
-        <span className="font-bold text-gray-800 min-w-[60px] text-right">
+      <div className="flex-shrink-0 ml-2">
+        <span className="font-bold text-gray-800 whitespace-nowrap">
           {formatCurrency(item.price * item.quantity)}
         </span>
       </div>
