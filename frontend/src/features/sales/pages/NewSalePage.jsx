@@ -11,6 +11,7 @@ import { useCart } from "../hooks/useCart";
 import { useParams } from "react-router";
 import { useGetOrder } from "../hooks/useGetOrder";
 import { ProductCard } from "../components/CardResult";
+import { useUpdateOrder } from "../hooks/useUpdateOrder";
 
 const NewSalePage = () => {
   const { orderId } = useParams();
@@ -21,6 +22,8 @@ const NewSalePage = () => {
   const [orderNote, setOrderNote] = useState("");
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [customerSectionKey, setCustomerSectionKey] = useState(0);
+ 
 
   const {
     data: orderResponse,
@@ -35,7 +38,10 @@ const NewSalePage = () => {
     loading: loadingProducts,
   } = useSalesProductSearch();
 
-  const { handleCreateOrder, isPending } = useOrderManagement();
+  const { handleCreateOrder, isPending: isCreating } = useOrderManagement();
+  const { handleUpdateOrder, isPending: isUpdating } = useUpdateOrder();
+
+  const isPending = isCreating || isUpdating;
 
   const {
     items: cartItems,
@@ -121,7 +127,10 @@ const NewSalePage = () => {
 
     try {
       if (isEditing) {
-        return;
+        await handleUpdateOrder({ 
+          orderId: editingOrderId, 
+          orderData 
+        });
       } else {
         await handleCreateOrder(orderData);
       }
@@ -129,8 +138,10 @@ const NewSalePage = () => {
       clearCart();
       setSelectedCustomer(null);
       setOrderNote("");
+      setProductQuery("");
       setIsEditing(false);
       setEditingOrderId(null);
+      setCustomerSectionKey(prev => prev + 1);
       setTimeout(() => setShowSuccessModal(true), 200);
     } catch (error) {
       alert("Error al procesar el pedido. Por favor intente nuevamente.");
@@ -149,6 +160,7 @@ const NewSalePage = () => {
     <div className="min-h-screen w-full flex flex-col">
       <div className="bg-background rounded-2xl shadow-sm p-8 border border-border max-w-[1200px] mx-auto w-full">
         <CustomerSection
+          key={customerSectionKey}
           preSelectedCustomer={isEditing ? selectedCustomer : null}
           onCustomerChange={setSelectedCustomer}
           disableRemove={isEditing}
