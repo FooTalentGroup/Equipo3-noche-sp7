@@ -22,18 +22,6 @@ import java.util.UUID;
 
 import static com.stockia.stockia.security.constants.SecurityConstants.Roles.*;
 
-/**
- * Controlador REST para la gestión de productos.
- *
- * Endpoints disponibles:
- * - DELETE [/api/products/{id}] → Eliminar producto (soft delete)
- * - DELETE [/api/products/{id}/permanent] → Eliminar producto permanentemente
- * - GET [/api/products/{id}] → Obtener producto por ID
- * - GET [/api/products] → Listar todos los productos con paginación (filtros: deleted, includeInactive, lowStock, q, categoryId)
- * - PATCH [/api/products/{id}/restore] → Restaurar producto eliminado
- * - POST [/api/products] → Registrar nuevo producto
- * - PUT [/api/products/{id}] → Actualizar producto existente
- */
 @ProductControllerTag
 @RestController
 @RequestMapping("/api/products")

@@ -5,13 +5,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
-/**
- * DTO para parámetros del reporte de costos de productos.
- *
- * @param year         Año a consultar (requerido)
- * @param categoryName Nombre de la categoría para filtrar (opcional)
- * @param productName  Nombre del producto para filtrar (opcional)
- */
 @Schema(description = "Parámetros para el reporte de costos de productos")
 public record ProductCostReportRequestDto(
 

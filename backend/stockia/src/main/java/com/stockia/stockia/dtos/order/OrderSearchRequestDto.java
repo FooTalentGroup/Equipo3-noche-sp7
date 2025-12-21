@@ -7,17 +7,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
 
-/**
- * DTO para los parámetros de búsqueda y filtrado de órdenes de venta.
- *
- * @param orderNumber   Número de orden (búsqueda parcial, case-insensitive)
- * @param customerName  Nombre del cliente (búsqueda parcial, case-insensitive)
- * @param status        Estado de la orden
- * @param paymentMethod Método de pago utilizado
- * @param paymentStatus Estado del pago
- * @param startDate     Fecha de inicio del rango de búsqueda (inclusive)
- * @param endDate       Fecha de fin del rango de búsqueda (inclusive)
- */
 @Schema(description = "Parámetros de búsqueda y filtrado para órdenes de venta")
 public record OrderSearchRequestDto(
 

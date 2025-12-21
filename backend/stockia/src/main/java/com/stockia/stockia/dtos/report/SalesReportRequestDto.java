@@ -9,10 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-/**
- * DTO para solicitar el reporte de ventas.
- * Permite filtrar por producto y período de tiempo.
- */
 @Data
 @Builder
 @NoArgsConstructor

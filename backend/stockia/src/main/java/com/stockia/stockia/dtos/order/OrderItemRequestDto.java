@@ -10,10 +10,6 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-/**
- * DTO para solicitar la creación de un item dentro de una orden.
- * Contiene la información mínima necesaria para agregar un producto a la venta.
- */
 @Data
 @Builder
 @NoArgsConstructor

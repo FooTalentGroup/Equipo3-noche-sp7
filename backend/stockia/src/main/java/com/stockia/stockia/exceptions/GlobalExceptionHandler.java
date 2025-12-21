@@ -1,7 +1,11 @@
 package com.stockia.stockia.exceptions;
 
+import com.stockia.stockia.exceptions.user.InvalidPasswordException;
+import com.stockia.stockia.exceptions.user.UserNotFoundException;
+import com.stockia.stockia.exceptions.user.UserProtectedException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +24,7 @@ import java.util.stream.Collectors;
 import com.stockia.stockia.exceptions.client.ClientNotFoundException;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
   @ExceptionHandler(Exception.class)
@@ -157,6 +162,26 @@ public class GlobalExceptionHandler {
     );
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
    }
+
+  @ExceptionHandler(UserProtectedException.class)
+  public ResponseEntity<ErrorResponse> handleUserProtectedException(
+          UserProtectedException ex,
+          HttpServletRequest request) {
+
+    log.warn("Operación no permitida sobre usuario protegido: {}", ex.getMessage());
+
+    ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            "USER_PROTECTED",
+            "Usuario protegido",
+            Collections.singletonList(ex.getMessage()),
+            request.getRequestURI()
+    );
+
+    return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(errorResponse);
+  }
   
     @ExceptionHandler(ClientNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleClientNotFoundException(ClientNotFoundException ex, HttpServletRequest request) {

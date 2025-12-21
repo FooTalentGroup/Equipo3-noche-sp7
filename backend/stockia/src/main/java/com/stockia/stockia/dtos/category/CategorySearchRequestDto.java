@@ -3,13 +3,6 @@ package com.stockia.stockia.dtos.category;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-/**
- * DTO para filtrar y buscar categorías de productos.
- *
- * @param name     Filtro por nombre (búsqueda parcial, case-insensitive)
- * @param isActive Filtro por estado activo/inactivo
- * @param deleted  Filtro por estado de eliminación (soft delete)
- */
 @Schema(description = "Parámetros de búsqueda y filtrado para categorías")
 public record CategorySearchRequestDto(
 

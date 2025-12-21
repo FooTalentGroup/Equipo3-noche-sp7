@@ -10,25 +10,11 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface NotificationMapper {
 
-    /**
-     * Convierte una notificación a DTO sin información de lectura.
-     *
-     * @param notification notificación a convertir
-     * @return DTO de respuesta
-     */
     @Mapping(target = "isRead", constant = "false")
     @Mapping(target = "readAt", ignore = true)
     @Mapping(target = "photoUrl", ignore = true)
     NotificationResponseDto toResponseDto(Notification notification);
 
-    /**
-     * Convierte una notificación a DTO con información de lectura del usuario.
-     *
-     * @param notification notificación a convertir
-     * @param readRecord   registro de lectura del usuario (puede ser null)
-     * @param photoUrl     Imagen del recurso
-     * @return DTO de respuesta con estado de lectura
-     */
     @Mapping(target = "id", source = "notification.id")
     @Mapping(target = "title",
             expression = "java(com.stockia.stockia.utils.NotificationMessageUtils.extractTitle(notification.getMessage()))")

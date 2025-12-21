@@ -22,21 +22,6 @@ import java.util.UUID;
 
 import static com.stockia.stockia.security.constants.SecurityConstants.Roles.*;
 
-/**
- * Controlador REST para la gestión de categorías de productos.
- *
- * Endpoints disponibles:
- * 
- * - DELETE [/api/categories/{id}] → Eliminar categoría (soft delete)
- * - DELETE [/api/categories/{id}/permanent] → Eliminar categoría permanentemente
- * - GET [/api/categories] → Buscar y listar categorías con filtros (nombre, isActive, deleted)
- * - PATCH [/api/categories/{id}/restore] → Restaurar categoría eliminada
- * - PATCH [/api/categories/{id}/deactivate] → Desactivar categoría
- * - PATCH [/api/categories/{id}/activate] → Activar categoría
- * - POST [/api/categories] → Crear nueva categoría
- * - PUT [/api/categories/{id}] → Actualizar categoría
- *
- */
 @CategoryControllerTag
 @RestController
 @RequestMapping("/api/categories")
@@ -45,12 +30,6 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
-    /**
-     * Crea una nueva categoría.
-     *
-     * @param dto Datos de la categoría a crear
-     * @return ResponseEntity con la categoría creada (201)
-     */
     @PostMapping
     @CreateCategoryDoc
     @PreAuthorize(ADMIN_OR_MANAGER)
@@ -64,15 +43,6 @@ public class CategoryController {
                 .body(ApiResult.success("Categoría creada exitosamente", category));
     }
 
-    /**
-     * Busca y lista categorías con filtros opcionales.
-     * Soporta filtrado por nombre, estado activo y estado de eliminación.
-     * Soporta paginación y ordenamiento.
-     *
-     * @param params Parámetros de búsqueda (nombre, isActive, deleted)
-     * @param pageable Configuración de paginación y ordenamiento
-     * @return ResponseEntity con página de categorías (200)
-     */
     @GetMapping
     @GetAllCategoriesDoc
     @PreAuthorize(ADMIN_OR_MANAGER)
@@ -87,14 +57,6 @@ public class CategoryController {
         );
     }
 
-    /**
-     * Actualiza una categoría existente (actualización parcial).
-     * Solo se actualizan los campos proporcionados.
-     *
-     * @param id ID de la categoría a actualizar
-     * @param dto Nuevos datos de la categoría (todos los campos son opcionales)
-     * @return ResponseEntity con la categoría actualizada (200)
-     */
     @PutMapping("/{id}")
     @UpdateCategoryDoc
     @PreAuthorize(ADMIN_ONLY)
@@ -109,12 +71,6 @@ public class CategoryController {
         );
     }
 
-    /**
-     * Elimina una categoría (soft delete).
-     *
-     * @param id ID de la categoría a eliminar
-     * @return ResponseEntity con mensaje de éxito (200)
-     */
     @DeleteMapping("/{id}")
     @DeleteCategoryDoc
     @PreAuthorize(ADMIN_ONLY)
@@ -128,12 +84,6 @@ public class CategoryController {
         );
     }
 
-    /**
-     * Restaura una categoría eliminada.
-     *
-     * @param id ID de la categoría a restaurar
-     * @return ResponseEntity con la categoría restaurada (200)
-     */
     @PatchMapping("/{id}/restore")
     @RestoreCategoryDoc
     @PreAuthorize(ADMIN_ONLY)
@@ -147,12 +97,6 @@ public class CategoryController {
         );
     }
 
-    /**
-     * Elimina permanentemente una categoría.
-     *
-     * @param id ID de la categoría a eliminar permanentemente
-     * @return ResponseEntity con mensaje de éxito (200)
-     */
     @DeleteMapping("/{id}/permanent")
     @PermanentDeleteCategoryDoc
     @PreAuthorize(ADMIN_ONLY)

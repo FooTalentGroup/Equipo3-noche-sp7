@@ -24,17 +24,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-/**
- * Controlador REST para gestionar notificaciones del sistema.
- * 
- * Endpoints disponibles:
- * 
- * - GET [/api/notifications] → Listar notificaciones con paginación
- * - GET [/api/notifications/unread-count] → Obtener contador de no leídas
- * - PUT [/api/notifications/{id}/read] → Marcar como leída
- * - PUT [/api/notifications/read-all] → Marcar todas como leídas
- * - DELETE [/api/notifications/{id}] → Eliminar notificación (admin)
- */
 @RestController
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
@@ -43,26 +32,6 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
-    /**
-     * Lista las notificaciones con el estado de lectura del usuario autenticado.
-     * 
-     * Permite filtrar por:
-     * - type: Tipo de notificación (LOW_STOCK, OUT_OF_STOCK, SALE_SUCCESS, ERROR)
-     * - isRead: Estado de lectura (true = leídas, false = no leídas)
-     * - referenceId: ID del producto relacionado
-     * 
-     * Ejemplos de uso:
-     * - GET /api/notifications?page=0&size=20
-     * - GET /api/notifications?isRead=false&page=0
-     * - GET /api/notifications?type=LOW_STOCK&page=0&size=10
-     *
-     * @param userDetails usuario autenticado
-     * @param type        filtro opcional por tipo de notificación
-     * @param isRead      filtro opcional por estado de lectura
-     * @param referenceId filtro opcional por ID de referencia
-     * @param pageable    configuración de paginación
-     * @return página de notificaciones
-     */
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     @GetNotificationsDoc
@@ -85,12 +54,6 @@ public class NotificationController {
         return ResponseEntity.ok(ApiResult.success(message, notifications));
     }
 
-    /**
-     * Obtiene la cantidad de notificaciones no leídas por el usuario autenticado.
-     *
-     * @param userDetails usuario autenticado
-     * @return contador de notificaciones no leídas
-     */
     @GetMapping("/unread-count")
     @PreAuthorize("isAuthenticated()")
     @GetUnreadCountDoc
@@ -103,13 +66,6 @@ public class NotificationController {
         return ResponseEntity.ok(ApiResult.success(message, count));
     }
 
-    /**
-     * Marca una notificación como leída para el usuario autenticado.
-     *
-     * @param id          ID de la notificación
-     * @param userDetails usuario autenticado
-     * @return notificación actualizada
-     */
     @PutMapping("/{id}/read")
     @PreAuthorize("isAuthenticated()")
     @MarkAsReadDoc
@@ -120,12 +76,6 @@ public class NotificationController {
         return ResponseEntity.ok(ApiResult.success("Notificación marcada como leída", notification));
     }
 
-    /**
-     * Marca todas las notificaciones como leídas para el usuario autenticado.
-     *
-     * @param userDetails usuario autenticado
-     * @return respuesta exitosa
-     */
     @PutMapping("/read-all")
     @PreAuthorize("isAuthenticated()")
     @MarkAllAsReadDoc
@@ -135,14 +85,6 @@ public class NotificationController {
         return ResponseEntity.ok(ApiResult.success("Todas las notificaciones han sido marcadas como leídas"));
     }
 
-    /**
-     * Elimina una notificación (soft delete).
-     * La eliminación afecta a todos los usuarios.
-     * Solo administradores pueden eliminar notificaciones.
-     *
-     * @param id ID de la notificación
-     * @return respuesta exitosa
-     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteNotificationDoc

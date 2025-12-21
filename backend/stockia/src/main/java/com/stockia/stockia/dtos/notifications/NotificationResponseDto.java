@@ -6,10 +6,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-/**
- * DTO de respuesta para notificaciones.
- * Incluye el estado de lectura específico del usuario que realiza la consulta.
- */
 @Schema(description = "Datos de respuesta de una notificación con estado de lectura del usuario")
 public record NotificationResponseDto(
                 @Schema(description = "ID único de la notificación", example = "123e4567-e89b-12d3-a456-426614174000") UUID id,

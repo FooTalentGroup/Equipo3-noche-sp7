@@ -27,21 +27,6 @@ import java.util.UUID;
 
 import static com.stockia.stockia.security.constants.SecurityConstants.Roles.*;
 
-/**
- * Controlador REST para la gestión de órdenes de venta.
- *
- * Endpoints disponibles:
- * 
- * - POST [/api/orders] → Crear nueva orden
- * - GET [/api/orders/{id}] → Obtener orden por ID
- * - GET [/api/orders] → Listar todas las órdenes
- * - GET [/api/orders/status/{status}] → Filtrar órdenes por estado
- * - PATCH [/api/orders/{id}/confirm] → Confirmar orden
- * - PUT [/api/orders/{id}] → Editar orden (solo PENDING y creador)
- * - PATCH [/api/orders/{id}/cancel] → Cancelar orden
- * - PATCH [/api/orders/{id}/deliver] → Marcar como entregada
- * - GET [/api/orders/{id}/pdf] → Generar comprobante PDF
- */
 @RestController
 @RequestMapping("/api/orders")
 @Tag(name = "06 - Órdenes de Venta", description = "Endpoints para la gestión de ventas y órdenes")
@@ -51,12 +36,6 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    /**
-     * Crea una nueva orden de venta.
-     * 
-     * @param dto Datos de la orden a crear
-     * @return Orden creada con estado PENDING
-     */
     @PostMapping
     @CreateOrderDoc
     @PreAuthorize(ADMIN_OR_MANAGER)
@@ -68,12 +47,6 @@ public class OrderController {
                 .body(ApiResult.success("Orden creada exitosamente", order));
     }
 
-    /**
-     * Obtiene una orden por su ID.
-     * 
-     * @param id ID de la orden
-     * @return Orden encontrada
-     */
     @GetMapping("/{id}")
     @GetOrderByIdDoc
     @PreAuthorize(ADMIN_OR_MANAGER)
@@ -83,27 +56,6 @@ public class OrderController {
         return ResponseEntity.ok(ApiResult.success("Orden encontrada", order));
     }
 
-    /**
-     * Obtiene todas las órdenes del sistema con paginación y filtros opcionales.
-     *
-     * Permite filtrar por:
-     * - orderNumber: Número de orden (búsqueda parcial)
-     * - customerName: Nombre del cliente (búsqueda parcial)
-     * - status: Estado de la orden (PENDING, CONFIRMED, DELIVERED, CANCELLED)
-     * - paymentMethod: Método de pago
-     * - paymentStatus: Estado del pago
-     * - startDate y endDate: Rango de fechas
-     *
-     * Ejemplos de uso:
-     * - GET /api/orders?page=0&size=20
-     * - GET /api/orders?status=CONFIRMED&page=0&size=10
-     * - GET /api/orders?customerName=María&page=0
-     * - GET /api/orders?startDate=2025-11-01&endDate=2025-11-30
-     *
-     * @param searchParams Parámetros de búsqueda opcionales
-     * @param pageable     Configuración de paginación y ordenamiento
-     * @return Página de órdenes que cumplen con los criterios
-     */
     @GetMapping
     @GetAllOrdersDoc
     @PreAuthorize(ADMIN_OR_MANAGER)
@@ -118,12 +70,6 @@ public class OrderController {
         return ResponseEntity.ok(ApiResult.success(message, ordersPage));
     }
 
-    /**
-     * Obtiene órdenes filtradas por estado.
-     * 
-     * @param status Estado de las órdenes
-     * @return Lista de órdenes con el estado especificado
-     */
     @GetMapping("/status/{status}")
     @GetOrdersByStatusDoc
     @PreAuthorize(ADMIN_OR_MANAGER)
@@ -135,12 +81,6 @@ public class OrderController {
         return ResponseEntity.ok(ApiResult.success(message, orders));
     }
 
-    /**
-     * Confirma una orden en estado PENDING.
-     * 
-     * @param id ID de la orden a confirmar
-     * @return Orden confirmada
-     */
     @PatchMapping("/{id}/confirm")
     @ConfirmOrderDoc
     @PreAuthorize(ADMIN_OR_MANAGER)
@@ -150,14 +90,6 @@ public class OrderController {
         return ResponseEntity.ok(ApiResult.success("Orden confirmada exitosamente", order));
     }
 
-    /**
-     * Edita una orden en estado PENDING.
-     * Solo el usuario que creó la orden puede editarla.
-     * 
-     * @param id  ID de la orden a editar
-     * @param dto Datos actualizados de los items
-     * @return Orden editada
-     */
     @PutMapping("/{id}")
     @EditOrderDoc
     @PreAuthorize(ADMIN_OR_MANAGER)
@@ -169,13 +101,6 @@ public class OrderController {
         return ResponseEntity.ok(ApiResult.success("Orden editada exitosamente", order));
     }
 
-    /**
-     * Cancela una orden y restaura el stock.
-     * 
-     * @param id  ID de la orden a cancelar
-     * @param dto Datos de cancelación (motivo)
-     * @return Orden cancelada
-     */
     @PatchMapping("/{id}/cancel")
     @CancelOrderDoc
     @PreAuthorize(ADMIN_OR_MANAGER)
@@ -187,12 +112,6 @@ public class OrderController {
         return ResponseEntity.ok(ApiResult.success("Orden cancelada exitosamente", order));
     }
 
-    /**
-     * Marca una orden como entregada.
-     * 
-     * @param id ID de la orden a marcar como entregada
-     * @return Orden marcada como entregada
-     */
     @PatchMapping("/{id}/deliver")
     @DeliverOrderDoc
     @PreAuthorize(ADMIN_OR_MANAGER)
@@ -202,12 +121,6 @@ public class OrderController {
         return ResponseEntity.ok(ApiResult.success("Orden marcada como entregada exitosamente", order));
     }
 
-    /**
-     * Genera y descarga el comprobante PDF de una orden.
-     * 
-     * @param id ID de la orden
-     * @return Archivo PDF del comprobante
-     */
     @GetMapping("/{id}/pdf")
     @GenerateOrderPdfDoc
     @PreAuthorize(ADMIN_OR_MANAGER)

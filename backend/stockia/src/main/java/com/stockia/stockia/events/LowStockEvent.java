@@ -13,23 +13,12 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 public class LowStockEvent {
-    /**
-     * ID del producto con stock bajo
-     */
+
     private final UUID productId;
 
-    /**
-     * Nombre del producto
-     */
     private final String productName;
 
-    /**
-     * Stock actual del producto
-     */
     private final Integer currentStock;
 
-    /**
-     * Stock mínimo configurado
-     */
     private final Integer minStock;
 }

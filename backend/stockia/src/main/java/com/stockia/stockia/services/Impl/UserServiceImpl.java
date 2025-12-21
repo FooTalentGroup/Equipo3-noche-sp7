@@ -7,7 +7,8 @@ import com.stockia.stockia.enums.AccountStatus;
 import com.stockia.stockia.enums.Role;
 import com.stockia.stockia.exceptions.DuplicateResourceException;
 import com.stockia.stockia.exceptions.UnauthorizedException;
-import com.stockia.stockia.exceptions.UserNotFoundException;
+import com.stockia.stockia.exceptions.user.UserNotFoundException;
+import com.stockia.stockia.exceptions.user.UserProtectedException;
 import com.stockia.stockia.mappers.UserMapper;
 import com.stockia.stockia.models.User;
 import com.stockia.stockia.repositories.UserRepository;
@@ -28,6 +29,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final AuthService authService;
+
+    private static final String ADMIN_EMAIL = "admin@stockia.com";
 
     @Override
     public Page<UserSearchResponseDto> searchUsers(UserSearchRequestDto params, Pageable pageable) {
@@ -59,6 +62,8 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
 
+        validateUserIsEditable(user);
+
         if (request.email() != null && !request.email().equals(user.getEmail())) {
             if (userRepository.existsByEmail(request.email())) {
                 throw new DuplicateResourceException("El email '" + request.email() + "' ya está registrado");
@@ -74,9 +79,20 @@ public class UserServiceImpl implements UserService {
     public void deleteById(UUID id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
+
+        validateUserIsEditable(user);
+
         user.setDeleted(true);
         user.setAccountStatus(AccountStatus.INACTIVE);
 
         userRepository.save(user);
+    }
+
+    private void validateUserIsEditable(User user) {
+        if (user.getEmail().equalsIgnoreCase(ADMIN_EMAIL)) {
+            throw new UserProtectedException(
+                    "No se puede modificar ni dar de baja al administrador del sistema"
+            );
+        }
     }
 }

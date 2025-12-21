@@ -6,14 +6,6 @@ import java.math.BigDecimal;
 
 /**
  * DTO para datos mensuales del reporte de costos.
- *
- * @param month                Número del mes (1-12)
- * @param monthName            Nombre del mes en español
- * @param unitsSold            Total de unidades vendidas en el mes
- * @param avgUnitPrice         Precio unitario promedio de venta
- * @param avgUnitCost          Costo unitario promedio de compra
- * @param totalAvgCost         Costo total promedio (unitsSold × avgUnit cost)
- * @param costVariationPercent Variación porcentual de costos vs mes anterior
  */
 @Schema(description = "Datos mensuales del reporte de costos")
 public record MonthlyCostDto(

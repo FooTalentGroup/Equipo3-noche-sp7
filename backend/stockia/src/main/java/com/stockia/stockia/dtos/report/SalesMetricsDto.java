@@ -4,11 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
 
-/**
- * DTO para las métricas principales del reporte de ventas.
- * Incluye ingreso total, cantidad de órdenes y ticket promedio,
- * junto con los porcentajes de cambio respecto al período anterior.
- */
 @Schema(description = "Métricas principales del reporte de ventas")
 public class SalesMetricsDto {
 

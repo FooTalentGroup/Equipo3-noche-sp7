@@ -26,26 +26,15 @@ import java.util.UUID;
 @EqualsAndHashCode(of = { "id" })
 public class OrderItem {
 
-    /**
-     * Identificador único del item.
-     */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    /**
-     * Orden a la que pertenece este item.
-     * Relación Many-to-One.
-     */
     @NotNull(message = "La orden es obligatoria")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    /**
-     * Producto vendido en este item.
-     * Relación Many-to-One con carga eager para obtener detalles del producto.
-     */
     @NotNull(message = "El producto es obligatorio")
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id", nullable = false)
@@ -93,7 +82,6 @@ public class OrderItem {
 
     /**
      * Calcula el total del item basándose en cantidad y precio unitario.
-     * Este método se llama automáticamente en @PrePersist y @PreUpdate.
      */
     public void calculateItemTotal() {
         if (quantity != null && unitPrice != null) {

@@ -4,6 +4,8 @@ import com.stockia.stockia.dtos.auth.*;
 import com.stockia.stockia.enums.AccountStatus;
 import com.stockia.stockia.enums.TokenPurpose;
 import com.stockia.stockia.exceptions.*;
+import com.stockia.stockia.exceptions.user.InvalidPasswordException;
+import com.stockia.stockia.exceptions.user.UserNotFoundException;
 import com.stockia.stockia.mappers.UserMapper;
 import com.stockia.stockia.models.User;
 import com.stockia.stockia.repositories.UserRepository;

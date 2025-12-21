@@ -8,10 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO para solicitar la cancelación de una orden.
- * Requiere un motivo obligatorio para registrar la razón de la cancelación.
- */
 @Data
 @Builder
 @NoArgsConstructor

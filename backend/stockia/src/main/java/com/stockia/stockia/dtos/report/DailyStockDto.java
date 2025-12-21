@@ -7,13 +7,6 @@ import java.time.LocalDate;
 
 /**
  * DTO para datos diarios del reporte de stock.
- *
- * @param date                  Fecha del día
- * @param initialStock          Stock al inicio del día
- * @param entries               Total de entradas (IN) del día
- * @param exits                 Total de salidas (OUT) del día
- * @param currentStock          Stock al final del día
- * @param stockVariationPercent Variación porcentual vs día anterior
  */
 @Schema(description = "Datos diarios del reporte de stock")
 public record DailyStockDto(

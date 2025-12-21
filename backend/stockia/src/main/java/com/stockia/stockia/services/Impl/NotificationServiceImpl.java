@@ -3,7 +3,7 @@ package com.stockia.stockia.services.Impl;
 import com.stockia.stockia.dtos.notifications.NotificationFilterDto;
 import com.stockia.stockia.dtos.notifications.NotificationResponseDto;
 import com.stockia.stockia.exceptions.notification.NotificationNotFoundException;
-import com.stockia.stockia.exceptions.UserNotFoundException;
+import com.stockia.stockia.exceptions.user.UserNotFoundException;
 import com.stockia.stockia.mappers.NotificationMapper;
 import com.stockia.stockia.models.Notification;
 import com.stockia.stockia.models.User;

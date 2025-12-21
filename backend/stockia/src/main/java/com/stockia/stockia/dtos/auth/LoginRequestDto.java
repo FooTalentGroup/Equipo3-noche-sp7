@@ -8,6 +8,10 @@ import jakarta.validation.constraints.Size;
 public record LoginRequestDto(
         @Schema(description = "Email.", example = "juan.perez@example.com")
         @NotBlank(message = "Email is required")
+        @Pattern(
+                regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",
+                message = "el email debe tener un dominio válido (ej: usuario@dominio.com)"
+        )
         String email,
 
         @Schema(description = "Contraseña del usuario", example = "Admin123@")

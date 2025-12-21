@@ -38,16 +38,6 @@ public interface InventoryMovementRepository extends JpaRepository<InventoryMove
                         @Param("endDate") LocalDateTime endDate,
                         Pageable pageable);
 
-        /**
-         * Calcula el costo unitario promedio de un producto en un mes específico.
-         * Solo considera movimientos de tipo IN (compras).
-         * 
-         * @param productId  ID del producto (puede ser null para todos)
-         * @param categoryId ID de categoría (puede ser null para todas)
-         * @param year       Año
-         * @param month      Mes (1-12)
-         * @return Costo promedio o null si no hay movimientos
-         */
         @Query("""
                         SELECT AVG(im.purchaseCost)
                         FROM InventoryMovement im
@@ -63,15 +53,6 @@ public interface InventoryMovementRepository extends JpaRepository<InventoryMove
                         @Param("year") Integer year,
                         @Param("month") Integer month);
 
-        /**
-         * Obtiene movimientos diarios agrupados por fecha y tipo.
-         * Usado para el reporte de stock.
-         * 
-         * @param productId ID del producto
-         * @param startDate Fecha de inicio
-         * @param endDate   Fecha de fin
-         * @return Lista de movimientos agrupados por día y tipo
-         */
         @Query("""
                         SELECT new com.stockia.stockia.dtos.report.DailyMovementDto(
                             CAST(im.createdAt AS LocalDate),
@@ -89,14 +70,6 @@ public interface InventoryMovementRepository extends JpaRepository<InventoryMove
                         @Param("startDate") LocalDate startDate,
                         @Param("endDate") LocalDate endDate);
 
-        /**
-         * Calcula el stock de un producto antes de una fecha específica.
-         * Suma todos los movimientos IN y resta todos los OUT antes de la fecha.
-         * 
-         * @param productId  ID del producto
-         * @param beforeDate Fecha límite (no incluida)
-         * @return Stock calculado antes de la fecha, 0 si no hay movimientos
-         */
         @Query("""
                         SELECT COALESCE(SUM(
                             CASE
