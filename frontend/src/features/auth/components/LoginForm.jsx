@@ -86,14 +86,14 @@ export function LoginForm() {
                 <FormControl>
                   <input
                     {...field}
-                    className={`
-                            w-[384px] h-[36px] text-[13px] font-normal p-2 border rounded-[8px] placeholder:text-gray-400 placeholder:text-xs
-                            focus:outline-none 
-                    ${fieldState.invalid
-                        ? "border border-red-500 "
-                        : "border border-gray-200 "
-                      }
-                  `}
+                      className={`
+                              w-96 h-9 text-[13px] font-normal p-2 border rounded-xl placeholder:text-gray-400 placeholder:text-xs
+                              focus:outline-none 
+                      ${fieldState.invalid
+                          ? "border border-red-500 "
+                          : "border border-gray-200 "
+                        }
+                    `}
                     placeholder="Introducir correo electrónico"
                   />
                 </FormControl>
@@ -124,7 +124,7 @@ export function LoginForm() {
                       type={showPassword ? "text" : "password"}
                       {...field}
                       className={`
-                          w-[384px] h-[36px] p-2 border rounded-[8px] placeholder:text-gray-400 placeholder:text-xs
+                          w-96 h-9 p-2 border rounded-xl placeholder:text-gray-400 placeholder:text-xs
                             focus:outline-none 
                     ${fieldState.invalid
                           ? "border border-red-500"
@@ -163,7 +163,7 @@ export function LoginForm() {
             type="submit"
             disabled={login.isPending}
             className={`
-              w-[384px] h-[36px] border rounded-[8px] flex items-center justify-center gap-2 text-sm font-medium
+              w-96 h-9 border rounded-xl flex items-center justify-center gap-2 text-sm font-medium
               border rounded-md transition-all
               ${login.isPending
                 ? "bg-white text-gray-500 border-gray-300 cursor-not-allowed"
