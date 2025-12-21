@@ -232,7 +232,7 @@ const NewSalePage = () => {
             <div className="flex space-x-4">
               <Button
                 onClick={() => setShowNoteModal(true)}
-                className="bg-stokia-neutral-50 text-foreground py-2 px-4 rounded-lg flex items-center space-x-2 shadow-sm text-sm min-w-[131px] h-[40px] hover:bg-stokia-neutral-50"
+                className="bg-stokia-neutral-50 text-foreground py-2 px-4 rounded-lg flex items-center space-x-2 shadow-sm text-sm min-w-[131px] h-10 hover:bg-stokia-neutral-50"
               >
                 <span>
                   {isEditing || orderNote ? "Editar nota" : "Agregar nota"}
@@ -242,7 +242,7 @@ const NewSalePage = () => {
               <Button
                 onClick={handleFinishOrder}
                 disabled={!isCheckoutEnabled || isPending}
-                className={`py-2 px-4 rounded-lg flex items-center space-x-2 shadow-sm text-sm min-w-[149px] h-[40px]
+                className={`py-2 px-4 rounded-lg flex items-center space-x-2 shadow-sm text-sm min-w-[149px] h-10
                   ${isCheckoutEnabled
                     ? "bg-btn-primary text-white hover:bg-btn-primary/80"
                     : "bg-stokia-neutral-50 text-foreground cursor-not-allowed"
