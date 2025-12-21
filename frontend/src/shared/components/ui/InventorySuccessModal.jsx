@@ -2,7 +2,7 @@ import { Check } from 'lucide-react';
 
 export function InventorySuccessModal() {
     return (
-        <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/40">
+        <div className="fixed inset-0 z-2000 flex items-center justify-center bg-black/40">
             <div className="px-44 py-56 bg-[#F4F5F7] rounded-2xl inline-flex justify-start items-center gap-2.5">
                 <div className="w-80 inline-flex flex-col justify-start items-center gap-12">
                     <div className="w-40 h-40 relative overflow-hidden flex items-center justify-center">
