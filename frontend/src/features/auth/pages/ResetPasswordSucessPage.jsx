@@ -6,7 +6,7 @@ import { AuthLayout } from "@/shared/components/layout/AuthLayout";
 export function ResetPasswordSuccess() {
   return (
     <AuthLayout>
-      <div className="w-full max-w-[432px] h-[270px] space-y-6 text-center border border-border bg-background rounded-md shadow-sm p-6">
+      <div className="w-full max-w-432 h-270 space-y-6 text-center border border-border bg-background rounded-md shadow-sm p-6">
         <div className="flex flex-col mb-6">
           <div className="w-12 h-12 bg-stokia-blue-light rounded-full flex items-center justify-center mb-2">
               <Check className="w-6 h-6" />
