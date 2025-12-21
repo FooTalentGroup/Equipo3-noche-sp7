@@ -75,7 +75,7 @@ export function MovementHistoryTable({
 
     if (isLoading) {
         return (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1086px] max-h-[673px] flex items-center justify-center">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-1086 max-h-673 flex items-center justify-center">
                 <div className="flex flex-col items-center justify-center gap-3 my-4">
                     <LoaderCircle className="h-8 w-8 text-slate-600 animate-spin" />
                     <span className="text-sm text-gray-600">Cargando movimientos...</span>
@@ -85,10 +85,10 @@ export function MovementHistoryTable({
     }
 
     return (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1086px] max-h-[700px]">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-1086 max-h-700">
             <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
-                    <thead className="text-[14px] bg-slate-200 text-[#404040] font-semibold h-[46px]">
+                    <thead className="text-[14px] bg-slate-200 text-[#404040] font-semibold h-11">
                         <tr>
                             <th className="px-6 py-3">Producto</th>
                             <th className="px-6 py-3">Entradas / Salidas</th>
