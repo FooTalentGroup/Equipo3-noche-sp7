@@ -23,5 +23,8 @@ public record UserUpdateRequestDto (
      @Schema(description = "Estado del usuario.",
              example = "ACTIVE",
              allowableValues = {"ACTIVE", "INACTIVE", "SUSPENDED", "ON_VACATION", "BLOCKED"})
-    AccountStatus accountStatus
+    AccountStatus accountStatus,
+
+    @Schema(description = "Indica si el usuario está eliminado.", example = "false")
+    Boolean deleted
 ){}
