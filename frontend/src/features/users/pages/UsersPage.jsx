@@ -120,6 +120,7 @@ const UsersPage = () => {
         nombre: u.name ?? u.nombre ?? '',
         email: u.email ?? '',
         role: roleMap[u.role] ?? (u.role ?? 'ENCARGADO'),
+        accountStatus: u.accountStatus ?? 'ACTIVE',
         __raw: {
           roleCode: u.role,
           accountStatus: u.accountStatus,
