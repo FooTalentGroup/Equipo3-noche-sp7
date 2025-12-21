@@ -62,7 +62,7 @@ public interface UserMapper {
     @Mapping(target = "role", source = "dto.role")
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "accountStatus", source = "dto.accountStatus")
-    @Mapping(target = "deleted", ignore = true)
+    @Mapping(target = "deleted", source = "dto.deleted")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     void updateUserFromDto(UserUpdateRequestDto dto, @MappingTarget User user);
