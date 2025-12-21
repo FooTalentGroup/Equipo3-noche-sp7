@@ -42,5 +42,14 @@ public class AdminInitializer implements CommandLineRunner {
             userRepository.save(admin);
             System.out.println("Existing 'admin' user role updated to ADMIN.");
         }
+
+        // Caso 3: Asegurar que el admin esté activo
+        if (admin.getAccountStatus() != AccountStatus.ACTIVE || admin.isDeleted()) {
+            admin.setAccountStatus(AccountStatus.ACTIVE);
+            admin.setDeleted(false);
+            userRepository.save(admin);
+            System.out.println("Admin user activated: accountStatus=ACTIVE, deleted=false");
+        }
     }
 }
+
