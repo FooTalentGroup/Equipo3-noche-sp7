@@ -17,39 +17,10 @@ import java.util.UUID;
 @Repository
 public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
 
-    /**
-     * Busca todos los items de una orden específica.
-     * 
-     * @param orderId ID de la orden
-     * @return Lista de items de la orden
-     */
     List<OrderItem> findByOrderId(UUID orderId);
 
-    /**
-     * Busca todos los items que contienen un producto específico.
-     * Útil para reportes y análisis de ventas por producto.
-     * 
-     * @param productId ID del producto
-     * @return Lista de items que contienen el producto
-     */
     List<OrderItem> findByProductId(UUID productId);
 
-    /**
-     * Obtiene los productos más vendidos en un rango de fechas.
-     * 
-     * Calcula la cantidad inicial mediante una subconsulta que suma todos los
-     * movimientos de inventario (IN y OUT) ocurridos antes de la fecha de inicio,
-     * y se suma al stock actual para obtener el stock que había al inicio del
-     * periodo.
-     * 
-     * Solo incluye órdenes con estado CONFIRMED o DELIVERED.
-     * Los resultados están ordenados por cantidad vendida descendente.
-     * 
-     * @param startDate Fecha y hora de inicio del periodo (inclusive)
-     * @param endDate   Fecha y hora de fin del periodo (inclusive)
-     * @param pageable  Configuración de paginación y ordenamiento
-     * @return Página con los productos más vendidos y sus estadísticas
-     */
     @Query("""
             SELECT new com.stockia.stockia.dtos.report.MostSoldProductDto(
                 p.id,
@@ -84,15 +55,6 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
             @Param("endDate") LocalDateTime endDate,
             Pageable pageable);
 
-    /**
-     * Obtiene datos mensuales de ventas para el reporte de costos.
-     * Retorna unidades vendidas y precio promedio por mes.
-     * 
-     * @param year       Año a consultar
-     * @param categoryId ID de categoría (opcional, puede ser null)
-     * @param productId  ID de producto (opcional, puede ser null)
-     * @return Lista de datos mensuales ordenados por mes
-     */
     @Query("""
             SELECT new com.stockia.stockia.dtos.report.MonthlyCostDto(
                 MONTH(o.orderDate),

@@ -10,22 +10,12 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Mapper para convertir entre entidades Order/OrderItem y sus DTOs.
- * Utiliza ProductMapper para mapear los productos dentro de los items.
- */
 @Component
 @RequiredArgsConstructor
 public class OrderMapper {
 
     private final ProductMapper productMapper;
 
-    /**
-     * Convierte una entidad OrderItem a DTO de respuesta.
-     *
-     * @param orderItem Entidad OrderItem
-     * @return DTO de respuesta del item
-     */
     public OrderItemResponseDto toItemResponseDto(OrderItem orderItem) {
         if (orderItem == null) {
             return null;
@@ -40,12 +30,6 @@ public class OrderMapper {
                 .build();
     }
 
-    /**
-     * Convierte una lista de OrderItems a lista de DTOs de respuesta.
-     *
-     * @param items Lista de entidades OrderItem
-     * @return Lista de DTOs de respuesta
-     */
     public List<OrderItemResponseDto> toItemResponseDtoList(List<OrderItem> items) {
         if (items == null) {
             return List.of();
@@ -56,13 +40,6 @@ public class OrderMapper {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Convierte una entidad Order a DTO de respuesta.
-     * Incluye todos los campos y relaciones (cliente, usuario, items, etc.).
-     *
-     * @param order Entidad Order
-     * @return DTO de respuesta de la orden
-     */
     public OrderResponseDto toResponseDto(Order order) {
         if (order == null) {
             return null;
@@ -94,12 +71,6 @@ public class OrderMapper {
                 .build();
     }
 
-    /**
-     * Convierte una lista de entidades Order a lista de DTOs de respuesta.
-     *
-     * @param orders Lista de entidades Order
-     * @return Lista de DTOs de respuesta
-     */
     public List<OrderResponseDto> toResponseDtoList(List<Order> orders) {
         if (orders == null) {
             return List.of();

@@ -13,11 +13,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * DTO para solicitar la creación de una nueva orden de venta.
- * Contiene toda la información necesaria para registrar una venta completa.
- * El usuario responsable se obtiene automáticamente del contexto de seguridad.
- */
 @Data
 @Builder
 @NoArgsConstructor

@@ -13,11 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
-/**
- * Controlador REST para reportes de ventas.
- * Proporciona endpoints para generar y consultar análisis de ventas.
- * Requiere autenticación y rol ADMIN.
- */
 @RestController
 @RequestMapping("/api/reports/sales")
 @RequiredArgsConstructor
@@ -26,14 +21,6 @@ public class SalesReportController implements SalesReportSwaggerDoc {
 
         private final SalesReportService salesReportService;
 
-        /**
-         * Genera el reporte completo de ventas para un período específico.
-         *
-         * @param startDate   Fecha de inicio del reporte (formato: yyyy-MM-dd)
-         * @param endDate     Fecha de fin del reporte (formato: yyyy-MM-dd)
-         * @param productName Nombre del producto para filtrar (opcional)
-         * @return ResponseEntity con el reporte generado
-         */
         @GetMapping
         @PreAuthorize("hasRole('ADMIN')")
         @Override

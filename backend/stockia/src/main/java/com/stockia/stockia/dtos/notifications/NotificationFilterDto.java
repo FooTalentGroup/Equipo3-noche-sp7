@@ -5,10 +5,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.UUID;
 
-/**
- * DTO para filtrar notificaciones.
- * Todos los campos son opcionales.
- */
 @Schema(description = "Criterios de filtrado para notificaciones")
 public record NotificationFilterDto(
                 @Schema(description = "Filtrar por tipo de notificación", example = "LOW_STOCK", nullable = true) NotificationType type,

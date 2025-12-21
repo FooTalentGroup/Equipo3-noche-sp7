@@ -10,11 +10,6 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-/**
- * DTO de respuesta para items de orden.
- * Incluye información completa del producto vendido junto con cantidad y
- * totales.
- */
 @Data
 @Builder
 @NoArgsConstructor

@@ -16,10 +16,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Manejador de excepciones específico para el controlador de notificaciones.
- * Se ejecuta antes que el GlobalExceptionHandler debido a @Order.
- */
 @RestControllerAdvice(assignableTypes = {
                 com.stockia.stockia.controllers.NotificationController.class
 })
@@ -27,9 +23,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class NotificationExceptionHandler {
 
-        /**
-         * Maneja errores de validación de campos anotados con @Valid.
-         */
         @ExceptionHandler(MethodArgumentNotValidException.class)
         public ResponseEntity<ErrorResponse> handleValidationExceptions(
                         MethodArgumentNotValidException ex, HttpServletRequest request) {
@@ -52,9 +45,6 @@ public class NotificationExceptionHandler {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
-        /**
-         * Maneja excepción cuando no se encuentra una notificación.
-         */
         @ExceptionHandler(NotificationNotFoundException.class)
         public ResponseEntity<ErrorResponse> handleNotificationNotFoundException(
                         NotificationNotFoundException ex, HttpServletRequest request) {
@@ -71,10 +61,6 @@ public class NotificationExceptionHandler {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
 
-        /**
-         * Maneja errores de acceso denegado (403 Forbidden).
-         * Se activa cuando un usuario intenta acceder sin los permisos necesarios.
-         */
         @ExceptionHandler(AccessDeniedException.class)
         public ResponseEntity<ErrorResponse> handleAccessDeniedException(
                         AccessDeniedException ex, HttpServletRequest request) {
@@ -92,9 +78,6 @@ public class NotificationExceptionHandler {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
         }
 
-        /**
-         * Maneja argumentos ilegales.
-         */
         @ExceptionHandler(IllegalArgumentException.class)
         public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
                         IllegalArgumentException ex, HttpServletRequest request) {
@@ -111,9 +94,6 @@ public class NotificationExceptionHandler {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
-        /**
-         * Maneja errores generales no capturados por otros handlers.
-         */
         @ExceptionHandler(Exception.class)
         public ResponseEntity<ErrorResponse> handleGlobalException(
                         Exception ex, HttpServletRequest request) {

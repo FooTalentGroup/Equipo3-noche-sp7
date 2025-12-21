@@ -18,105 +18,25 @@ import java.util.UUID;
  */
 public interface OrderService {
 
-    /**
-     * Crea una nueva orden de venta.
-     * Valida stock, bloquea inventario y crea movimientos de inventario.
-     * 
-     * @param dto Datos de la orden a crear
-     * @return DTO con la información de la orden creada
-     */
     OrderResponseDto createOrder(OrderRequestDto dto);
 
-    /**
-     * Obtiene una orden por su ID.
-     * 
-     * @param id ID de la orden
-     * @return DTO con la información de la orden
-     */
     OrderResponseDto getOrderById(UUID id);
 
-    /**
-     * Obtiene una orden por su número de orden.
-     * 
-     * @param orderNumber Número de orden
-     * @return DTO con la información de la orden
-     */
     OrderResponseDto getOrderByOrderNumber(String orderNumber);
 
-    /**
-     * Obtiene todas las órdenes del sistema.
-     * Ordenadas por fecha descendente (más recientes primero).
-     * 
-     * @return Lista de órdenes
-     */
     List<OrderResponseDto> getAllOrders();
 
-    /**
-     * Busca órdenes con paginación y filtros múltiples.
-     *
-     * Permite filtrar por número de orden, nombre de cliente, estado,
-     * método de pago, estado de pago y rango de fechas.
-     * Todos los filtros son opcionales.
-     *
-     * @param searchParams Parámetros de búsqueda y filtrado
-     * @param pageable     Configuración de paginación y ordenamiento
-     * @return Page con las órdenes que cumplen los criterios
-     */
     Page<OrderResponseDto> searchOrders(OrderSearchRequestDto searchParams, Pageable pageable);
 
-    /**
-     * Obtiene todas las órdenes con un estado específico.
-     * 
-     * @param status Estado de las órdenes a buscar
-     * @return Lista de órdenes con el estado especificado
-     */
     List<OrderResponseDto> getOrdersByStatus(OrderStatus status);
 
-    /**
-     * Confirma una orden en estado PENDING.
-     * Cambia el estado a CONFIRMED.
-     * 
-     * @param id ID de la orden a confirmar
-     * @return DTO con la información de la orden confirmada
-     */
     OrderResponseDto confirmOrder(UUID id);
 
-    /**
-     * Edita una orden en estado PENDING.
-     * Solo permite editar los items de la orden.
-     * Verifica autorización del usuario y disponibilidad de stock.
-     * 
-     * @param id  ID de la orden a editar
-     * @param dto Datos actualizados de los items
-     * @return DTO con la información de la orden actualizada
-     */
     OrderResponseDto editOrder(UUID id, EditOrderRequestDto dto);
 
-    /**
-     * Cancela una orden.
-     * Restaura el stock y crea movimientos de inventario inversos.
-     * Solo se pueden cancelar órdenes en estado PENDING o CONFIRMED.
-     * 
-     * @param id  ID de la orden a cancelar
-     * @param dto Datos de cancelación (motivo)
-     * @return DTO con la información de la orden cancelada
-     */
     OrderResponseDto cancelOrder(UUID id, CancelOrderRequestDto dto);
 
-    /**
-     * Marca una orden como entregada.
-     * Solo se pueden marcar como entregadas órdenes en estado CONFIRMED.
-     * 
-     * @param id ID de la orden a marcar como entregada
-     * @return DTO con la información de la orden entregada
-     */
     OrderResponseDto markAsDelivered(UUID id);
 
-    /**
-     * Genera el PDF del comprobante de venta.
-     * 
-     * @param id ID de la orden
-     * @return Bytes del archivo PDF generado
-     */
     byte[] generateOrderPdf(UUID id);
 }

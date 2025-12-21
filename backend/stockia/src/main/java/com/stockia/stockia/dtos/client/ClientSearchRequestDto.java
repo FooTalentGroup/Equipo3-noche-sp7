@@ -3,15 +3,6 @@ package com.stockia.stockia.dtos.client;
 import com.stockia.stockia.enums.ClientStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-/**
- * DTO para los parámetros de búsqueda y filtrado de clientes.
- *
- * @param name       Nombre del cliente (búsqueda parcial, case-insensitive)
- * @param email      Email del cliente (búsqueda exacta)
- * @param phone      Teléfono del cliente (búsqueda exacta)
- * @param isFrequent Filtrar por clientes frecuentes (true) o no frecuentes
- *                   (false), null para todos
- */
 @Schema(description = "Parámetros de búsqueda y filtrado para clientes")
 public record ClientSearchRequestDto(
 

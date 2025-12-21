@@ -10,6 +10,10 @@ public record RegisterRequestDto(
         @NotBlank(message = "el email es obligatorio")
         @Size(max = 100, message = "el email no puede superar los 100 caracteres")
         @Email(message = "el email debe tener un formato válido")
+        @Pattern(
+                regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",
+                message = "el email debe tener un dominio válido (ej: usuario@dominio.com)"
+        )
         String email,
 
         @Schema(description = "Contraseña del usuario", example = "Password123@")

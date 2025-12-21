@@ -6,13 +6,6 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
-/**
- * DTO para parámetros del reporte de stock de productos.
- *
- * @param productName Nombre del producto a consultar (requerido)
- * @param startDate   Fecha de inicio del período (requerido)
- * @param endDate     Fecha de fin del período (requerido)
- */
 @Schema(description = "Parámetros para el reporte de stock de productos")
 public record StockReportRequestDto(
 

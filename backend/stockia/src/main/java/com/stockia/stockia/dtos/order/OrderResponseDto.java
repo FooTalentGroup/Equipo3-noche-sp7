@@ -14,11 +14,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * DTO de respuesta para órdenes de venta.
- * Incluye información completa de la orden con todos sus items,
- * cliente, usuario responsable y detalles de pago.
- */
 @Data
 @Builder
 @NoArgsConstructor

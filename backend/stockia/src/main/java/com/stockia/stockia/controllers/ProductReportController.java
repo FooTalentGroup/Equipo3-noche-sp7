@@ -1,6 +1,5 @@
 package com.stockia.stockia.controllers;
 
-import com.stockia.stockia.documentation.product.ProductIdParam;
 import com.stockia.stockia.documentation.report.ProductReportSwaggerDoc.*;
 import com.stockia.stockia.dtos.report.DailyStockDto;
 import com.stockia.stockia.dtos.report.MonthlyCostDto;
@@ -21,19 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
-/**
- * Controlador REST para generación de reportes de productos.
- * 
- * Proporciona endpoints para obtener estadísticas y reportes
- * basados en las ventas y el inventario de productos.
- *
- * Endpoints disponibles:
- * - GET [/api/reports/products/most-sold] → Productos más vendidos
- * - GET [/api/reports/products/costs] → Reporte de costos mensuales
- * - GET [/api/reports/products/stock] → Reporte de stock diario
- */
 @ProductReportControllerTag
 @RestController
 @RequestMapping("/api/reports/products")

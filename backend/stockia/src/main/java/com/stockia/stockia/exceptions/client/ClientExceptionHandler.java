@@ -15,12 +15,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Manejador de excepciones específico para el módulo de clientes.
- * 
- * Tiene prioridad más alta que el GlobalExceptionHandler para proporcionar
- * mensajes de error más específicos en el contexto de clientes.
- */
 @RestControllerAdvice(assignableTypes = {
         com.stockia.stockia.controllers.ClientController.class
 })
@@ -28,12 +22,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ClientExceptionHandler {
 
-    /**
-     * Maneja ClientDuplicatedException cuando se intenta registrar un cliente
-     * con email o teléfono que ya existe.
-     * 
-     * Retorna un error 409 CONFLICT con detalles del conflicto.
-     */
     @ExceptionHandler(ClientDuplicatedException.class)
     public ResponseEntity<ErrorResponse> handleClientDuplicatedException(
             ClientDuplicatedException ex, HttpServletRequest request) {
@@ -50,11 +38,6 @@ public class ClientExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 
-    /**
-     * Maneja ClientNotFoundException cuando no se encuentra un cliente.
-     * 
-     * Retorna un error 404 NOT_FOUND con el ID del cliente que no se encontró.
-     */
     @ExceptionHandler(ClientNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleClientNotFoundException(
             ClientNotFoundException ex, HttpServletRequest request) {
@@ -91,12 +74,6 @@ public class ClientExceptionHandler {
                 .body(errorResponse);
     }
 
-    /**
-     * Maneja IllegalArgumentException en el contexto de clientes.
-     * 
-     * Proporciona mensajes de error específicos para validaciones de negocio
-     * como datos inválidos, formatos incorrectos, etc.
-     */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
             IllegalArgumentException ex, HttpServletRequest request) {
@@ -131,13 +108,6 @@ public class ClientExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-
-    /**
-     * Maneja excepciones generales en el contexto de clientes.
-     * 
-     * Este handler captura cualquier excepción no manejada específicamente,
-     * asegurando un mensaje de error consistente en el módulo de clientes.
-     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(
             Exception ex, HttpServletRequest request) {
