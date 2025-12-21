@@ -25,7 +25,7 @@ export const ConfirmDialog = ({
   description,
   onAccept,
   onConfirm,
-  onCancel = () => {},
+  onCancel = () => { },
   variant = "stokia",
   icon: Icon,
   showIcon = variant === "destructive",
@@ -40,24 +40,24 @@ export const ConfirmDialog = ({
     typeof handleOpenChange === "function"
       ? handleOpenChange
       : typeof onClose === "function"
-      ? (open) => onClose(open)
-      : () => {};
+        ? (open) => onClose(open)
+        : () => { };
 
   const acceptHandler = () => {
-    const cb = onConfirm || onAccept || (() => {});
+    const cb = onConfirm || onAccept || (() => { });
     cb();
     try {
       openChangeHandler(false);
-    } catch (e) {}
+    } catch (e) { }
   };
 
   const cancelHandler = () => {
     try {
       onCancel();
-    } catch (e) {}
+    } catch (e) { }
     try {
       openChangeHandler(false);
-    } catch (e) {}
+    } catch (e) { }
   };
 
   return (
@@ -69,8 +69,8 @@ export const ConfirmDialog = ({
             {effectiveDescription}
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter className="justify-start! gap-6">
-          <AlertDialogCancel onClick={cancelHandler}>
+        <AlertDialogFooter className="gap-6">
+          <AlertDialogCancel onClick={onCancel}>
             {cancelTitle}
           </AlertDialogCancel>
           <AlertDialogAction
