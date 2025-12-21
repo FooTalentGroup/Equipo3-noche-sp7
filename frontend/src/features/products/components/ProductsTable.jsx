@@ -42,10 +42,10 @@ export const ProductsTable = () => {
   };
 
   return (
-    <div className="h-full max-w-5xl max-h-[720px] flex flex-col shadow-lg">
-      <div className={`relative overflow-x-auto ${loading ? 'h-[400px] overflow-hidden' : ''} flex-1`}>
+    <div className="h-full max-w-5xl max-h-720 flex flex-col shadow-lg">
+      <div className={`relative overflow-x-auto ${loading ? 'h-400 overflow-hidden' : ''} flex-1`}>
         <table className="w-full text-left border-separate border-spacing-0">
-          <thead className="text-sm bg-stokia-primary-100 text-stokia-neutral-950 font-normal h-[46px] sticky top-0 z-10">
+          <thead className="text-sm bg-stokia-primary-100 text-stokia-neutral-950 font-normal h-11 sticky top-0 z-10">
             <tr className="[&_th]:px-6 [&_th]:py-3">
               <th className="rounded-tl-xl">Estado</th>
               <th>Producto</th>
