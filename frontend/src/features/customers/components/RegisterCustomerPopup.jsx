@@ -107,12 +107,17 @@ export default function RegisterCustomerPopup({ open, onClose, onSave, initialDa
     };
 
     return (
-        <div className="fixed inset-0 z-1000 flex items-center justify-center">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center">
             <div className="absolute inset-0 bg-black/40" onClick={!isSubmitting && !showSuccess ? handleClose : undefined} />
-            <div className="relative w-700 max-w-full bg-[#F4F5F7] rounded-xl shadow-lg p-10 z-10 flex flex-col min-h-500">
+            <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="register-customer-title"
+                className="relative w-[700px] max-w-full bg-[#F4F5F7] rounded-xl shadow-lg p-10 z-10 flex flex-col min-h-[500px]"
+            >
                 {!isSubmitting && !showSuccess && (
                     <form onSubmit={submit} className="flex flex-col h-full">
-                        <h3 className="text-lg font-semibold">
+                        <h3 id="register-customer-title" className="text-lg font-semibold">
                             {isEditMode ? 'Editar cliente' : 'Registrar cliente'}
                         </h3>
                         <p className="text-xs text-gray-500 mt-1">
@@ -124,10 +129,11 @@ export default function RegisterCustomerPopup({ open, onClose, onSave, initialDa
 
                         <div className="space-y-5 flex-1">
                             <div>
-                                <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                                <label htmlFor="nombre" className="text-sm font-medium text-gray-700 flex items-center gap-1">
                                     Nombre <span className="text-red-500">*</span>
                                 </label>
                                 <Input
+                                    id="nombre"
                                     className="mt-1 bg-white shadow-sm"
                                     value={form.nombre}
                                     onChange={(e) => setForm(f => ({ ...f, nombre: e.target.value }))}
@@ -136,10 +142,11 @@ export default function RegisterCustomerPopup({ open, onClose, onSave, initialDa
                             </div>
 
                             <div>
-                                <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                                <label htmlFor="telefono" className="text-sm font-medium text-gray-700 flex items-center gap-1">
                                     Número telefónico <span className="text-red-500">*</span>
                                 </label>
                                 <Input
+                                    id="telefono"
                                     className="mt-1 bg-white shadow-sm"
                                     value={form.telefono}
                                     onChange={(e) => setForm(f => ({ ...f, telefono: e.target.value }))}
@@ -148,10 +155,11 @@ export default function RegisterCustomerPopup({ open, onClose, onSave, initialDa
                             </div>
 
                             <div>
-                                <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                                <label htmlFor="email" className="text-sm font-medium text-gray-700 flex items-center gap-1">
                                     Correo electrónico <span className="text-red-500">*</span>
                                 </label>
                                 <Input
+                                    id="email"
                                     type="email"
                                     className="mt-1 bg-white shadow-sm"
                                     value={form.email}
@@ -169,17 +177,18 @@ export default function RegisterCustomerPopup({ open, onClose, onSave, initialDa
                                 </p>
                             </div>
 
-                            <label className="relative inline-flex items-center cursor-pointer">
+                            <label className="relative inline-flex items-center cursor-pointer" aria-label="Unirse a la comunidad">
                                 <input
                                     type="checkbox"
                                     className="sr-only peer"
                                     checked={form.esFrecuente}
                                     onChange={(e) => setForm(f => ({ ...f, esFrecuente: e.target.checked }))}
+                                    aria-checked={form.esFrecuente}
                                 />
-                                <div className="w-33 h-18 bg-gray-200 peer-checked:bg-[#545F66] rounded-full transition-colors duration-300" />
+                                <div className="w-[42px] h-[22px] bg-gray-200 peer-checked:bg-[#545F66] rounded-full transition-colors duration-300" />
                                 <div className="pointer-events-none absolute inset-0 flex items-center px-1">
                                     <div
-                                        className={`h-4 w-4 bg-white rounded-full shadow-lg transform transition-transform duration-300 ease-in-out ${form.esFrecuente ? 'translate-x-3' : 'translate-x-0'}`}
+                                        className={`h-4 w-4 bg-white rounded-full shadow-lg transform transition-transform duration-300 ease-in-out ${form.esFrecuente ? 'translate-x-[18px]' : 'translate-x-0'}`}
                                     />
                                 </div>
                             </label>
