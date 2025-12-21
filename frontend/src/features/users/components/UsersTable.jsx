@@ -5,7 +5,7 @@ export default function UsersTable({ users = [], onEdit, onDelete, isLoading = f
   if (isLoading) {
 
     return (
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1116px] max-h-[673px] flex items-center justify-center">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-1116 max-h-673 flex items-center justify-center">
         <div className="flex flex-col items-center justify-center gap-3 my-4">
           <div className="h-8 w-8 border-4 border-gray-300 rounded-full animate-spin" />
           <span className="text-sm text-gray-600">Cargando lista de usuarios...</span>
@@ -37,17 +37,17 @@ export default function UsersTable({ users = [], onEdit, onDelete, isLoading = f
             ) : (
               users.map((u) => (
                 <tr key={u.id} className="bg-[#F5F7FA]">
-                  <td className="px-6 py-4 font-normal text-[#202326] text-[14px] flex-1 self-stretch text-center justify-center w-[234px] h-[24px]">{u.nombre}</td>
-                  <td className="px-6 py-4 font-normal text-[#202326] text-[14px] flex-1 self-stretch text-center justify-center w-[234px] h-[24px]">{u.email}</td>
+                  <td className="px-6 py-4 font-normal text-[#202326] text-[14px] flex-1 self-stretch text-center justify-center w-[234px] h-6">{u.nombre}</td>
+                  <td className="px-6 py-4 font-normal text-[#202326] text-[14px] flex-1 self-stretch text-center justify-center w-[234px] h-6">{u.email}</td>
                   <td className="px-6 py-4 font-normal text-[#202326] text-[14px] flex-1 self-stretch text-center justify-center w-[234px] h-[24px]">
                     <div data-etiqueta={u.role} className={`inline-flex px-2.5 py-1.5 rounded-2xl items-center justify-center ${u.role === 'ADMINISTRADOR' ? 'bg-[#CBE7CF] text-[#2C4F31] text-[12px] font-normal w-full' : 'bg-[#D0DAE7] text-[#263243] text-[12px] font-normal w-full'}`}>
                       <span className="text-xs font-normal">{u.role}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-center w-[234px] h-[24px]">
+                  <td className="px-6 py-4 text-center w-[234px] h-6">
                     <div className="flex items-center justify-center gap-3">
                       <button onClick={() => onEdit?.(u)} className="w-[72.25px] min-h-6 px-2 py-[3px] bg-unofficial-outline/10 rounded-sm shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] outline-1 outline-unofficial-border-3 flex items-center justify-center gap-[6px] cursor-pointer">
-                        <Pencil className="text-[#202326] h-[14px] w-[14px]"/>
+                        <Pencil className="text-[#202326] h-3.5 w-3.5"/>
                           <span className="text-[#202326] text-sm font-medium">Editar</span>
                       </button>
                       <button onClick={() => onDelete?.(u.id)} className="w-[72.25px] min-h-6 px-2 py-[3px] bg-[#C93939] rounded-sm shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center gap-[6px] cursor-pointer">
