@@ -17,7 +17,7 @@ export function ProductsSection({
             onChange={setProductQuery}
             onClear={handleClearSearch}
             placeholder="Buscar productos por nombre o código"
-            className="w-[432px] h-[36px]"
+            className="w-432 h-9"
           />
         </div>
       </div>
