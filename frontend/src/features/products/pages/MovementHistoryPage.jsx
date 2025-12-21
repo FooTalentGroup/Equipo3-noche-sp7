@@ -43,7 +43,6 @@ export default function MovementHistoryPage() {
                 endDate: currentFilters.endDate,
             };
 
-            // Only send productId OR productName, not both
             if (productId) {
                 params.productId = productId;
             } else if (search) {
@@ -68,12 +67,10 @@ export default function MovementHistoryPage() {
         }
     }, [filters, productId]);
 
-    // Reset page when search or filters change
     useEffect(() => {
         setCurrentPage(0);
     }, [debouncedSearch, filters]);
 
-    // Fetch movements when page, search, or filters change
     useEffect(() => {
         fetchMovements(currentPage, debouncedSearch, filters);
     }, [fetchMovements, currentPage, debouncedSearch, filters]);
@@ -134,6 +131,7 @@ export default function MovementHistoryPage() {
                 isLoading={isLoading}
                 currentPage={currentPage}
                 totalPages={pagination.totalPages}
+                totalElements={pagination.totalElements}
                 onPageChange={setCurrentPage}
             />
 

@@ -6,7 +6,6 @@ import { getUnreadCount as apiGetUnreadCount } from '../services/notificationsSe
 let stompClient = null;
 let unreadCount = 0;
 
-// Simple emitter
 const listeners = new Map();
 function on(event, cb) {
   if (!listeners.has(event)) listeners.set(event, new Set());
@@ -20,7 +19,6 @@ function off(event, cb) {
 function emit(event, payload) {
   if (!listeners.has(event)) return;
   if (event === 'unread') {
-    // keep dev debug but less noisy
     try { console.debug('[notificationSocket] emit unread ->', payload); } catch (e) { /* ignore */ }
   }
   for (const cb of Array.from(listeners.get(event))) {
@@ -30,7 +28,6 @@ function emit(event, payload) {
 
 const isDev = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.MODE === 'development';
 function logError(...args) {
-  // Silence socket-related errors in development to avoid noisy logs when backend WS isn't available.
   if (!isDev) console.error(...args);
 }
 function logDebug(...args) {
@@ -43,8 +40,6 @@ export const connectNotificationsSocket = async (onNotification) => {
 
     const wsUrl = import.meta.env.VITE_WS_URL ?? '';
 
-    // In local dev (vite) the dev server does not provide the SockJS endpoints used by backend.
-    // Skip attempting a connection in common dev setups to avoid noisy 404 / WebSocket errors.
     const runningOnViteLocalhost = typeof window !== 'undefined' && window.location && window.location.hostname === 'localhost' && window.location.port === '5173';
     const noWsConfigured = !wsUrl || wsUrl === '/ws';
     if (isDev && runningOnViteLocalhost && noWsConfigured) {
@@ -53,7 +48,6 @@ export const connectNotificationsSocket = async (onNotification) => {
     }
 
     const socket = new SockJS(wsUrl);
-    // Use Stomp.over only when we have a socket; if it throws we'll catch below
     stompClient = Stomp.over(socket);
 
     const token = getAuthToken();
@@ -69,7 +63,6 @@ export const connectNotificationsSocket = async (onNotification) => {
             emit('unread', unreadCount);
             emit('message', notification);
           } catch (err) {
-            // log only in non-dev
             logError('Failed to parse notification message', err);
           }
         });

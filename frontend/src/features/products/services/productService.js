@@ -3,7 +3,7 @@ import apiClient from '@/shared/services/apiClient.js';
 export const getProducts = async (params = {}) => {
   const {
     page = 0,
-    size = 20,
+    size = 10,
     sort,
     q,
     categoryId,
@@ -66,4 +66,3 @@ export const deleteProduct = async (id) => {
   const { data } = await apiClient.delete(`/api/products/${id}`);
   return data;
 };
-

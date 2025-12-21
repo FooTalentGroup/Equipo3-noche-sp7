@@ -1,6 +1,6 @@
 const INITIAL_PAGINATION_STATE = {
   currentPage: 0,
-  pageSize: 20,
+  pageSize: 10,
   totalElements: 0,
   totalPages: 0,
   isFirst: true,
