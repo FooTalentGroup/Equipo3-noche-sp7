@@ -161,7 +161,7 @@ const UsersPage = () => {
         </div>
 
         <div className="flex items-center gap-6">
-          <button className="cursor-pointer flex items-center justify-center gap-2 py-2 bg-[#F5F5F5] rounded-[8px] shadow-md w-[199px]" onClick={() => setIsHistoryOpen(true)}>
+          <button className="cursor-pointer flex items-center justify-center gap-2 py-2 bg-[#F5F5F5] rounded-xl shadow-md w-[199px]" onClick={() => setIsHistoryOpen(true)}>
 
             <History className="h-4 w-4" /> 
             Historial de usuarios
@@ -169,7 +169,7 @@ const UsersPage = () => {
 
           <button
             onClick={openRegister}
-            className="cursor-pointer flex items-center justify-center gap-2 p-[9.5px] bg-stokia-primary-600 text-stokia-neutral-50 rounded-[8px] w-[177.25px]"
+            className="cursor-pointer flex items-center justify-center gap-2 p-[9.5px] bg-stokia-primary-600 text-stokia-neutral-50 rounded-xl w-[177.25px]"
           >
             <Plus className="h-4 w-4" />
             Registrar usuario

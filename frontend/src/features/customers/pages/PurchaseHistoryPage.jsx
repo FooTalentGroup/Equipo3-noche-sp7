@@ -87,7 +87,7 @@ export default function PurchaseHistoryPage() {
     if (isLoading) {
         return (
             <div className="p-6 w-full">
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1086px] max-h-[673px] flex items-center justify-center">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-1086 max-h-673 flex items-center justify-center">
                     <div className="flex flex-col items-center justify-center gap-3 my-4">
                         <LoaderCircle className="h-8 w-8 text-slate-600 animate-spin" />
                         <span className="text-sm text-gray-600">Cargando historial de compras...</span>
@@ -112,10 +112,10 @@ export default function PurchaseHistoryPage() {
                 </Button>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1086px]">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-1086">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
-                        <thead className="text-[14px] bg-slate-200 text-[#404040] font-semibold h-[46px]">
+                        <thead className="text-[14px] bg-slate-200 text-[#404040] font-semibold h-11">
                             <tr>
                                 <th className="px-6 py-3 text-center text-gray-700">FECHA</th>
                                 <th className="px-6 py-3 text-center text-gray-700">CLIENTE</th>

@@ -31,7 +31,7 @@ export function CustomersTable({
 
     if (isLoading) {
         return (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1086px] max-h-[673px] flex items-center justify-center">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-1086 max-h-673 flex items-center justify-center">
                 <div className="flex flex-col items-center justify-center gap-3 my-4">
                     <LoaderCircle className="h-8 w-8 text-slate-600 animate-spin" />
                     <span className="text-sm text-gray-600">Cargando lista de clientes...</span>
@@ -42,7 +42,7 @@ export function CustomersTable({
 
 
     return (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-[1086px]">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-1086">
             <div className="overflow-visible">
                 <table className="w-full text-sm">
                     <thead className="text-[14px] bg-slate-200 text-[#404040]">

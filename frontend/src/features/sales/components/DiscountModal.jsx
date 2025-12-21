@@ -79,7 +79,7 @@ const DiscountModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[1000] p-4">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-1000 p-4">
       <div className="bg-white rounded-lg shadow-2xl w-full max-w-md mx-auto p-6 relative">
         <div className="flex justify-between items-center border-b pb-3 mb-4">
           <h2 className="text-xl font-semibold text-gray-900">

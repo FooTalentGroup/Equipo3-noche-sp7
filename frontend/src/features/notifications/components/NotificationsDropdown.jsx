@@ -33,7 +33,7 @@ export function NotificationsDropdown({
     };
 
     return (
-        <div ref={rootRef} className={`w-[450px] bg-white rounded-[8px] shadow pt-2 ${className}`}>
+        <div ref={rootRef} className={`w-450 bg-white rounded-xl shadow pt-2 ${className}`}>
             <div className="flex items-center justify-between mb-4">
                 <div className="text-sm font-medium ml-2">Notificaciones</div>
                 <div className="flex items-center gap-2">
@@ -67,7 +67,7 @@ export function NotificationsDropdown({
                     </div>
                 ))}
             </div>
-            <div className="h-[24px] flex items-center justify-center ">
+            <div className="h-6 flex items-center justify-center ">
                 <button onClick={handleMarkAll} className="text-lg text-[#436086] cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                         <path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" stroke="#525252" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />

@@ -64,7 +64,7 @@ export default function UsersHistoryModal({ open, onClose, onRestore }) {
       <div className="relative max-w-full bg-white rounded-xl shadow-lg z-60">
 
         <div className="w-[1116px] rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] overflow-hidden">
-          <div className="overflow-auto w-full max-h-[460px]">
+          <div className="overflow-auto w-full max-h-460">
             <table className="w-full text-sm border-collapse table-fixed">
               <colgroup>
                 <col className="w-1/4" />
@@ -72,7 +72,7 @@ export default function UsersHistoryModal({ open, onClose, onRestore }) {
                 <col className="w-1/4" />
                 <col className="w-1/4" />
               </colgroup>
-              <thead className="text-base bg-[#EAEEF4] text-[#485056] text-center font-medium h-[46px] sticky top-0">
+              <thead className="text-base bg-[#EAEEF4] text-[#485056] text-center font-medium h-11 sticky top-0">
                 <tr>
                   <th className="w-1/4 px-6 py-3 text-center">NOMBRE</th>
                   <th className="w-1/4 px-6 py-3 text-center">CORREO ELÉCTRONICO</th>

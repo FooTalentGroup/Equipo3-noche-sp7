@@ -122,7 +122,7 @@ export function CustomerSection({ preSelectedCustomer, onCustomerSelected, onCus
               onChange={handleChangeQuery}
               onClear={handleClearCustomer}
               placeholder="Buscar clientes"
-              className="w-[432px] h-[36px]"
+              className="w-432 h-9"
               disableClear={disableRemove}
               disabled={selectedCustomer !== null}
             />

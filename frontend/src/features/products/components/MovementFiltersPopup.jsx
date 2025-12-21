@@ -37,7 +37,7 @@ export function MovementFiltersPopup({ open, onClose, filters, onApplyFilters })
     };
 
     return (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/40">
+        <div className="fixed inset-0 z-1000 flex items-center justify-center bg-black/40">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
                 <div className="flex items-center justify-between p-6 border-b">
                     <h3 className="text-lg font-semibold text-gray-900">Filtrar movimientos</h3>

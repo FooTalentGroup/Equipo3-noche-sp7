@@ -12,7 +12,7 @@ const Badge = ({ variant = "success", children, className, ...props }) => {
 
     const baseClasses = cn(
         "flex items-center justify-center",
-        "rounded-[4px]",
+        "rounded-sm",
         variants[variant],
         className
     );
@@ -32,16 +32,15 @@ const Badge = ({ variant = "success", children, className, ...props }) => {
         <span
             className={baseClasses}
             style={{
-                width: '100px',
-                height: '24px',
-                minHeight: '24px',
-                borderRadius: '4px',
-                paddingTop: '3px',
-                paddingBottom: '3px',
-                paddingLeft: '5px',
-                opacity: 1,
-                angle: '0deg'
-            }}
+                    width: '100px',
+                    height: '24px',
+                    minHeight: '24px',
+                    paddingTop: '3px',
+                    paddingBottom: '3px',
+                    paddingLeft: '5px',
+                    opacity: 1,
+                    angle: '0deg'
+                }}
             {...props}
         >
             {icon && (

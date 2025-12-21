@@ -47,7 +47,7 @@ export function ForgotPasswordForm() {
   if (isSubmitted) {
     return (
       <AuthLayout>
-        <div className="w-full max-w-[432px] h-[263px] space-y-6 text-center border border-border bg-background rounded-md shadow-sm p-6">
+        <div className="w-full max-w-432 h-263 space-y-6 text-center border border-border bg-background rounded-md shadow-sm p-6">
           <div className="flex flex-col mb-6">
             <div className="w-12 h-12 bg-stokia-blue-light rounded-full flex items-center justify-center mb-2">
               <Mail className="w-6 h-6 text-chart-3" />
@@ -64,7 +64,7 @@ export function ForgotPasswordForm() {
           <Button
             asChild
             variant="stokia"
-            className="w-full max-w-[384px] h-[36px] mx-auto"
+            className="w-full max-w-384 h-9 mx-auto"
           >
             <Link to="/login">Volver al inicio de sesión</Link>
           </Button>
@@ -78,7 +78,7 @@ export function ForgotPasswordForm() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full max-w-[432px] h-[370px] space-y-6 px-6 border border-border bg-background rounded-md  "
+          className="w-full max-w-432 h-370 space-y-6 px-6 border border-border bg-background rounded-md  "
         >
           <div className="flex flex-col mb-8">
             <h1 className="text-3xl font-semibold py-4">
@@ -103,7 +103,7 @@ export function ForgotPasswordForm() {
                     {...field}
                     type="email"
                     placeholder="Introducir correo electrónico"
-                    className={`w-full max-w-[384px] h-[36px] text-xs ${fieldState.invalid ? "border-destructive" : ""
+                    className={`w-full max-w-384 h-9 text-xs ${fieldState.invalid ? "border-destructive" : ""
                       }`}
                   />
                 </FormControl>
@@ -122,7 +122,7 @@ export function ForgotPasswordForm() {
             type="submit"
             disabled={!form.formState.isValid || forgotPassword.isPending}
             variant="stokia"
-            className="w-full max-w-[384px] h-[36px]"
+            className="w-full max-w-384 h-9"
           >
             {forgotPassword.isPending && (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -130,12 +130,12 @@ export function ForgotPasswordForm() {
             {forgotPassword.isPending ? "Enviando enlance..." : "Enviar enlace"}
           </Button>
 
-          <div className="text-center w-full max-w-[384px] h-[36px]">
+          <div className="text-center w-full max-w-384 h-9">
             <Button
               asChild
               variant="stokia"
               className={
-                `w-full max-w-[384px] h-[36px] bg-secondary text-foreground font-normal hover:bg-secondary
+                `w-full max-w-384 h-9 bg-secondary text-foreground font-normal hover:bg-secondary
                 ${forgotPassword.isPending ? "pointer-events-none opacity-50" : ""}`}
             >
               <Link to="/login">Volver al inicio de sesión</Link>
