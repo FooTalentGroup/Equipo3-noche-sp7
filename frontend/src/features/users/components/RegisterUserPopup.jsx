@@ -99,7 +99,14 @@ export default function RegisterUserPopup({ open, onClose, onSave, initialData =
     } catch (error) {
       console.error('Error saving user:', error);
       setIsSubmitting(false);
-      setErrors(prev => ({ ...prev, email: error.response?.data?.message || 'Error al guardar usuario' }));
+      const msg = error?.response?.data?.message ?? error?.message ?? 'Error al guardar usuario';
+      if (error?.message && error.message.includes('El email')) {
+        setErrors(prev => ({ ...prev, email: error.message }));
+      } else if (error?.message && error.message.includes('El nombre')) {
+        setErrors(prev => ({ ...prev, nombre: error.name ?? error.message }));
+      } else {
+        setErrors(prev => ({ ...prev, email: msg }));
+      }
     }
   }
 

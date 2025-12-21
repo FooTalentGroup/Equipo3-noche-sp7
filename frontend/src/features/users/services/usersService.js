@@ -52,6 +52,10 @@ export async function updateUser(id, payload, activateUser = false) {
 }
 
 export async function deleteUser(id) {
-  const res = await apiClient.delete(`/api/users/${id}`);
+  const body = {
+    deleted: true,
+    accountStatus: 'INACTIVE',
+  };
+  const res = await apiClient.put(`/api/users/${id}`, body);
   return unwrap(res);
 }
