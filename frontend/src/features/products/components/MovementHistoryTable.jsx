@@ -6,25 +6,36 @@ export function MovementHistoryTable({
     isLoading = false,
     currentPage = 0,
     totalPages = 0,
+    totalElements = 0,
     onPageChange,
     pageSize = 10,
 }) {
     const isControlled = typeof onPageChange === 'function';
     const [internalPage, setInternalPage] = useState(currentPage || 0);
 
+    // Determine the number of pages to show in the UI. Prefer server-provided totalPages,
+    // otherwise derive from totalElements, and as a last resort derive from movements length.
+    const usedTotalPages = totalPages > 0
+        ? totalPages
+        : (totalElements > 0 ? Math.ceil(totalElements / pageSize) : (movements?.length === 0 ? 0 : Math.ceil(movements.length / pageSize)));
+
+    // Keep internal page in bounds when uncontrolled, and keep synced when controlled.
     useEffect(() => {
-        const totalItems = movements?.length || 0;
-        const calcTotal = totalItems === 0 ? 0 : Math.ceil(totalItems / pageSize);
-        if (!isControlled) {
-            if (calcTotal === 0) setInternalPage(0);
-            else if (internalPage > calcTotal - 1) setInternalPage(calcTotal - 1);
+        if (isControlled) {
+            setInternalPage(currentPage || 0);
+            return;
         }
-    }, [movements, pageSize, internalPage, isControlled]);
+
+        const calcTotal = usedTotalPages;
+        if (calcTotal === 0) {
+            setInternalPage(0);
+        } else if (internalPage > calcTotal - 1) {
+            setInternalPage(calcTotal - 1);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [usedTotalPages, isControlled, currentPage]);
 
     const page = isControlled ? currentPage : internalPage;
-    const totalItems = movements?.length || 0;
-    const computedTotalPages = totalItems === 0 ? 0 : Math.ceil(totalItems / pageSize);
-    const usedTotalPages = totalPages > 0 ? totalPages : computedTotalPages;
 
     const setPage = (p) => {
         if (isControlled) {
@@ -100,7 +111,7 @@ export function MovementHistoryTable({
                     </thead>
 
                     <tbody className="divide-y divide-gray-200">
-                        {(movements || []).slice(page * pageSize, (page + 1) * pageSize).map((movement) => (
+                        {(movements || []).map((movement) => (
                             <tr key={movement.id} className="hover:bg-gray-50 transition-colors">
                                 <td className="px-6 py-4 text-[#171717] text-[14px] font-medium">
                                     {movement.productName || '—'}
@@ -135,7 +146,7 @@ export function MovementHistoryTable({
             </div>
 
             {/* Pagination */}
-            {(usedTotalPages >= 1 && totalItems > 0) && (
+            {(usedTotalPages >= 1 && (totalElements > 0 || (movements || []).length > 0)) && (
                 <div className="flex items-center justify-center px-6 py-3 bg-gray-50 border-t">
                     <div className="flex items-center gap-2">
                         <button

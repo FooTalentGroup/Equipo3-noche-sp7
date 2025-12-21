@@ -134,6 +134,7 @@ export default function MovementHistoryPage() {
                 isLoading={isLoading}
                 currentPage={currentPage}
                 totalPages={pagination.totalPages}
+                totalElements={pagination.totalElements}
                 onPageChange={setCurrentPage}
             />
 
