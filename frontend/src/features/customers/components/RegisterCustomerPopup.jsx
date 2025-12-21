@@ -109,7 +109,7 @@ export default function RegisterCustomerPopup({ open, onClose, onSave, initialDa
     return (
         <div className="fixed inset-0 z-1000 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/40" onClick={!isSubmitting && !showSuccess ? handleClose : undefined} />
-            <div className="relative w-[700px] max-w-full bg-[#F4F5F7] rounded-xl shadow-lg p-10 z-10 flex flex-col min-h-[500px]">
+            <div className="relative w-700 max-w-full bg-[#F4F5F7] rounded-xl shadow-lg p-10 z-10 flex flex-col min-h-500">
                 {!isSubmitting && !showSuccess && (
                     <form onSubmit={submit} className="flex flex-col h-full">
                         <h3 className="text-lg font-semibold">
@@ -176,7 +176,7 @@ export default function RegisterCustomerPopup({ open, onClose, onSave, initialDa
                                     checked={form.esFrecuente}
                                     onChange={(e) => setForm(f => ({ ...f, esFrecuente: e.target.checked }))}
                                 />
-                                <div className="w-[33px] h-[18px] bg-gray-200 peer-checked:bg-[#545F66] rounded-full transition-colors duration-300" />
+                                <div className="w-33 h-18 bg-gray-200 peer-checked:bg-[#545F66] rounded-full transition-colors duration-300" />
                                 <div className="pointer-events-none absolute inset-0 flex items-center px-1">
                                     <div
                                         className={`h-4 w-4 bg-white rounded-full shadow-lg transform transition-transform duration-300 ease-in-out ${form.esFrecuente ? 'translate-x-3' : 'translate-x-0'}`}
