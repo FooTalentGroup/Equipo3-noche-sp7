@@ -160,7 +160,7 @@ export function ReportExportModal({ isOpen, onClose, reportData }) {
                     </div>
                     <div className="mb-6 overflow-x-auto rounded-lg border border-stokia-neutral-200">
                         <table className="w-full text-center border-separate border-spacing-0">
-                            <thead className="text-xs bg-stokia-neutral-100 text-stokia-neutral-700 font-semibold h-[40px]">
+                            <thead className="text-xs bg-stokia-neutral-100 text-stokia-neutral-700 font-semibold h-10">
                                 <tr className="[&_th]:px-4 [&_th]:py-2 uppercase tracking-wider">
                                     {reportData.tableHeaders.map((header, idx) => (
                                         <th key={idx} className={idx === 0 ? "text-left" : ""}>{header}</th>
