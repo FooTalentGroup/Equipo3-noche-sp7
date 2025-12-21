@@ -13,13 +13,12 @@ export function MovementHistoryTable({
     const isControlled = typeof onPageChange === 'function';
     const [internalPage, setInternalPage] = useState(currentPage || 0);
 
-    // Determine the number of pages to show in the UI. Prefer server-provided totalPages,
-    // otherwise derive from totalElements, and as a last resort derive from movements length.
+
     const usedTotalPages = totalPages > 0
         ? totalPages
         : (totalElements > 0 ? Math.ceil(totalElements / pageSize) : (movements?.length === 0 ? 0 : Math.ceil(movements.length / pageSize)));
 
-    // Keep internal page in bounds when uncontrolled, and keep synced when controlled.
+
     useEffect(() => {
         if (isControlled) {
             setInternalPage(currentPage || 0);
@@ -32,7 +31,6 @@ export function MovementHistoryTable({
         } else if (internalPage > calcTotal - 1) {
             setInternalPage(calcTotal - 1);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [usedTotalPages, isControlled, currentPage]);
 
     const page = isControlled ? currentPage : internalPage;
