@@ -1,6 +1,10 @@
 import { Button } from "@/shared/components/ui/button";
 import { Calendar } from "@/shared/components/ui/calendar";
-import { Dialog, DialogContent, DialogTitle } from "@/shared/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/shared/components/ui/dialog";
 import { Label } from "@/shared/components/ui/label";
 import { NativeSelect } from "@/shared/components/ui/native-select";
 import { Description } from "@radix-ui/react-dialog";
@@ -76,11 +80,13 @@ function ProductsReport() {
         <Button
           onClick={() => {
             try {
-
-              console.debug('Ver reporte clicked, setIsExportModalOpen:', !!setIsExportModalOpen);
+              console.debug(
+                "Ver reporte clicked, setIsExportModalOpen:",
+                !!setIsExportModalOpen
+              );
               setIsExportModalOpen?.(true);
             } catch (e) {
-              console.error('Error al abrir modal de export:', e);
+              console.error("Error al abrir modal de export:", e);
             }
           }}
           className="bg-stokia-primary-600 hover:bg-stokia-primary-700 text-white flex items-center gap-2"
@@ -93,7 +99,10 @@ function ProductsReport() {
       <div id="filters" className="flex flex-row pt-3 gap-3.5">
         <Label className="flex flex-col gap-3 items-start">
           Tipo de reporte
-          <NativeSelect value={currentReportType} onChange={handleReportTypeChange}>
+          <NativeSelect
+            value={currentReportType}
+            onChange={handleReportTypeChange}
+          >
             {REPORT_TYPES.map((reportType) => (
               <option key={reportType.value} value={reportType.value}>
                 {reportType.label}
@@ -103,14 +112,14 @@ function ProductsReport() {
         </Label>
 
         <section id="specificFilters" className="flex flex-row gap-3">
-          {currentReportType === 'pricing' ? (
+          {currentReportType === "pricing" ? (
             <CostReportFilters
               year={year}
               onYearChange={setYear}
               productName={productName}
               onProductChange={setProductName}
             />
-          ) : currentReportType === 'stock' ? (
+          ) : currentReportType === "stock" ? (
             <StockReportFilters
               productName={productName}
               onProductChange={setProductName}
@@ -130,7 +139,7 @@ function ProductsReport() {
                 <Calendar1 size={12} />
                 {startDate && endDate
                   ? `${formatDateArg(startDate)} - ${formatDateArg(endDate)}`
-                  : 'Seleccionar período'}
+                  : "Seleccionar período"}
               </Button>
             </Label>
           )}
@@ -151,7 +160,7 @@ function ProductsReport() {
               <Calendar1 size={14} />
               {startDate && endDate
                 ? `${formatDateArg(startDate)} - ${formatDateArg(endDate)}`
-                : 'Sin período seleccionado'}
+                : "Sin período seleccionado"}
             </p>
           </div>
 
@@ -168,12 +177,15 @@ function ProductsReport() {
             numberOfMonths={1}
             captionLayout="dropdown"
             classNames={{
-              button_previous: 'hidden', button_next: 'hidden',
-              dropdowns: 'w-full flex items-center text-sm font-medium h-(--cell-size) gap-1.5',
-              week: 'flex w-full mt-2 gap-2',
+              button_previous: "hidden",
+              button_next: "hidden",
+              dropdowns:
+                "w-full flex items-center text-sm font-medium h-(--cell-size) gap-1.5",
+              week: "flex w-full mt-2 gap-2",
               month_caption: "",
-              dropdown_root: "px-3 relative has-focus:border-ring border border-stokia-neutral-300 shadow-xs has-focus:ring-ring/50 has-focus:ring-[3px] rounded-md",
-              table: "bg-red-100!"
+              dropdown_root:
+                "px-3 relative has-focus:border-ring border border-stokia-neutral-300 shadow-xs has-focus:ring-ring/50 has-focus:ring-[3px] rounded-md",
+              table: "bg-red-100!",
             }}
           />
 

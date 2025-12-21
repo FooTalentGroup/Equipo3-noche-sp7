@@ -23,7 +23,8 @@ const BestSellersReport = () => {
     fetch: fetchMostSold,
   } = useMostSoldProducts();
 
-  const { setReportData, startDate, endDate, productName } = useProductsReport();
+  const { setReportData, startDate, endDate, productName } =
+    useProductsReport();
   const [stableProducts, setStableProducts] = useState([]);
 
   useEffect(() => {
@@ -41,28 +42,44 @@ const BestSellersReport = () => {
   useEffect(() => {
     if (content.length > 0) {
       const formatDate = (date) => {
-        if (!date) return '';
-        return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+        if (!date) return "";
+        return date.toLocaleDateString("es-ES", {
+          day: "2-digit",
+          month: "short",
+        });
       };
-      const dateRange = startDate && endDate
-        ? `${formatDate(startDate)} - ${formatDate(endDate)}`
-        : 'Todos los periodos';
+      const dateRange =
+        startDate && endDate
+          ? `${formatDate(startDate)} - ${formatDate(endDate)}`
+          : "Todos los periodos";
 
       const showPlaceholder = !!productName || (startDate && endDate);
 
       setReportData({
-        title: 'Reporte de más vendidos',
+        title: "Reporte de más vendidos",
         dateRange: dateRange,
-        chartComponent: <BestSellersChart products={stableProducts} showPlaceholder={showPlaceholder} />,
-        tableHeaders: ['Producto', 'Categoría', 'Precio de Venta', 'Cant. Inicial', 'Cant. Vendida', 'Cant. Actual'],
-        tableRows: content.map(product => [
+        chartComponent: (
+          <BestSellersChart
+            products={stableProducts}
+            showPlaceholder={showPlaceholder}
+          />
+        ),
+        tableHeaders: [
+          "Producto",
+          "Categoría",
+          "Precio de Venta",
+          "Cant. Inicial",
+          "Cant. Vendida",
+          "Cant. Actual",
+        ],
+        tableRows: content.map((product) => [
           product.productName,
           product.categoryName,
           `$${product.salePrice.toFixed(2)}`,
           product.initialQuantity,
           product.quantitySold,
-          product.currentQuantity
-        ])
+          product.currentQuantity,
+        ]),
       });
     }
   }, [content, stableProducts, startDate, endDate, setReportData]);
@@ -71,13 +88,17 @@ const BestSellersReport = () => {
     <>
       <div className="mb-10 mt-4 w-full" style={{ height: "300px" }}>
         <h1>Reporte de Ventas</h1>
-        <BestSellersChart products={stableProducts} showPlaceholder={!!productName || (startDate && endDate)} />
+        <BestSellersChart
+          products={stableProducts}
+          showPlaceholder={!!productName || (startDate && endDate)}
+        />
       </div>
 
       <section>
         <div
-          className={`relative overflow-x-auto ${loadingMostSold ? "h-[400px] overflow-hidden" : ""
-            } flex-1`}
+          className={`relative overflow-x-auto ${
+            loadingMostSold ? "h-[400px] overflow-hidden" : ""
+          } flex-1`}
         >
           <table className="w-full text-left border-separate border-spacing-0">
             <thead className="text-sm bg-stokia-primary-100 text-stokia-neutral-950 font-normal h-[46px] sticky top-0 z-10">

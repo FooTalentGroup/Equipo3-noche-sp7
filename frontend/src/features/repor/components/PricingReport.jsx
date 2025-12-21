@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import { LoaderCircle } from "lucide-react";
 import { Pagination } from "@/shared/components/ui/pagination";
-import ChartPricing from './charts/ChartPricing';
-import { useCostReport } from '../hooks/useCostReport';
-import { useProductsReport } from '../contexts/ProductsReportContext';
+import ChartPricing from "./charts/ChartPricing";
+import { useCostReport } from "../hooks/useCostReport";
+import { useProductsReport } from "../contexts/ProductsReportContext";
 
 const PricingReport = () => {
   const { year, productName, setReportData } = useProductsReport();
@@ -30,45 +30,72 @@ const PricingReport = () => {
   };
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'USD' }).format(value);
+    return new Intl.NumberFormat("es-ES", {
+      style: "currency",
+      currency: "USD",
+    }).format(value);
   };
 
   const getVarColor = (val) => {
-    if (val > 0) return 'text-green-600';
-    if (val < 0) return 'text-red-500';
-    return 'text-stokia-neutral-950';
+    if (val > 0) return "text-green-600";
+    if (val < 0) return "text-red-500";
+    return "text-stokia-neutral-950";
   };
 
   useEffect(() => {
     if (data.length > 0 && year && productName) {
-      const chartValues = data.map(item => item.avgUnitPrice);
+      const chartValues = data.map((item) => item.avgUnitPrice);
 
       setReportData({
-        title: 'Reporte de costos',
+        title: "Reporte de costos",
         dateRange: `${productName} - ${year}`,
-        chartComponent: <ChartPricing dataPoints={chartValues} showPlaceholder={!!productName && !!year} />,
-        tableHeaders: ['Mes', 'Unid. Vend.', 'Precio Unit. Prom.', 'Costo Unit. Prom.', 'Costo Total Prom.', 'Var. Costos (%) Prom.'],
-        tableRows: data.map(row => [
+        chartComponent: (
+          <ChartPricing
+            dataPoints={chartValues}
+            showPlaceholder={!!productName && !!year}
+          />
+        ),
+        tableHeaders: [
+          "Mes",
+          "Unid. Vend.",
+          "Precio Unit. Prom.",
+          "Costo Unit. Prom.",
+          "Costo Total Prom.",
+          "Var. Costos (%) Prom.",
+        ],
+        tableRows: data.map((row) => [
           row.monthName,
           row.unitsSold,
           formatCurrency(row.avgUnitPrice),
           formatCurrency(row.avgUnitCost),
           formatCurrency(row.totalAvgCost),
-          `${row.costVariationPercent > 0 ? '+' : ''}${row.costVariationPercent}%`
-        ])
+          `${row.costVariationPercent > 0 ? "+" : ""}${
+            row.costVariationPercent
+          }%`,
+        ]),
       });
     }
   }, [data, year, productName, setReportData]);
 
-  const chartData = data.map(item => item.avgUnitPrice);
+  const chartData = data.map((item) => item.avgUnitPrice);
 
   return (
     <>
-      <div className="mb-10 mt-4 w-full p-6 bg-white rounded-xl shadow-sm border border-stokia-neutral-200" style={{ height: '350px' }}>
-        <ChartPricing dataPoints={chartData} showPlaceholder={!!productName && !!year} />
+      <div
+        className="mb-10 mt-4 w-full p-6 bg-white rounded-xl shadow-sm border border-stokia-neutral-200"
+        style={{ height: "350px" }}
+      >
+        <ChartPricing
+          dataPoints={chartData}
+          showPlaceholder={!!productName && !!year}
+        />
       </div>
       <section>
-        <div className={`relative overflow-x-auto ${isLoading ? 'h-[400px] overflow-hidden' : ''} flex-1`}>
+        <div
+          className={`relative overflow-x-auto ${
+            isLoading ? "h-[400px] overflow-hidden" : ""
+          } flex-1`}
+        >
           <table className="w-full text-center border-separate border-spacing-0">
             <thead className="text-sm bg-stokia-primary-100 text-stokia-neutral-950 font-normal h-[46px] sticky top-0 z-10">
               <tr className="[&_th]:px-6 [&_th]:py-3 uppercase tracking-wider text-xs">
@@ -83,8 +110,13 @@ const PricingReport = () => {
 
             <tbody className="divide-y divide-stokia-neutral-100 bg-white">
               {paginatedData.map((row) => (
-                <tr key={row.month} className="hover:bg-stokia-neutral-100 transition-colors [&_td]:text-stokia-neutral-950 [&_td]:text-sm [&_td]:px-6 [&_td]:py-4">
-                  <td className="text-left pl-8 font-medium">{row.monthName}</td>
+                <tr
+                  key={row.month}
+                  className="hover:bg-stokia-neutral-100 transition-colors [&_td]:text-stokia-neutral-950 [&_td]:text-sm [&_td]:px-6 [&_td]:py-4"
+                >
+                  <td className="text-left pl-8 font-medium">
+                    {row.monthName}
+                  </td>
 
                   <td>{row.unitsSold}</td>
 
@@ -94,8 +126,13 @@ const PricingReport = () => {
 
                   <td>{formatCurrency(row.totalAvgCost)}</td>
 
-                  <td className={`font-medium ${getVarColor(row.costVariationPercent)}`}>
-                    {row.costVariationPercent > 0 ? '+' : ''}{row.costVariationPercent}%
+                  <td
+                    className={`font-medium ${getVarColor(
+                      row.costVariationPercent
+                    )}`}
+                  >
+                    {row.costVariationPercent > 0 ? "+" : ""}
+                    {row.costVariationPercent}%
                   </td>
                 </tr>
               ))}
@@ -115,8 +152,8 @@ const PricingReport = () => {
             <div className="absolute inset-0 flex items-center justify-center">
               <span className="px-6 py-6 text-center text-stokia-neutral-600 text-sm">
                 {productName && year
-                  ? 'No hay datos para mostrar con los filtros seleccionados.'
-                  : 'Selecciona un producto y año para ver el reporte.'}
+                  ? "No hay datos para mostrar con los filtros seleccionados."
+                  : "Selecciona un producto y año para ver el reporte."}
               </span>
             </div>
           )}

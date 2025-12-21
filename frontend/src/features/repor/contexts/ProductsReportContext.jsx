@@ -6,10 +6,9 @@ export function ProductsReportProvider({ children }) {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [year, setYear] = useState(new Date().getFullYear());
-  const [productName, setProductName] = useState('');
+  const [productName, setProductName] = useState("");
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [reportData, setReportData] = useState(null);
-
 
   return (
     <ProductsReportContext.Provider

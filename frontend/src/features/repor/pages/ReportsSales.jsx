@@ -1,10 +1,8 @@
-import React from 'react';
-import ReportSales from '../components/ReportSales';
+import React from "react";
+import ReportSales from "../components/ReportSales";
 
 function ReportsSales() {
-  return (
-    <ReportSales />
-  );
-};
+  return <ReportSales />;
+}
 
 export default ReportsSales;

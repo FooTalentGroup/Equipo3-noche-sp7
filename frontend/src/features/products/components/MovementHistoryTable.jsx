@@ -134,7 +134,6 @@ export function MovementHistoryTable({
                 </table>
             </div>
 
-            {/* Pagination */}
             {(usedTotalPages >= 1 && totalItems > 0) && (
                 <div className="flex items-center justify-center px-6 py-3 bg-gray-50 border-t">
                     <div className="flex items-center gap-2">

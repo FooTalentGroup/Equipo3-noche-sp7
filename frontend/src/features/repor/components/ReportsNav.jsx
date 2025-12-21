@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 
 const tabs = [
-  { name: 'Ventas', path: 'sales' },
-  { name: 'Productos', path: 'products' },
+  { name: "Ventas", path: "sales" },
+  { name: "Productos", path: "products" },
 ];
 
 const ReportsNav = () => {
@@ -12,14 +12,17 @@ const ReportsNav = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const pathSegments = location.pathname.split('/');
-    const activeIndex = tabs.findIndex(tab => pathSegments.includes(tab.path));
+    const pathSegments = location.pathname.split("/");
+    const activeIndex = tabs.findIndex((tab) =>
+      pathSegments.includes(tab.path)
+    );
     const indexToUse = activeIndex !== -1 ? activeIndex : 0;
 
     const activeTab = tabsRef.current[indexToUse];
     if (activeTab) {
       const barWidth = activeTab.offsetWidth * 0.7;
-      const centeredLeft = activeTab.offsetLeft + (activeTab.offsetWidth - barWidth) / 2;
+      const centeredLeft =
+        activeTab.offsetLeft + (activeTab.offsetWidth - barWidth) / 2;
 
       setIndicatorStyle({
         left: centeredLeft,
@@ -43,9 +46,12 @@ const ReportsNav = () => {
           <NavLink
             key={tab.path}
             to={tab.path}
-            ref={el => (tabsRef.current[index] = el)}
+            ref={(el) => (tabsRef.current[index] = el)}
             className={({ isActive }) =>
-              `relative z-0 px-8 py-4 text-xl font-medium transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${isActive ? 'text-stokia-neutral-950' : 'text-stokia-neutral-400 hover:text-slate-700'
+              `relative z-0 px-8 py-4 text-xl font-medium transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+                isActive
+                  ? "text-stokia-neutral-950"
+                  : "text-stokia-neutral-400 hover:text-slate-700"
               }`
             }
           >

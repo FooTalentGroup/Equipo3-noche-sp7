@@ -10,7 +10,6 @@ export function MovementHistoryFiltersBar({
 }) {
     return (
         <div className="flex gap-3 items-center mb-4 max-w-[1086px]">
-            {/* Search Bar */}
             <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input
@@ -32,7 +31,6 @@ export function MovementHistoryFiltersBar({
                 )}
             </div>
 
-            {/* Filter Button */}
             <Button
                 variant="outline"
                 onClick={onFilterClick}
@@ -46,8 +44,6 @@ export function MovementHistoryFiltersBar({
                     </span>
                 )}
             </Button>
-
-            {/* Export Button */}
             <Button
                 onClick={onExport}
                 variant="outline"

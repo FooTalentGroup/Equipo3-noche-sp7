@@ -12,12 +12,7 @@ export function useMostSoldProducts() {
   const [page, setPage] = useState(0);
 
   const query = useQuery({
-    queryKey: [
-      "most-sold-products",
-      formattedStart,
-      formattedEnd,
-      page,
-    ],
+    queryKey: ["most-sold-products", formattedStart, formattedEnd, page],
     queryFn: () =>
       getMostSoldProducts({
         startDate: formattedStart,
